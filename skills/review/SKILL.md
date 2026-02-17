@@ -6,8 +6,10 @@ disable-model-invocation: true
 
 # /mz:review
 
-This skill is not yet available. It will be implemented in Phase 5.
+This skill will be available in **Phase 5: Code Review and Verification**.
 
-**What it will do:** Perform a two-stage code review: first checking spec compliance against requirements, then evaluating code quality including patterns, maintainability, and potential issues.
+**What it will do:** Perform a two-stage code review: first checking spec compliance against plan requirements, then evaluating code quality, patterns, and maintainability.
 
-Run `/mz:help` to see all available skills and their status.
+**Current phase:** 3 (Core Skills and State Management)
+
+Run `/mz:help` to see available commands.
