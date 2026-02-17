@@ -64,12 +64,12 @@ Plans:
   3. Running `/mz:pause` creates a context handoff file, and `/mz:resume` in a new session restores full working context from STATE.md
   4. Running `/mz:quick` executes a simple task without requiring project ceremony (no roadmap, no phases)
   5. All ~12 slash commands are registered and routable, even if some are stubs pending later phases
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md -- State management library and CLI tooling (state.ts, progress, stash commands)
+- [ ] 03-02-PLAN.md -- /mz:plan skill with researcher and planner agent definitions
+- [ ] 03-03-PLAN.md -- /mz:status, pause, resume, quick skills + stub updates + help refresh
 
 ### Phase 4: Subagent Execution and Atomic Commits
 **Goal**: A developer can execute planned tasks via subagent delegation with each completed task producing exactly one clean git commit
@@ -152,7 +152,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 |-------|----------------|--------|-----------|
 | 1. Plugin Scaffold and Build Pipeline | 0/2 | Not started | - |
 | 2. Project Initialization and Configuration | 0/2 | Complete    | 2026-02-17 |
-| 3. Core Skills and State Management | 0/3 | Not started | - |
+| 3. Core Skills and State Management | 0/3 | Planned     | - |
 | 4. Subagent Execution and Atomic Commits | 0/1 | Not started | - |
 | 5. Code Review and Verification | 0/1 | Not started | - |
 | 6. Agent Teams Integration | 0/3 | Not started | - |
