@@ -1,0 +1,18 @@
+{
+  "name": "mz",
+  "version": "0.1.0",
+  "description": "Unified framework for project management, code quality, and multi-agent coordination",
+  "author": {
+    "name": "Megazord"
+  },
+  "homepage": "https://github.com/megazord/megazord",
+  "repository": "https://github.com/megazord/megazord",
+  "license": "MIT",
+  "keywords": [
+    "project-management",
+    "code-quality",
+    "agent-teams",
+    "tdd",
+    "workflow"
+  ]
+}
