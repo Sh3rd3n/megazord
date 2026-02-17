@@ -1,10 +1,22 @@
 import { Command } from "commander";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-// Read version from package.json using readFileSync (ESM-safe, no import assertion needed)
-const packageJsonPath = join(import.meta.dirname, "..", "..", "package.json");
-const pkg = JSON.parse(readFileSync(packageJsonPath, "utf-8")) as {
+// Resolve package.json by walking up from the current file's directory.
+// Works both in dev (src/cli/index.ts -> ../../package.json) and
+// after bundling (bin/megazord.mjs -> ../package.json).
+function findPackageJson(): string {
+	let dir = dirname(fileURLToPath(import.meta.url));
+	while (dir !== dirname(dir)) {
+		const candidate = join(dir, "package.json");
+		if (existsSync(candidate)) return candidate;
+		dir = dirname(dir);
+	}
+	throw new Error("Could not find package.json");
+}
+
+const pkg = JSON.parse(readFileSync(findPackageJson(), "utf-8")) as {
 	version: string;
 };
 
@@ -29,6 +41,20 @@ program
 	.action(async () => {
 		const { uninstall } = await import("./commands/uninstall.js");
 		await uninstall();
+	});
+
+program
+	.command("version")
+	.description("Show installed version")
+	.action(() => {
+		console.log(pkg.version);
+	});
+
+program
+	.command("help")
+	.description("Show help for all commands")
+	.action(() => {
+		program.outputHelp();
 	});
 
 // Default action (no subcommand) = install

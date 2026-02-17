@@ -1,7 +1,7 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-	entry: ["src/cli/index.ts"],
+	entry: { megazord: "src/cli/index.ts" },
 	outDir: "bin",
 	format: "esm",
 	clean: true,
