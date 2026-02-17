@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "postbuild": "node bin/megazord.mjs update --yes",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "lint": "biome check .",
