@@ -19,8 +19,8 @@ export const installedPluginsPath = join(pluginsDir, "installed_plugins.json");
 /** GSD commands directory: ~/.claude/commands/gsd/ */
 export const gsdCommandsDir = join(claudeDir, "commands", "gsd");
 
-/** Marketplaces directory: ~/.claude/marketplaces/ */
-export const marketplacesDir = join(claudeDir, "marketplaces");
+/** Known marketplaces registry: ~/.claude/plugins/known_marketplaces.json */
+export const knownMarketplacesPath = join(pluginsDir, "known_marketplaces.json");
 
 /** Resolve a plugin path in the cache by name */
 export function resolvePluginPath(name: string): string {
