@@ -57,6 +57,19 @@ program
 		program.outputHelp();
 	});
 
+// ─── Tools subcommand group (non-interactive, JSON output) ──────────────
+// Used by Megazord skills via Bash for state management operations.
+
+const tools = program
+	.command("tools")
+	.description("Internal tools for Megazord skills");
+
+// Register tool subcommands via dynamic imports (matches install/uninstall pattern)
+const { registerStateCommands } = await import("./commands/state.js");
+const { registerProgressCommands } = await import("./commands/progress.js");
+registerStateCommands(tools);
+registerProgressCommands(tools);
+
 // Default action (no subcommand) = install
 program.action(async () => {
 	const { install } = await import("./commands/install.js");
