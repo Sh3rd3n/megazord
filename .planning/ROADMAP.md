@@ -32,11 +32,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Megazord plugin coexists with Superpowers and GSD installed simultaneously without namespace conflicts or skill collisions
   3. TypeScript orchestration CLI (`mz-tools`) compiles, bundles, and executes basic commands (version, help)
   4. Framework overhead at session start measures under 15% of context window with all skills registered
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md -- Project scaffold, plugin manifest, and 13 skill stubs
+- [ ] 01-02-PLAN.md -- TypeScript CLI, build pipeline, coexistence and context budget verification
 
 ### Phase 2: Project Initialization and Configuration
 **Goal**: A developer can run `/mz:init` to set up a new project with their preferred quality and workflow settings persisted in config
