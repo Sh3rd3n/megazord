@@ -1,0 +1,44 @@
+{
+  "name": "megazord",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Claude Code framework unifying project management, code quality, and multi-agent coordination",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "megazord": "bin/megazord.mjs"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "skills",
+    "agents",
+    "hooks",
+    ".claude-plugin"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "lint": "biome check .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "zod": "^4.3.0",
+    "picocolors": "^1.1.0",
+    "ora": "^8.0.0",
+    "fs-extra": "^11.0.0",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.0",
+    "tsdown": "^0.20.0",
+    "vitest": "^4.0.0",
+    "@biomejs/biome": "^2.3.0",
+    "@types/fs-extra": "^11.0.0",
+    "@types/node": "^22.0.0"
+  }
+}
