@@ -6,8 +6,10 @@ disable-model-invocation: true
 
 # /mz:debug
 
-This skill is not yet available. It will be implemented in Phase 7.
+This skill will be available in **Phase 7: Quality and Debugging Skills**.
 
-**What it will do:** Guide systematic debugging through four phases: reproduce the issue, isolate the failing component, identify root cause, and implement a verified fix.
+**What it will do:** Guide systematic four-phase debugging: reproduce the issue, isolate the failing component, identify root cause, and implement a verified fix.
 
-Run `/mz:help` to see all available skills and their status.
+**Current phase:** 3 (Core Skills and State Management)
+
+Run `/mz:help` to see available commands.

@@ -6,8 +6,10 @@ disable-model-invocation: true
 
 # /mz:discuss
 
-This skill is not yet available. It will be implemented in Phase 7.
+This skill will be available in **Phase 7: Quality and Debugging Skills**.
 
-**What it will do:** Facilitate a Socratic brainstorming session to explore design approaches, trade-offs, and implementation strategies before writing code.
+**What it will do:** Facilitate Socratic brainstorming to explore 3+ design approaches, trade-offs, and implementation strategies before writing code.
 
-Run `/mz:help` to see all available skills and their status.
+**Current phase:** 3 (Core Skills and State Management)
+
+Run `/mz:help` to see available commands.

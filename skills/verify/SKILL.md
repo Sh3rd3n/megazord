@@ -6,8 +6,10 @@ disable-model-invocation: true
 
 # /mz:verify
 
-This skill is not yet available. It will be implemented in Phase 5.
+This skill will be available in **Phase 5: Code Review and Verification**.
 
-**What it will do:** Check that phase deliverables satisfy all acceptance criteria defined in the phase plan, including file existence, content validation, and functional verification.
+**What it will do:** Verify that phase deliverables satisfy all acceptance criteria and success conditions before marking the phase complete.
 
-Run `/mz:help` to see all available skills and their status.
+**Current phase:** 3 (Core Skills and State Management)
+
+Run `/mz:help` to see available commands.
