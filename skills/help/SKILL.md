@@ -8,12 +8,23 @@ disable-model-invocation: false
 
 Display the complete skill reference for Megazord.
 
+Reference `@skills/init/design-system.md` for visual output formatting.
+
+Display the stage banner:
+
+```
+╔═══════════════════════════════════════════════╗
+║  ⚡ MEGAZORD ► HELP                           ║
+╚═══════════════════════════════════════════════╝
+```
+
 ## Available Skills
 
 | Skill | Description | Status |
 |-------|-------------|--------|
 | `/mz:help` | Show this help listing | Available |
-| `/mz:init` | Initialize project with config and planning structure | Coming soon |
+| `/mz:init` | Initialize project with config and planning structure | Available |
+| `/mz:settings` | View and modify project configuration | Available |
 | `/mz:plan` | Plan a phase into tasks with dependencies | Coming soon |
 | `/mz:go` | Execute the current phase plan | Coming soon |
 | `/mz:status` | Show project progress and next actions | Coming soon |
@@ -43,4 +54,4 @@ Skills marked "Coming soon" are planned for future phases and not yet functional
 Megazord unifies project management, code quality discipline, and multi-agent coordination into one Claude Code framework.
 
 **Version:** 0.1.0
-**Phase:** 1 of 8 (Plugin Scaffold and Build Pipeline)
+**Phase:** 2 of 8 (Project Initialization and Configuration)
