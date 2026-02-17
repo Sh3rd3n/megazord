@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Phase: 1 of 8 (Plugin Scaffold and Build Pipeline)
 Plan: 0 of 2 in current phase
 Status: Ready to plan
-Last activity: 2026-02-17 -- Roadmap created with 8 phases covering 42 requirements
+Last activity: 2026-02-17 -- Phase 1 context gathered (discuss-phase)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -45,6 +45,8 @@ Recent decisions affecting current work:
 - Roadmap: 8 phases derived from 42 requirements at comprehensive depth
 - Roadmap: Stable primitives first (Phases 1-5), experimental Agent Teams after (Phase 6)
 - Roadmap: Quality skills (Phase 7) placed after Agent Teams to leverage coordination, but designed to work with subagent fallback
+- Phase 1: Megazord is the successor to GSD/Superpowers — coexistence is temporary during migration
+- Phase 1: `bunx megazord` = installation only; `/mz:init` = project configuration (Phase 2)
 
 ### Pending Todos
 
@@ -58,5 +60,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Roadmap created, ready to plan Phase 1
-Resume file: None
+Stopped at: Phase 1 context gathered
+Resume file: .planning/phases/01-plugin-scaffold-and-build-pipeline/01-CONTEXT.md
