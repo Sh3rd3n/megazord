@@ -76,8 +76,10 @@ const tools = program
 // Register tool subcommands via dynamic imports (matches install/uninstall pattern)
 const { registerStateCommands } = await import("./commands/state.js");
 const { registerProgressCommands } = await import("./commands/progress.js");
+const { registerPlanCommands } = await import("./commands/plan-tools.js");
 registerStateCommands(tools);
 registerProgressCommands(tools);
+registerPlanCommands(tools);
 
 // Default action (no subcommand) = install
 program.action(async () => {

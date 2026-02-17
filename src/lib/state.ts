@@ -507,3 +507,238 @@ export function calculateProgress(planningDir: string): {
 		},
 	};
 }
+
+// ─── Execution Lifecycle Functions ──────────────────────────────────────────
+
+/** Result from advancePlan operation */
+export interface AdvancePlanResult {
+	success: boolean;
+	plan: number;
+	totalPlans: number;
+	isLast: boolean;
+}
+
+/**
+ * Advance the plan counter in STATE.md by 1.
+ * Recalculates progress and detects last-plan edge case.
+ * Updates status to "Phase complete" if this was the last plan.
+ */
+export function advancePlan(planningDir: string): AdvancePlanResult {
+	const current = readPosition(planningDir);
+	if (!current) {
+		return { success: false, plan: 0, totalPlans: 0, isLast: false };
+	}
+
+	const newPlan = current.plan + 1;
+	const isLast = newPlan >= current.totalPlans;
+
+	// Recalculate progress
+	const progress = calculateProgress(planningDir);
+
+	// Update position
+	const updates: Partial<StatePosition> = {
+		plan: newPlan,
+		progressPercent: progress.overall,
+	};
+
+	if (isLast) {
+		updates.status = "Phase complete";
+	}
+
+	updatePosition(planningDir, updates);
+
+	return {
+		success: true,
+		plan: newPlan,
+		totalPlans: current.totalPlans,
+		isLast,
+	};
+}
+
+/**
+ * Record execution metrics for a completed plan.
+ * Updates the "Performance Metrics" section in STATE.md:
+ * - Adds or updates the phase row in the "By Phase" table
+ * - Updates the "Velocity" total plans completed and total execution time
+ */
+export function recordMetric(
+	planningDir: string,
+	phase: string,
+	plan: string,
+	duration: string,
+	tasks: number,
+	files: number,
+): void {
+	const statePath = join(planningDir, STATE_FILENAME);
+	if (!fse.pathExistsSync(statePath)) return;
+
+	let content = fse.readFileSync(statePath, "utf-8");
+	const lines = content.split("\n");
+
+	// Parse duration string to minutes (e.g., "5min" -> 5)
+	const durationMin = parseDurationMin(duration);
+
+	// ─── Update "By Phase" table ────────────────────────────────────────
+	// Find the table rows for the phase
+	let phaseRowIdx = -1;
+	for (let i = 0; i < lines.length; i++) {
+		if (lines[i].match(new RegExp(`^\\|\\s*${escapeRegex(phase)}\\s*\\|`))) {
+			phaseRowIdx = i;
+			break;
+		}
+	}
+
+	if (phaseRowIdx >= 0) {
+		// Update existing row: | Phase | Plans | Total | Avg/Plan |
+		const rowMatch = lines[phaseRowIdx].match(
+			/^\|\s*([^|]+)\|\s*(\d+)\s*\|\s*(\d+)min\s*\|\s*[\d.]+min\s*\|/,
+		);
+		if (rowMatch) {
+			const existingPlans = Number.parseInt(rowMatch[2], 10);
+			const existingTotal = Number.parseInt(rowMatch[3], 10);
+			const newPlans = existingPlans + 1;
+			const newTotal = existingTotal + durationMin;
+			const newAvg =
+				newPlans > 0
+					? `${(newTotal / newPlans).toFixed(newTotal % newPlans === 0 ? 0 : 1)}min`
+					: `${durationMin}min`;
+			lines[phaseRowIdx] =
+				`| ${phase} | ${newPlans} | ${newTotal}min | ${newAvg} |`;
+		}
+	} else {
+		// Find the table end to insert new row (after last | line in the By Phase table)
+		let tableEndIdx = -1;
+		let inByPhaseTable = false;
+		for (let i = 0; i < lines.length; i++) {
+			if (lines[i].includes("**By Phase:**")) {
+				inByPhaseTable = true;
+				continue;
+			}
+			if (inByPhaseTable && lines[i].startsWith("|")) {
+				tableEndIdx = i;
+			}
+			if (
+				inByPhaseTable &&
+				!lines[i].startsWith("|") &&
+				lines[i].trim() !== "" &&
+				tableEndIdx > 0
+			) {
+				break;
+			}
+		}
+		if (tableEndIdx >= 0) {
+			const newRow = `| ${phase} | 1 | ${durationMin}min | ${durationMin}min |`;
+			lines.splice(tableEndIdx + 1, 0, newRow);
+		}
+	}
+
+	// ─── Update "Velocity" section ──────────────────────────────────────
+	for (let i = 0; i < lines.length; i++) {
+		// Update total plans completed
+		const plansMatch = lines[i].match(
+			/^-\s+Total plans completed:\s*(\d+)/,
+		);
+		if (plansMatch) {
+			const current = Number.parseInt(plansMatch[1], 10);
+			lines[i] = `- Total plans completed: ${current + 1}`;
+		}
+
+		// Update total execution time (in hours)
+		const timeMatch = lines[i].match(
+			/^-\s+Total execution time:\s*([\d.]+)\s*hours?/,
+		);
+		if (timeMatch) {
+			const currentHours = Number.parseFloat(timeMatch[1]);
+			const newHours = (currentHours + durationMin / 60).toFixed(2);
+			lines[i] = `- Total execution time: ${newHours} hours`;
+		}
+
+		// Update average duration
+		const avgMatch = lines[i].match(
+			/^-\s+Average duration:\s*(\d+)min/,
+		);
+		if (avgMatch) {
+			// Recalculate from total time and total plans
+			// Find the updated values
+			const totalPlansLine = lines.find((l) =>
+				l.match(/^-\s+Total plans completed:/),
+			);
+			const totalTimeLine = lines.find((l) =>
+				l.match(/^-\s+Total execution time:/),
+			);
+			if (totalPlansLine && totalTimeLine) {
+				const tp = Number.parseInt(
+					totalPlansLine.match(/(\d+)$/)?.[1] ?? "1",
+					10,
+				);
+				const tt = Number.parseFloat(
+					totalTimeLine.match(/([\d.]+)\s*hours?/)?.[1] ?? "0",
+				);
+				const avgMin = Math.round((tt * 60) / tp);
+				lines[i] = `- Average duration: ${avgMin}min`;
+			}
+		}
+	}
+
+	content = lines.join("\n");
+	fse.writeFileSync(statePath, content, "utf-8");
+}
+
+/**
+ * Add a decision to the "### Decisions" subsection within "## Accumulated Context".
+ * Appends `- Phase {phase}: {decision}` after the last existing decision line.
+ */
+export function addDecision(
+	planningDir: string,
+	phase: string,
+	decision: string,
+): void {
+	const statePath = join(planningDir, STATE_FILENAME);
+	if (!fse.pathExistsSync(statePath)) return;
+
+	const content = fse.readFileSync(statePath, "utf-8");
+	const lines = content.split("\n");
+
+	// Find the ### Decisions heading
+	let decisionsHeadingIdx = -1;
+	for (let i = 0; i < lines.length; i++) {
+		if (lines[i].trim() === "### Decisions") {
+			decisionsHeadingIdx = i;
+			break;
+		}
+	}
+
+	if (decisionsHeadingIdx < 0) return;
+
+	// Find the last "- Phase" or "- Roadmap:" decision line after the heading
+	let lastDecisionLineIdx = decisionsHeadingIdx;
+	for (let i = decisionsHeadingIdx + 1; i < lines.length; i++) {
+		// Stop at next heading
+		if (lines[i].startsWith("### ") || lines[i].startsWith("## ")) {
+			break;
+		}
+		// Track the last decision-style line
+		if (lines[i].match(/^- (Phase|Roadmap)/)) {
+			lastDecisionLineIdx = i;
+		}
+	}
+
+	// Insert after the last decision line
+	const newLine = `- Phase ${phase}: ${decision}`;
+	lines.splice(lastDecisionLineIdx + 1, 0, newLine);
+
+	fse.writeFileSync(statePath, lines.join("\n"), "utf-8");
+}
+
+// ─── Internal Helpers ───────────────────────────────────────────────────────
+
+/** Parse a duration string like "5min" or "12min" to numeric minutes */
+function parseDurationMin(duration: string): number {
+	const match = duration.match(/^(\d+)/);
+	return match ? Number.parseInt(match[1], 10) : 0;
+}
+
+/** Escape special regex characters in a string */
+function escapeRegex(str: string): string {
+	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}

@@ -6,6 +6,9 @@ import {
 	updateSessionContinuity,
 	stashPause,
 	stashResume,
+	advancePlan,
+	recordMetric,
+	addDecision,
 } from "../../lib/state.js";
 
 /**
@@ -102,6 +105,58 @@ export function registerStateCommands(parent: Command): void {
 				console.log(JSON.stringify({ success: true, updates }, null, 2));
 			},
 		);
+
+	// ─── Execution lifecycle subcommands ────────────────────────────────────
+
+	state
+		.command("advance-plan")
+		.description("Increment plan counter and recalculate progress")
+		.action(() => {
+			const planningDir = `${process.cwd()}/.planning`;
+			const result = advancePlan(planningDir);
+			console.log(JSON.stringify(result, null, 2));
+			if (!result.success) process.exit(1);
+		});
+
+	state
+		.command("record-metric")
+		.description("Record execution timing for a completed plan")
+		.requiredOption("--phase <string>", "Phase identifier (e.g., '04')")
+		.requiredOption("--plan <string>", "Plan identifier (e.g., '01')")
+		.requiredOption("--duration <string>", "Duration (e.g., '5min')")
+		.requiredOption("--tasks <number>", "Number of tasks completed")
+		.requiredOption("--files <number>", "Number of files modified")
+		.action(
+			(opts: {
+				phase: string;
+				plan: string;
+				duration: string;
+				tasks: string;
+				files: string;
+			}) => {
+				const planningDir = `${process.cwd()}/.planning`;
+				recordMetric(
+					planningDir,
+					opts.phase,
+					opts.plan,
+					opts.duration,
+					Number.parseInt(opts.tasks, 10),
+					Number.parseInt(opts.files, 10),
+				);
+				console.log(JSON.stringify({ success: true }, null, 2));
+			},
+		);
+
+	state
+		.command("add-decision")
+		.description("Append a decision to Accumulated Context")
+		.requiredOption("--phase <string>", "Phase identifier (e.g., '04')")
+		.requiredOption("--decision <string>", "Decision summary text")
+		.action((opts: { phase: string; decision: string }) => {
+			const planningDir = `${process.cwd()}/.planning`;
+			addDecision(planningDir, opts.phase, opts.decision);
+			console.log(JSON.stringify({ success: true }, null, 2));
+		});
 
 	// ─── Stash subcommand group ─────────────────────────────────────────────
 	const stash = parent
