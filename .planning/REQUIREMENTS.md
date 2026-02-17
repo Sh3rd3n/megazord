@@ -102,53 +102,53 @@ Deferred to future release. Tracked but not in current roadmap.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | DIST-01 | Phase 1 | Pending |
-| DIST-02 | Phase 1 | Pending |
+| DIST-02 | Phase 3 | Pending |
 | DIST-03 | Phase 1 | Pending |
 | DIST-04 | Phase 1 | Pending |
 | DIST-05 | Phase 1 | Pending |
 | PROJ-01 | Phase 2 | Pending |
-| PROJ-02 | Phase 2 | Pending |
-| PROJ-03 | Phase 2 | Pending |
-| PROJ-04 | Phase 2 | Pending |
-| PROJ-05 | Phase 2 | Pending |
-| PROJ-06 | Phase 2 | Pending |
-| PROJ-07 | Phase 2 | Pending |
-| PROJ-08 | Phase 3 | Pending |
-| PROJ-09 | Phase 3 | Pending |
-| PROJ-10 | Phase 3 | Pending |
-| PROJ-11 | Phase 2 | Pending |
+| PROJ-02 | Phase 3 | Pending |
+| PROJ-03 | Phase 3 | Pending |
+| PROJ-04 | Phase 3 | Pending |
+| PROJ-05 | Phase 3 | Pending |
+| PROJ-06 | Phase 3 | Pending |
+| PROJ-07 | Phase 3 | Pending |
+| PROJ-08 | Phase 4 | Pending |
+| PROJ-09 | Phase 8 | Pending |
+| PROJ-10 | Phase 8 | Pending |
+| PROJ-11 | Phase 3 | Pending |
 | PROJ-12 | Phase 1 | Pending |
 | QUAL-01 | Phase 5 | Pending |
-| QUAL-02 | Phase 5 | Pending |
-| QUAL-03 | Phase 5 | Pending |
-| QUAL-04 | Phase 5 | Pending |
+| QUAL-02 | Phase 7 | Pending |
+| QUAL-03 | Phase 7 | Pending |
+| QUAL-04 | Phase 7 | Pending |
 | QUAL-05 | Phase 2 | Pending |
 | QUAL-06 | Phase 5 | Pending |
 | QUAL-07 | Phase 2 | Pending |
-| CRTX-01 | Phase 5 | Pending |
-| CRTX-02 | Phase 5 | Pending |
-| CRTX-03 | Phase 5 | Pending |
-| CRTX-04 | Phase 5 | Pending |
-| CRTX-05 | Phase 5 | Pending |
+| CRTX-01 | Phase 7 | Pending |
+| CRTX-02 | Phase 7 | Pending |
+| CRTX-03 | Phase 7 | Pending |
+| CRTX-04 | Phase 7 | Pending |
+| CRTX-05 | Phase 7 | Pending |
 | CRTX-06 | Phase 2 | Pending |
-| AGNT-01 | Phase 4 | Pending |
-| AGNT-02 | Phase 3 | Pending |
-| AGNT-03 | Phase 4 | Pending |
-| AGNT-04 | Phase 4 | Pending |
-| AGNT-05 | Phase 4 | Pending |
-| AGNT-06 | Phase 4 | Pending |
-| AGNT-07 | Phase 4 | Pending |
-| AGNT-08 | Phase 4 | Pending |
+| AGNT-01 | Phase 6 | Pending |
+| AGNT-02 | Phase 4 | Pending |
+| AGNT-03 | Phase 6 | Pending |
+| AGNT-04 | Phase 6 | Pending |
+| AGNT-05 | Phase 6 | Pending |
+| AGNT-06 | Phase 6 | Pending |
+| AGNT-07 | Phase 6 | Pending |
+| AGNT-08 | Phase 6 | Pending |
 | CONF-01 | Phase 2 | Pending |
 | CONF-02 | Phase 2 | Pending |
 | CONF-03 | Phase 2 | Pending |
 | CONF-04 | Phase 2 | Pending |
 
 **Coverage:**
-- v1 requirements: 40 total
-- Mapped to phases: 40
-- Unmapped: 0 ✓
+- v1 requirements: 42 total
+- Mapped to phases: 42
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-17*
-*Last updated: 2026-02-17 after initial definition*
+*Last updated: 2026-02-17 after roadmap creation*
