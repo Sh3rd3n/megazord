@@ -4,14 +4,18 @@ import { execSync } from "node:child_process";
 import { createInterface } from "node:readline";
 import {
 	pluginsCacheDir,
-	marketplacesDir,
+	knownMarketplacesPath,
 	installedPluginsPath,
+	settingsPath,
 } from "../../lib/paths.js";
 import { detectPlugins } from "../utils/detect-plugins.js";
 import { success, error, info, warn, bold, dim } from "../utils/colors.js";
 import { createSpinner, spinnerSuccess, spinnerFail } from "../utils/spinner.js";
 
 const VERSION = "0.1.0";
+const MARKETPLACE_NAME = "megazord-marketplace";
+const PLUGIN_NAME = "mz";
+const PLUGIN_KEY = `${PLUGIN_NAME}@${MARKETPLACE_NAME}`;
 
 /** Prompt user for a yes/no confirmation. Returns true if confirmed. */
 async function confirm(message: string): Promise<boolean> {
@@ -44,34 +48,67 @@ async function selectOption(message: string, options: string[]): Promise<string>
 	});
 }
 
-/** Create the local marketplace for Megazord. */
-function createMarketplace(): void {
-	const marketplaceDir = join(marketplacesDir, "megazord");
-	mkdirSync(marketplaceDir, { recursive: true });
-
-	const marketplace = {
-		name: "megazord-marketplace",
-		description: "Megazord plugin marketplace",
-		plugins: {
-			mz: {
-				source: {
-					source: "npm",
-					package: "megazord",
-				},
-			},
-		},
-	};
-
-	writeFileSync(
-		join(marketplaceDir, "marketplace.json"),
-		JSON.stringify(marketplace, null, 2),
-	);
+/** Get package root directory (one level up from bin/) */
+function getPackageRoot(): string {
+	return join(import.meta.dirname, "..");
 }
 
-/** Attempt to install via claude plugin install. Returns true if successful. */
-function installViaClaudePlugin(): boolean {
+/**
+ * Create a local marketplace directory with proper Claude Code structure.
+ * Returns the path to the marketplace directory.
+ */
+function createLocalMarketplace(): string {
+	const packageRoot = getPackageRoot();
+	const marketplaceDir = join(packageRoot, ".megazord-marketplace");
+
+	// Create marketplace manifest
+	mkdirSync(join(marketplaceDir, ".claude-plugin"), { recursive: true });
+	writeFileSync(
+		join(marketplaceDir, ".claude-plugin", "marketplace.json"),
+		JSON.stringify(
+			{
+				name: MARKETPLACE_NAME,
+				owner: { name: "Megazord" },
+				plugins: [
+					{
+						name: PLUGIN_NAME,
+						source: `./${PLUGIN_NAME}`,
+						description:
+							"Unified framework for project management, code quality, and multi-agent coordination",
+					},
+				],
+			},
+			null,
+			2,
+		),
+	);
+
+	// Create plugin directory inside marketplace with actual plugin files
+	const pluginDir = join(marketplaceDir, PLUGIN_NAME);
+	mkdirSync(pluginDir, { recursive: true });
+
+	// Copy plugin structure into marketplace
+	const dirsToCopy = [".claude-plugin", "hooks", "skills", "commands"];
+	for (const dir of dirsToCopy) {
+		const src = join(packageRoot, dir);
+		if (existsSync(src)) {
+			copyDirSync(src, join(pluginDir, dir));
+		}
+	}
+
+	return marketplaceDir;
+}
+
+/** Attempt to install via claude CLI. Returns true if successful. */
+function installViaClaudeCli(marketplacePath: string): boolean {
 	try {
-		execSync("claude plugin install mz@megazord-marketplace", {
+		// Add marketplace
+		execSync(`claude plugin marketplace add "${marketplacePath}"`, {
+			stdio: "pipe",
+			timeout: 30_000,
+		});
+		// Install plugin
+		execSync(`claude plugin install ${PLUGIN_KEY}`, {
 			stdio: "pipe",
 			timeout: 30_000,
 		});
@@ -81,35 +118,37 @@ function installViaClaudePlugin(): boolean {
 	}
 }
 
-/** Fallback installation: copy plugin files to cache and register. */
-function installFallback(): void {
-	// Determine the source plugin directory (where this package is installed)
-	const packageRoot = join(import.meta.dirname, "..", "..", "..");
-	const targetDir = join(pluginsCacheDir, "megazord", "mz", VERSION);
+/** Fallback: manually copy plugin files to cache and register everywhere. */
+function installFallback(marketplacePath: string): void {
+	const packageRoot = getPackageRoot();
+	const targetDir = join(pluginsCacheDir, MARKETPLACE_NAME, PLUGIN_NAME, VERSION);
 
 	mkdirSync(targetDir, { recursive: true });
 
-	// Copy essential plugin files
-	const filesToCopy = [
-		".claude-plugin/plugin.json",
-		"hooks/hooks.json",
-	];
-
-	for (const file of filesToCopy) {
-		const src = join(packageRoot, file);
-		const dest = join(targetDir, file);
+	// Copy all plugin directories
+	const dirsToCopy = [".claude-plugin", "hooks", "skills", "commands"];
+	for (const dir of dirsToCopy) {
+		const src = join(packageRoot, dir);
 		if (existsSync(src)) {
-			const destDir = join(dest, "..");
-			mkdirSync(destDir, { recursive: true });
-			writeFileSync(dest, readFileSync(src));
+			copyDirSync(src, join(targetDir, dir));
 		}
 	}
 
-	// Copy skills directory
-	const skillsSource = join(packageRoot, "skills");
-	if (existsSync(skillsSource)) {
-		copyDirSync(skillsSource, join(targetDir, "skills"));
+	// Register marketplace in known_marketplaces.json
+	let marketplaces: Record<string, unknown> = {};
+	if (existsSync(knownMarketplacesPath)) {
+		try {
+			marketplaces = JSON.parse(readFileSync(knownMarketplacesPath, "utf-8"));
+		} catch {
+			// Start fresh
+		}
 	}
+	marketplaces[MARKETPLACE_NAME] = {
+		source: { source: "directory", path: marketplacePath },
+		installLocation: marketplacePath,
+		lastUpdated: new Date().toISOString(),
+	};
+	writeFileSync(knownMarketplacesPath, JSON.stringify(marketplaces, null, 2));
 
 	// Register in installed_plugins.json
 	let installed: Record<string, unknown> = {};
@@ -120,17 +159,34 @@ function installFallback(): void {
 			// Start fresh
 		}
 	}
-
-	const plugins = (installed.plugins ?? {}) as Record<string, unknown>;
-	plugins[`mz@megazord-marketplace`] = {
-		version: VERSION,
-		source: { source: "npm", package: "megazord" },
-		installedAt: new Date().toISOString(),
-	};
+	if (!installed.version) installed.version = 2;
+	const plugins = (installed.plugins ?? {}) as Record<string, unknown[]>;
+	const now = new Date().toISOString();
+	plugins[PLUGIN_KEY] = [
+		{
+			scope: "user",
+			installPath: targetDir,
+			version: VERSION,
+			installedAt: now,
+			lastUpdated: now,
+		},
+	];
 	installed.plugins = plugins;
-
-	mkdirSync(join(installedPluginsPath, ".."), { recursive: true });
 	writeFileSync(installedPluginsPath, JSON.stringify(installed, null, 2));
+
+	// Enable in settings.json
+	let settings: Record<string, unknown> = {};
+	if (existsSync(settingsPath)) {
+		try {
+			settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
+		} catch {
+			// Start fresh
+		}
+	}
+	const enabledPlugins = (settings.enabledPlugins ?? {}) as Record<string, boolean>;
+	enabledPlugins[PLUGIN_KEY] = true;
+	settings.enabledPlugins = enabledPlugins;
+	writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
 }
 
 /** Recursively copy a directory. */
@@ -153,7 +209,7 @@ function verifyInstallation(): boolean {
 	try {
 		const installed = JSON.parse(readFileSync(installedPluginsPath, "utf-8"));
 		const plugins = installed.plugins ?? {};
-		return Object.keys(plugins).some((k) => k.startsWith("mz@"));
+		return Object.keys(plugins).some((k) => k.startsWith(`${PLUGIN_NAME}@`));
 	} catch {
 		return false;
 	}
@@ -207,10 +263,16 @@ export async function install(): Promise<void> {
 
 	// Coexistence info
 	if (detection.gsdInstalled) {
-		console.log(info("  GSD detected — Megazord coexists peacefully. Both /gsd: and /mz: commands will work."));
+		console.log(
+			info("  GSD detected — Megazord coexists peacefully. Both /gsd: and /mz: commands will work."),
+		);
 	}
 	if (detection.superpowersInstalled) {
-		console.log(info("  Superpowers detected — Megazord coexists peacefully. Both /superpowers: and /mz: commands will work."));
+		console.log(
+			info(
+				"  Superpowers detected — Megazord coexists peacefully. Both /superpowers: and /mz: commands will work.",
+			),
+		);
 	}
 
 	// Confirm
@@ -228,13 +290,13 @@ export async function install(): Promise<void> {
 	const installSpinner = createSpinner("Installing Megazord...");
 	installSpinner.start();
 
-	// Step 1: Create local marketplace
-	createMarketplace();
+	// Step 1: Create local marketplace with proper structure
+	const marketplacePath = createLocalMarketplace();
 
-	// Step 2: Try claude plugin install, fall back if needed
-	const installed = installViaClaudePlugin();
+	// Step 2: Try claude CLI, fall back to manual registration
+	const installed = installViaClaudeCli(marketplacePath);
 	if (!installed) {
-		installFallback();
+		installFallback(marketplacePath);
 	}
 
 	// Step 3: Verify
@@ -243,10 +305,10 @@ export async function install(): Promise<void> {
 	} else {
 		spinnerFail(installSpinner, "Installation could not be verified");
 		console.log(warn("  The plugin was installed but verification failed."));
-		console.log(dim("  Try running `claude /mz:help` to check if it works."));
+		console.log(dim("  Try running `/mz:help` in Claude Code to check if it works."));
 	}
 
 	console.log("");
-	console.log(success("  Megazord installed! Run /mz:help to get started."));
+	console.log(success("  Megazord installed! Run /mz:help in Claude Code to get started."));
 	console.log("");
 }

@@ -1,10 +1,7 @@
-import { existsSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { execSync } from "node:child_process";
 import { createInterface } from "node:readline";
-import { marketplacesDir } from "../../lib/paths.js";
-import { success, dim, warn } from "../utils/colors.js";
-import { createSpinner, spinnerSuccess, spinnerFail } from "../utils/spinner.js";
+import { success, dim } from "../utils/colors.js";
+import { createSpinner, spinnerSuccess } from "../utils/spinner.js";
 
 /** Prompt user for a yes/no confirmation. Returns true if confirmed. */
 async function confirm(message: string): Promise<boolean> {
@@ -35,26 +32,24 @@ export async function uninstall(): Promise<void> {
 	const spinner = createSpinner("Uninstalling Megazord...");
 	spinner.start();
 
-	// Try claude plugin uninstall
+	// Uninstall via claude CLI (handles cache, registry, settings)
 	try {
 		execSync("claude plugin uninstall mz", {
 			stdio: "pipe",
 			timeout: 15_000,
 		});
 	} catch {
-		// Plugin may not be registered via claude — continue cleanup
+		// Plugin may not be registered — continue
 	}
 
-	// Remove marketplace directory
-	const marketplaceDir = join(marketplacesDir, "megazord");
-	if (existsSync(marketplaceDir)) {
-		try {
-			rmSync(marketplaceDir, { recursive: true, force: true });
-		} catch {
-			spinnerFail(spinner, "Failed to remove marketplace directory");
-			console.log(warn(`  Could not remove ${marketplaceDir}`));
-			return;
-		}
+	// Remove marketplace
+	try {
+		execSync("claude plugin marketplace remove megazord-marketplace", {
+			stdio: "pipe",
+			timeout: 15_000,
+		});
+	} catch {
+		// Marketplace may not exist
 	}
 
 	spinnerSuccess(spinner, "Megazord uninstalled");
