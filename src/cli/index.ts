@@ -44,6 +44,15 @@ program
 	});
 
 program
+	.command("update")
+	.description("Sync skills from source to plugin cache")
+	.option("--yes", "Skip confirmation prompts")
+	.action(async () => {
+		const { update } = await import("./commands/update.js");
+		await update();
+	});
+
+program
 	.command("version")
 	.description("Show installed version")
 	.action(() => {
