@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Plugin Scaffold and Build Pipeline** - Working Claude Code plugin with manifest, npm distribution, TypeScript build, and context budget enforcement (completed 2026-02-17)
 - [x] **Phase 2: Project Initialization and Configuration** - `/mz:init` creates project structure with full configuration schema for quality, workflow, and agent settings (completed 2026-02-17)
 - [x] **Phase 3: Core Skills and State Management** - Core slash commands (plan, status, pause, resume, quick) with state lifecycle and context management (completed 2026-02-17)
-- [ ] **Phase 4: Subagent Execution and Atomic Commits** - Task tool execution pipeline with atomic git commits and graceful degradation path
+- [x] **Phase 4: Subagent Execution and Atomic Commits** - Task tool execution pipeline with atomic git commits and graceful degradation path (completed 2026-02-17)
 - [ ] **Phase 5: Code Review and Verification** - Two-stage code review and UAT verification gate integrated into execution workflow
 - [ ] **Phase 6: Agent Teams Integration** - Native Agent Teams coordination with hybrid approach, reviewer feedback loops, worktree isolation, and delegate mode
 - [ ] **Phase 7: Quality and Debugging Skills** - TDD enforcement, Socratic brainstorming, systematic debugging, and CORTEX adaptive thinking
@@ -83,7 +83,7 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md -- Plan parsing library, state extensions, and CLI tooling
-- [ ] 04-02-PLAN.md -- Executor agent definition and /mz:go orchestration skill
+- [x] 04-02-PLAN.md -- Executor agent definition and /mz:go orchestration skill
 
 ### Phase 5: Code Review and Verification
 **Goal**: Completed work passes through quality gates before being marked done -- automated two-stage review and user acceptance verification
@@ -154,7 +154,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 1. Plugin Scaffold and Build Pipeline | 2/2 | Complete | 2026-02-17 |
 | 2. Project Initialization and Configuration | 2/2 | Complete | 2026-02-17 |
 | 3. Core Skills and State Management | 4/4 | Complete | 2026-02-17 |
-| 4. Subagent Execution and Atomic Commits | 1/2 | In Progress | - |
+| 4. Subagent Execution and Atomic Commits | 2/2 | Complete | 2026-02-17 |
 | 5. Code Review and Verification | 0/1 | Not started | - |
 | 6. Agent Teams Integration | 0/3 | Not started | - |
 | 7. Quality and Debugging Skills | 0/3 | Not started | - |
