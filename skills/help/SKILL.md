@@ -30,7 +30,7 @@ Display the stage banner:
 | `/mz:pause` | Save context for session handoff | Available |
 | `/mz:resume` | Restore context from previous session | Available |
 | `/mz:quick` | Run a quick task without project ceremony | Available |
-| `/mz:go` | Execute the current phase plan | Coming soon |
+| `/mz:go` | Execute the current phase plan with subagent delegation | Available |
 | `/mz:review` | Two-stage code review (spec + quality) | Coming soon |
 | `/mz:verify` | Verify phase deliverables match criteria | Coming soon |
 | `/mz:debug` | Systematic four-phase debugging | Coming soon |
@@ -51,6 +51,10 @@ Run any skill by typing its name as a slash command:
 /mz:pause          Save session for later
 /mz:resume         Restore and continue from last session
 /mz:quick {task}   Run a quick task inline
+/mz:go             Execute the current phase plan
+/mz:go --dry-run   Preview execution plan without running
+/mz:go --from 2    Start from plan 2, skip earlier plans
+/mz:go --tasks 1,3 Execute only specific plans
 ```
 
 Skills marked "Coming soon" are planned for future phases and not yet functional.
@@ -60,4 +64,4 @@ Skills marked "Coming soon" are planned for future phases and not yet functional
 Megazord unifies project management, code quality discipline, and multi-agent coordination into one Claude Code framework.
 
 **Version:** 0.1.0
-**Phase:** 3 of 8 (Core Skills and State Management)
+**Phase:** 4 of 8 (Subagent Execution and Atomic Commits)
