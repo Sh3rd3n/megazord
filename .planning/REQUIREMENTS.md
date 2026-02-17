@@ -24,7 +24,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PROJ-05**: User can pause work with `/mz:pause` creating a context handoff file for session recovery
 - [ ] **PROJ-06**: User can resume from any previous session with `/mz:resume` restoring full context from STATE.md
 - [ ] **PROJ-07**: User can execute quick tasks with `/mz:quick` bypassing full project ceremony
-- [ ] **PROJ-08**: Each completed task produces exactly one atomic git commit with descriptive message
+- [x] **PROJ-08**: Each completed task produces exactly one atomic git commit with descriptive message
 - [ ] **PROJ-09**: User can manage full project lifecycle: roadmap, phases, milestones, phase transitions
 - [ ] **PROJ-10**: User can analyze existing codebases with `/mz:map` for brownfield project support
 - [ ] **PROJ-11**: Context management prevents context rot via fresh subagent spawning, dimensioned state files, and lazy loading
@@ -52,7 +52,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Multi-Agent Coordination
 
 - [ ] **AGNT-01**: Native Agent Teams integration via TeamCreate, SendMessage, shared TaskList for coordinated parallel work
-- [ ] **AGNT-02**: Graceful degradation to Task tool subagents when Agent Teams is unavailable or disabled
+- [x] **AGNT-02**: Graceful degradation to Task tool subagents when Agent Teams is unavailable or disabled
 - [ ] **AGNT-03**: Hybrid approach: Agent Teams for coordination-heavy work (impl+review cycles), Task tool for fire-and-forget
 - [ ] **AGNT-04**: Reviewer agent can send code back to specific implementer via SendMessage with actionable feedback
 - [ ] **AGNT-05**: Git worktree isolation: each parallel teammate gets its own worktree to prevent file conflicts
@@ -113,7 +113,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | PROJ-05 | Phase 3 | Pending |
 | PROJ-06 | Phase 3 | Pending |
 | PROJ-07 | Phase 3 | Pending |
-| PROJ-08 | Phase 4 | Pending |
+| PROJ-08 | Phase 4 | Complete |
 | PROJ-09 | Phase 8 | Pending |
 | PROJ-10 | Phase 8 | Pending |
 | PROJ-11 | Phase 3 | Pending |
@@ -132,7 +132,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | CRTX-05 | Phase 7 | Pending |
 | CRTX-06 | Phase 2 | Pending |
 | AGNT-01 | Phase 6 | Pending |
-| AGNT-02 | Phase 4 | Pending |
+| AGNT-02 | Phase 4 | Complete |
 | AGNT-03 | Phase 6 | Pending |
 | AGNT-04 | Phase 6 | Pending |
 | AGNT-05 | Phase 6 | Pending |
