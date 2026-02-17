@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 03-core-skills-and-state-management
 source: 03-01-SUMMARY.md, 03-02-SUMMARY.md, 03-03-SUMMARY.md
 started: 2026-02-17T15:00:00Z
