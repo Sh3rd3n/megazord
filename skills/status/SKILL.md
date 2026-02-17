@@ -1,13 +1,195 @@
 ---
 name: status
 description: Show project progress, current phase, and next actions
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # /mz:status
 
-This skill is not yet available. It will be implemented in Phase 3.
+Display current project progress, phase completion, and recommended next actions. Supports compact (default) and verbose (`--verbose`) modes.
 
-**What it will do:** Display current project progress including phase completion, task status, blockers, and recommended next actions.
+Reference `@skills/init/design-system.md` for all visual output formatting.
 
-Run `/mz:help` to see all available skills and their status.
+## Step 1: Display Banner
+
+```
+╔═══════════════════════════════════════════════╗
+║  ⚡ MEGAZORD ► STATUS                         ║
+╚═══════════════════════════════════════════════╝
+```
+
+## Step 2: Load Context
+
+Read `.planning/megazord.config.json`. If the file does not exist, display:
+
+```
+╔═══════════════════════════════════════════════╗
+║  ✗ No Megazord project found                  ║
+╠═══════════════════════════════════════════════╣
+║  Run /mz:init to set up your project first.   ║
+╚═══════════════════════════════════════════════╝
+```
+
+Then exit.
+
+Read `.planning/STATE.md` for current position, accumulated context, and session continuity.
+
+Read `.planning/ROADMAP.md` for phase listing and completion status.
+
+## Step 3: Check Verbose Flag
+
+Check if the user's message contains `--verbose` or `-v`. Store the result as a boolean.
+
+## Step 4: Get Progress Data
+
+Run via Bash to get progress JSON:
+
+```bash
+node {plugin_path}/bin/megazord.mjs tools progress
+```
+
+Parse the JSON result which contains:
+- `overall`: overall progress percentage
+- `currentPhase`: `{ completed, total }` plan counts
+- `bar`: pre-formatted progress bar string
+
+Also run via Bash to get current position:
+
+```bash
+node {plugin_path}/bin/megazord.mjs tools state read-position
+```
+
+Parse the JSON result which contains:
+- `phase`, `totalPhases`, `phaseName`
+- `plan`, `totalPlans`
+- `status`
+
+Where `{plugin_path}` is the absolute path to the Megazord plugin directory (the root of this repository where `package.json` lives).
+
+## Step 5: Compact Mode (Default)
+
+Display the project name from `megazord.config.json` and position data in an action box:
+
+```
+╔═══════════════════════════════════════════════════════╗
+║  {project_name}                                       ║
+╠═══════════════════════════════════════════════════════╣
+║  Phase: {phase} of {totalPhases} -- {phaseName}       ║
+║  Plan:  {plan} of {totalPlans} -- {status}            ║
+║  Power: {bar}                                         ║
+╚═══════════════════════════════════════════════════════╝
+```
+
+### Recent Phases
+
+Display the `Recent` section showing the last 3 phases from ROADMAP.md with status symbols:
+
+```
+▸ Recent
+  ✓ Phase 1: {name} ({plan_count} plans)
+  ✓ Phase 2: {name} ({plan_count} plans)
+  ◆ Phase 3: {name} ({completed}/{total} plans)
+```
+
+Use these status symbols:
+- `✓` for completed phases (all plans have SUMMARY.md files, or marked `[x]` in ROADMAP.md)
+- `◆` for the current in-progress phase
+- `○` for pending/future phases
+
+### Last Error (if applicable)
+
+Read session continuity from STATE.md. If `Last error` field exists and is not "None", display:
+
+```
+▸ Last Error
+  {error context from STATE.md}
+```
+
+Only show this if the error is from the most recent session. Do not show stale errors.
+
+### Next Up Block
+
+Determine the appropriate next action based on current state:
+
+- If `.planning/` does not exist or no config: suggest `/mz:init`
+- If no ROADMAP.md exists: suggest `/mz:plan` (to create roadmap)
+- If current phase has no PLAN.md files: suggest `/mz:plan`
+- If current phase is mid-execution (plans exist, not all complete): suggest `/mz:go`
+- If current phase is complete but not verified: suggest `/mz:verify`
+- If all phases are complete: display "All phases complete!"
+
+```
+═══════════════════════════════════════════════════
+▸ Next Up
+**{Task Name}** -- {brief description}
+`/mz:{command}`
+═══════════════════════════════════════════════════
+```
+
+If NOT verbose, stop here. Do not display verbose sections.
+
+## Step 6: Verbose Mode (--verbose)
+
+If verbose mode was requested, display everything from Step 5 PLUS the following additional sections.
+
+### All Phases
+
+List every phase from ROADMAP.md with status symbol, plan counts, and duration (from STATE.md Performance Metrics if available):
+
+```
+▸ All Phases
+  ✓ Phase 1: {name}
+    Plans: {completed}/{total} ✓ | Duration: {Xmin}
+  ✓ Phase 2: {name}
+    Plans: {completed}/{total} ✓ | Duration: {Xmin}
+  ◆ Phase 3: {name}
+    Plans: {completed}/{total} ◆
+  ○ Phase 4: {name}
+  ○ Phase 5: {name}
+  ○ Phase 6: {name}
+  ○ Phase 7: {name}
+  ○ Phase 8: {name}
+```
+
+For completed phases, show plan counts and duration. For the current phase, show plan progress. For future phases, show just the name.
+
+### Current Phase Tasks
+
+If PLAN.md files exist for the current phase, list them with status:
+
+```
+▸ Current Phase Tasks
+  ✓ Plan 01: {objective from plan frontmatter or first line}
+  ◆ Plan 02: {objective}
+  ○ Plan 03: {objective}
+```
+
+Use `✓` for plans with a corresponding SUMMARY.md, `◆` for the current plan (next without summary), `○` for remaining plans.
+
+### Performance
+
+Display performance metrics from STATE.md:
+
+```
+▸ Performance
+  Plans completed: {total}
+  Average duration: {avg}min
+  Total execution: {total} hours
+```
+
+### Decisions
+
+Display recent decisions from STATE.md Accumulated Context section:
+
+```
+▸ Decisions
+  - {decision 1}
+  - {decision 2}
+  - {decision 3}
+```
+
+Show up to 5 most recent decisions. If more exist, show "... and {N} more in STATE.md".
+
+### Next Up Block
+
+Same as Step 5 -- always end with the Next Up block.
