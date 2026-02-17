@@ -48,11 +48,11 @@ Plans:
   3. All settings are persisted in `megazord.config.json` and can be modified after init without re-running the command
   4. Quality and workflow configuration is respected by downstream skills when they load config
   5. AI model selection (quality/balanced/budget) is configurable and stored in config
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md -- Config schema (Zod v4), presets, GSD migration, and design system reference
+- [ ] 02-02-PLAN.md -- /mz:init skill with deep context gathering, /mz:settings skill, help update
 
 ### Phase 3: Core Skills and State Management
 **Goal**: A developer can plan work, track progress, pause mid-session, resume later, and run quick tasks -- the complete single-user project management workflow
