@@ -55,9 +55,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **AGNT-02**: Graceful degradation to Task tool subagents when Agent Teams is unavailable or disabled
 - [ ] **AGNT-03**: Hybrid approach: Agent Teams for coordination-heavy work (impl+review cycles), Task tool for fire-and-forget
 - [x] **AGNT-04**: Reviewer agent can send code back to specific implementer via SendMessage with actionable feedback
-- [ ] **AGNT-05**: Git worktree isolation: each parallel teammate gets its own worktree to prevent file conflicts
+- [x] **AGNT-05**: Git worktree isolation: each parallel teammate gets its own worktree to prevent file conflicts
 - [x] **AGNT-06**: Delegate mode: team lead coordinates without implementing, only using spawn/message/shutdown/task tools
-- [ ] **AGNT-07**: File ownership enforcement: each agent/task has declared files it can modify, violations blocked via hooks
+- [x] **AGNT-07**: File ownership enforcement: each agent/task has declared files it can modify, violations blocked via hooks
 - [ ] **AGNT-08**: Wave execution for large phases: batches of parallel tasks with checkpoints between waves
 
 ### Workflow Configuration
@@ -135,9 +135,9 @@ Deferred to future release. Tracked but not in current roadmap.
 | AGNT-02 | Phase 4 | Complete |
 | AGNT-03 | Phase 6 | Pending |
 | AGNT-04 | Phase 6 | Complete |
-| AGNT-05 | Phase 6 | Pending |
+| AGNT-05 | Phase 6 | Complete |
 | AGNT-06 | Phase 6 | Complete |
-| AGNT-07 | Phase 6 | Pending |
+| AGNT-07 | Phase 6 | Complete |
 | AGNT-08 | Phase 6 | Pending |
 | CONF-01 | Phase 2 | Pending |
 | CONF-02 | Phase 2 | Pending |

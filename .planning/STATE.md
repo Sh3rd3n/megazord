@@ -111,7 +111,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 06-02-PLAN.md (executor and reviewer agent dual-mode updates)
-Resume file: .planning/phases/06-agent-teams-integration/06-02-SUMMARY.md
+Stopped at: Completed 06-01-PLAN.md (worktree and ownership infrastructure)
+Resume file: .planning/phases/06-agent-teams-integration/06-01-SUMMARY.md
 Stash ref: None
 Last error: None
