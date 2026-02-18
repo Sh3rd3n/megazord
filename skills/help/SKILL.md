@@ -13,9 +13,9 @@ Reference `@skills/init/design-system.md` for visual output formatting.
 Display the stage banner:
 
 ```
-╔═══════════════════════════════════════════════╗
-║  ⚡ MEGAZORD ► HELP                           ║
-╚═══════════════════════════════════════════════╝
++===============================================+
+|  MEGAZORD > HELP                              |
++===============================================+
 ```
 
 ## Available Skills
@@ -31,8 +31,8 @@ Display the stage banner:
 | `/mz:resume` | Restore context from previous session | Available |
 | `/mz:quick` | Run a quick task without project ceremony | Available |
 | `/mz:go` | Execute the current phase plan with subagent delegation | Available |
-| `/mz:review` | Two-stage code review (spec + quality) | Coming soon |
-| `/mz:verify` | Verify phase deliverables match criteria | Coming soon |
+| `/mz:review` | Two-stage code review (spec + quality) | Available |
+| `/mz:verify` | Verify phase deliverables match criteria | Available |
 | `/mz:debug` | Systematic four-phase debugging | Coming soon |
 | `/mz:discuss` | Socratic brainstorming before implementation | Coming soon |
 | `/mz:map` | Analyze existing codebase for brownfield support | Coming soon |
@@ -55,6 +55,13 @@ Run any skill by typing its name as a slash command:
 /mz:go --dry-run   Preview execution plan without running
 /mz:go --from 2    Start from plan 2, skip earlier plans
 /mz:go --tasks 1,3 Execute only specific plans
+/mz:review          Review the latest commit
+/mz:review --plan 05-01  Review all changes from a plan
+/mz:review --files src/lib/auth.ts  Review specific files
+/mz:review --last 3      Review last 3 commits
+/mz:verify           Verify current phase deliverables
+/mz:verify 5         Verify a specific phase
+/mz:verify --partial Verify even with incomplete plans
 ```
 
 Skills marked "Coming soon" are planned for future phases and not yet functional.
@@ -64,4 +71,4 @@ Skills marked "Coming soon" are planned for future phases and not yet functional
 Megazord unifies project management, code quality discipline, and multi-agent coordination into one Claude Code framework.
 
 **Version:** 0.1.0
-**Phase:** 4 of 8 (Subagent Execution and Atomic Commits)
+**Phase:** 5 of 8 (Code Review and Verification)
