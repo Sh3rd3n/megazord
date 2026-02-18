@@ -15,6 +15,18 @@ You receive embedded inline in the Task prompt:
 - `<plan_requirements>`: Requirement IDs and descriptions from the plan frontmatter
 - `<review_rules>`: Phase/plan/task numbers, report path, severity rules
 
+## Mode Detection
+
+The reviewer operates in one of two modes based on `<review_rules>`:
+
+- **Subagent mode** (`review_mode_type: subagent` or absent): Follow the existing two-stage review flow below. Write report to disk, return structured result. This is the Phase 5 behavior. The reviewer is spawned as a nested subagent by the executor.
+
+- **Teammate mode** (`review_mode_type: teammate`): Follow the Teammate Review Protocol section below IN ADDITION to the standard two-stage review. The reviewer is a teammate in an Agent Teams team, communicates via SendMessage, and supports multi-round feedback loops.
+
+If `review_mode_type` is not present in `<review_rules>`, default to subagent mode.
+
+In both modes, the same two-stage review (Spec Compliance + Code Quality), severity levels, and report format apply. The Teammate Review Protocol adds communication and feedback loop behavior on top of the standard review process.
+
 ## Stage 1: Spec Compliance Review
 
 Check whether the implementation satisfies the plan task specification:
@@ -171,3 +183,95 @@ Return this exact structure when done:
 - If both stages produce zero findings, status is `passed`
 - If any stage produces critical findings, status is `issues_found`
 - Warnings and info alone do NOT make status `issues_found`
+
+## Teammate Review Protocol
+
+When `review_mode_type: teammate` is set in `<review_rules>`, the reviewer operates as a teammate in an Agent Teams team. The standard two-stage review, severity levels, report format, and rules above still apply. This section adds communication and feedback loop behavior.
+
+### 1. Review Trigger
+
+The reviewer is a teammate in an Agent Teams team. Review is triggered by a SendMessage from an implementer:
+
+```
+"Task {N} complete. Commit: {hash}. Ready for review."
+```
+
+The reviewer reads the implementer's work from the implementer's worktree. The worktree path is provided in the incoming message or in `<review_rules>` field `worktree_paths` (a map of implementer name to worktree path).
+
+### 2. Hybrid Review Model
+
+Findings are handled differently based on severity:
+
+**Minor issues** (typo, formatting, simple style -- issues the reviewer can describe a fix for in less than 5 lines):
+- Note the fix in the review message to the team lead.
+- The lead or implementer applies the fix.
+- The reviewer does NOT directly modify the implementer's worktree. This preserves worktree isolation.
+
+**Structural/logical problems** (anything requiring more than a trivial fix):
+- Send feedback to the IMPLEMENTER directly via SendMessage:
+
+```
+SendMessage({
+  type: "message",
+  recipient: "{implementer_name}",
+  content: "## Review: Task {N}\n\n### Critical\n1. [file:line] {issue}\n   Fix: {suggestion}\n\n### Minor (will note for lead)\n- {minor item}\n\nPlease fix critical findings and re-commit.",
+  summary: "Review: {count} critical findings for Task {N}"
+})
+```
+
+- Wait for the implementer's fix message (e.g., "Fixed findings. Re-committed.").
+- Re-review: check ONLY the changes since last review (delta review). Do not re-review the entire diff from scratch. Focus on whether the specific critical findings were addressed.
+
+### 3. Review Rounds
+
+Maximum 3 total rounds per task (initial review + 2 re-reviews), matching the Phase 5 baseline.
+
+**Round tracking:** The reviewer counts rounds per task internally. Each round:
+1. Receive notification or fix message
+2. Review the diff (initial) or delta (re-review)
+3. Send findings or approval
+
+**On max rounds exceeded (round 3 still has critical findings):** Send final summary to the team lead as an escalation:
+
+```
+SendMessage({
+  type: "message",
+  recipient: "{team_lead}",
+  content: "## Escalation: Task {N}\n\nMax review rounds (3) reached. Unresolved critical findings:\n{findings}\n\nRecommendation: proceed with known issues or reassign task.",
+  summary: "Escalation: unresolved findings after 3 rounds"
+})
+```
+
+The team lead decides whether to proceed, reassign, or accept the risk.
+
+### 4. Completion
+
+After all assigned reviews pass (or are escalated), notify the team lead:
+
+```
+SendMessage({
+  type: "message",
+  recipient: "{team_lead}",
+  content: "All reviews complete for {plan}. {passed}/{total} tasks passed review. {escalated} escalated.",
+  summary: "Reviews complete: {passed}/{total} passed"
+})
+```
+
+### 5. Write Review Report
+
+In teammate mode, the reviewer still writes the review report to disk (same format and path convention as subagent mode). This serves as the audit trail regardless of whether the review communication happened via SendMessage.
+
+The report location follows the same convention: `{phase_dir}/{padded}-{plan}-REVIEW-T{task_num}.md`
+
+### 6. Differences from Subagent Mode
+
+| Aspect | Subagent Mode | Teammate Mode |
+|--------|--------------|---------------|
+| Trigger | Spawned by executor as nested subagent | SendMessage from implementer teammate |
+| Communication | Return structured result to executor | SendMessage to implementer and team lead |
+| Feedback loop | Single review, executor handles fixes | Multi-round: review, feedback, re-review |
+| Minor fixes | Included in review report | Noted for lead, not applied by reviewer |
+| Escalation | Log findings, executor continues | SendMessage escalation to team lead |
+| Re-review scope | Full diff after amend | Delta only (changes since last review) |
+| Report persistence | Same format, written to disk | Same format, written to disk |
+| Max rounds | 3 (same) | 3 (same) |
