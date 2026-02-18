@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 6 of 8 (Agent Teams Integration) -- In Progress
-Plan: 2 of 3 in current phase
-Status: In Progress
-Last activity: 2026-02-18 -- Plan 06-02 complete (executor and reviewer agent dual-mode updates)
+Plan: 3 of 3 in current phase
+Status: Phase Complete
+Last activity: 2026-02-18 -- Plan 06-03 complete (core integration: hybrid /mz:go, teams.md, ownership hook)
 
-Progress: [██████████████░░░░░░] 70%
+Progress: [███████████████░░░░░] 75%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: 4min
-- Total execution time: 0.87 hours
+- Total execution time: 0.95 hours
 
 **By Phase:**
 
@@ -31,13 +31,14 @@ Progress: [██████████████░░░░░░] 70%
 | 03 | 3 | 12min | 4min |
 | 04 | 2 | 7min | 3.5min |
 | 05 | 2/2 | 9min | 4.5min |
-| 06 | 2/3 | 6min | 3min |
+| 06 | 3/3 | 11min | 3.7min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (3min), 04-02 (4min), 05-01 (4min), 05-02 (5min), 06-02 (3min)
+- Last 5 plans: 04-02 (4min), 05-01 (4min), 05-02 (5min), 06-02 (3min), 06-03 (5min)
 - Trend: Consistent
 
 *Updated after each plan completion*
+| Phase 06 P03 | 5min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,11 @@ Recent decisions affecting current work:
 - Phase 6-01: Worktree branch naming: mz/{team}/{agent} convention for namespace isolation
 - Phase 6-01: Ownership validation uses prefix matching (not exact) for directory-level scope
 - Phase 6-01: Agent not in manifest defaults to unrestricted access (opt-in enforcement)
+- Phase 6-03: Hybrid detection order: CLI flags > config.agent_teams.enabled > per-wave auto-detect
+- Phase 6-03: Auto-detect triggers Agent Teams when (review enabled AND 2+ plans) or inter-plan dependencies
+- Phase 6-03: Delegate mode enforced at skill level, not API-level permissionMode (avoids teammate tool loss bug)
+- Phase 6-03: File ownership context via .mz-agent-context.json (env vars cannot be set for teammates)
+- Phase 6-03: Advisory ownership enforcement by default; strict mode opt-in via config
 
 ### Pending Todos
 
@@ -111,7 +117,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 06-01-PLAN.md (worktree and ownership infrastructure)
-Resume file: .planning/phases/06-agent-teams-integration/06-01-SUMMARY.md
+Stopped at: Completed 06-03-PLAN.md (core integration: hybrid /mz:go, teams.md, ownership hook). Phase 6 complete.
+Resume file: .planning/phases/06-agent-teams-integration/06-03-SUMMARY.md
 Stash ref: None
 Last error: None

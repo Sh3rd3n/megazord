@@ -51,14 +51,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Multi-Agent Coordination
 
-- [ ] **AGNT-01**: Native Agent Teams integration via TeamCreate, SendMessage, shared TaskList for coordinated parallel work
+- [x] **AGNT-01**: Native Agent Teams integration via TeamCreate, SendMessage, shared TaskList for coordinated parallel work
 - [x] **AGNT-02**: Graceful degradation to Task tool subagents when Agent Teams is unavailable or disabled
-- [ ] **AGNT-03**: Hybrid approach: Agent Teams for coordination-heavy work (impl+review cycles), Task tool for fire-and-forget
+- [x] **AGNT-03**: Hybrid approach: Agent Teams for coordination-heavy work (impl+review cycles), Task tool for fire-and-forget
 - [x] **AGNT-04**: Reviewer agent can send code back to specific implementer via SendMessage with actionable feedback
 - [x] **AGNT-05**: Git worktree isolation: each parallel teammate gets its own worktree to prevent file conflicts
 - [x] **AGNT-06**: Delegate mode: team lead coordinates without implementing, only using spawn/message/shutdown/task tools
 - [x] **AGNT-07**: File ownership enforcement: each agent/task has declared files it can modify, violations blocked via hooks
-- [ ] **AGNT-08**: Wave execution for large phases: batches of parallel tasks with checkpoints between waves
+- [x] **AGNT-08**: Wave execution for large phases: batches of parallel tasks with checkpoints between waves
 
 ### Workflow Configuration
 
@@ -131,14 +131,14 @@ Deferred to future release. Tracked but not in current roadmap.
 | CRTX-04 | Phase 7 | Pending |
 | CRTX-05 | Phase 7 | Pending |
 | CRTX-06 | Phase 2 | Pending |
-| AGNT-01 | Phase 6 | Pending |
+| AGNT-01 | Phase 6 | Complete |
 | AGNT-02 | Phase 4 | Complete |
-| AGNT-03 | Phase 6 | Pending |
+| AGNT-03 | Phase 6 | Complete |
 | AGNT-04 | Phase 6 | Complete |
 | AGNT-05 | Phase 6 | Complete |
 | AGNT-06 | Phase 6 | Complete |
 | AGNT-07 | Phase 6 | Complete |
-| AGNT-08 | Phase 6 | Pending |
+| AGNT-08 | Phase 6 | Complete |
 | CONF-01 | Phase 2 | Pending |
 | CONF-02 | Phase 2 | Pending |
 | CONF-03 | Phase 2 | Pending |
