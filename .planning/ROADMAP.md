@@ -126,12 +126,11 @@ Plans:
   3. Running `/mz:debug` follows systematic four-phase debugging (reproduce, isolate, root-cause, fix) with observable state transitions
   4. CORTEX task classification (Clear/Complicated/Complex/Chaotic) determines approach depth before non-trivial tasks, with challenge blocks on Complicated+ tasks
   5. Anti-sycophancy is enforced: the framework challenges unsound architecture and unnecessary complexity with evidence-based evaluation, not performative agreement
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
-- [ ] 07-03: TBD
+- [ ] 07-01-PLAN.md -- Executor agent: TDD protocol, CORTEX classification, challenge blocks, anti-sycophancy, pushback mandate, verification gate, config forwarding
+- [ ] 07-02-PLAN.md -- /mz:discuss Socratic brainstorming, /mz:debug systematic debugging, help update
 
 ### Phase 8: Brownfield Support and Project Lifecycle
 **Goal**: Megazord works for existing codebases (not just greenfield) and supports full project lifecycle management from roadmap through milestones and phase transitions
@@ -158,9 +157,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 4. Subagent Execution and Atomic Commits | 2/2 | Complete    | 2026-02-17 |
 | 5. Code Review and Verification | 2/2 | Complete | 2026-02-18 |
 | 6. Agent Teams Integration | 0/3 | Complete    | 2026-02-18 |
-| 7. Quality and Debugging Skills | 0/3 | Not started | - |
+| 7. Quality and Debugging Skills | 0/2 | Not started | - |
 | 8. Brownfield Support and Project Lifecycle | 0/1 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-17*
-*Last updated: 2026-02-18 (Phase 6 planned)*
+*Last updated: 2026-02-18 (Phase 7 planned)*
