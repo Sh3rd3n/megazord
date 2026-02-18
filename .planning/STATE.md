@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** One framework that handles the entire development lifecycle with agents that actually communicate and coordinate
-**Current focus:** Phase 8 in progress -- Brownfield Support and Project Lifecycle
+**Current focus:** Phase 8 complete -- Brownfield Support and Project Lifecycle
 
 ## Current Position
 
-Phase: 8 of 8 (Brownfield Support and Project Lifecycle) -- Executing
-Plan: 2 of 3 in current phase
-Status: Executing
-Last activity: 2026-02-18 -- Plan 08-01 complete (codebase mapping skill: mapper agent, /mz:map orchestrator)
+Phase: 8 of 8 (Brownfield Support and Project Lifecycle) -- Complete
+Plan: 3 of 3 in current phase
+Status: Complete
+Last activity: 2026-02-18 -- Plan 08-03 complete (skill integration: brownfield, lifecycle, milestone audit)
 
-Progress: [██████████████████░░] 92%
+Progress: [████████████████████] 100%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
+- Total plans completed: 21
 - Average duration: 3min
-- Total execution time: 1.17 hours
+- Total execution time: 1.27 hours
 
 **By Phase:**
 
@@ -34,16 +34,17 @@ Progress: [██████████████████░░] 92%
 | 06 | 3/3 | 11min | 3.7min |
 | 07 | 2/2 | 6min | 3min |
 
-| 08 | 1/3 | 3min | 3min |
+| 08 | 3/3 | 10min | 3.3min |
 
 **Recent Trend:**
-- Last 5 plans: 06-02 (3min), 06-03 (5min), 07-01 (3min), 07-02 (3min), 08-01 (3min)
+- Last 5 plans: 07-01 (3min), 07-02 (3min), 08-01 (3min), 08-02 (4min), 08-03 (3min)
 - Trend: Consistent
 
 *Updated after each plan completion*
 | Phase 08 P01 | 3min | 2 tasks | 4 files |
 | Phase 07 P02 | 3min | 3 tasks | 3 files |
 | Phase 07 P01 | 3min | 2 tasks | 3 files |
+| Phase 08 P03 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -122,6 +123,9 @@ Recent decisions affecting current work:
 - Phase 8-01: Focus aliases: arch -> architecture, conventions -> quality
 - Phase 08: Phase 8-02: Verification gate treats both passed and human_needed as passing (matches Phase 5 verification pattern)
 - Phase 08: Phase 8-02: Milestone archive copies full phase directories for history preservation, git tag creation is best-effort
+- [Phase 08]: Phase 8-03: Brownfield detection is a soft warning with user choice (continue or run /mz:map first)
+- [Phase 08]: Phase 8-03: Verification gate is advisory only -- user always has final authority to proceed
+- [Phase 08]: Phase 8-03: Milestone audit writes MILESTONE-AUDIT.md to .planning/ root (spans all phases)
 
 ### Pending Todos
 
@@ -135,7 +139,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 08-02-PLAN.md
-Resume file: .planning/phases/08-brownfield-support-and-project-lifecycle/08-02-PLAN.md
+Stopped at: Completed 08-03-PLAN.md -- Phase 8 complete, all 21 plans executed
+Resume file: .planning/phases/08-brownfield-support-and-project-lifecycle/08-03-SUMMARY.md
 Stash ref: None
 Last error: None
