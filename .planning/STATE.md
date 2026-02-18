@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** One framework that handles the entire development lifecycle with agents that actually communicate and coordinate
-**Current focus:** Phase 7 in progress -- Quality and Debugging Skills
+**Current focus:** Phase 8 in progress -- Brownfield Support and Project Lifecycle
 
 ## Current Position
 
-Phase: 7 of 8 (Quality and Debugging Skills) -- In Progress
-Plan: 2 of 2 in current phase
-Status: Phase Complete
-Last activity: 2026-02-18 -- Plan 07-02 complete (discuss and debug skills: Socratic brainstorming, four-phase debugging)
+Phase: 8 of 8 (Brownfield Support and Project Lifecycle) -- Executing
+Plan: 2 of 3 in current phase
+Status: Executing
+Last activity: 2026-02-18 -- Plan 08-01 complete (codebase mapping skill: mapper agent, /mz:map orchestrator)
 
-Progress: [█████████████████░░░] 85%
+Progress: [██████████████████░░] 92%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration: 4min
-- Total execution time: 1.05 hours
+- Total plans completed: 19
+- Average duration: 3min
+- Total execution time: 1.17 hours
 
 **By Phase:**
 
@@ -34,11 +34,14 @@ Progress: [█████████████████░░░] 85%
 | 06 | 3/3 | 11min | 3.7min |
 | 07 | 2/2 | 6min | 3min |
 
+| 08 | 1/3 | 3min | 3min |
+
 **Recent Trend:**
-- Last 5 plans: 05-02 (5min), 06-02 (3min), 06-03 (5min), 07-01 (3min), 07-02 (3min)
+- Last 5 plans: 06-02 (3min), 06-03 (5min), 07-01 (3min), 07-02 (3min), 08-01 (3min)
 - Trend: Consistent
 
 *Updated after each plan completion*
+| Phase 08 P01 | 3min | 2 tasks | 4 files |
 | Phase 07 P02 | 3min | 3 tasks | 3 files |
 | Phase 07 P01 | 3min | 2 tasks | 3 files |
 
@@ -112,6 +115,13 @@ Recent decisions affecting current work:
 - [Phase 07]: Phase 7-01: TDD Protocol placed after Review Protocol, before Summary Creation
 - [Phase 07]: Phase 7-01: Verification Gate replaces Self-Check content in-place rather than adding separate section
 - [Phase 07]: Phase 7-01: Config flag forwarding pattern: orchestrator reads config.quality.{flag}, embeds in execution_rules, executor activates protocol
+- Phase 8-01: 4 focus areas (tech, architecture, quality, concerns) producing 7 documents plus synthesis SUMMARY.md
+- Phase 8-01: Synthesis agent runs only on full maps, not focused single-area runs
+- Phase 8-01: Orchestrator never reads map document content -- only checks existence via wc -l
+- Phase 8-01: Re-mapping offers 3 options: Refresh (clean slate), Update (overwrite), Skip (reuse)
+- Phase 8-01: Focus aliases: arch -> architecture, conventions -> quality
+- Phase 08: Phase 8-02: Verification gate treats both passed and human_needed as passing (matches Phase 5 verification pattern)
+- Phase 08: Phase 8-02: Milestone archive copies full phase directories for history preservation, git tag creation is best-effort
 
 ### Pending Todos
 
@@ -125,7 +135,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-brownfield-support-and-project-lifecycle/08-CONTEXT.md
+Stopped at: Completed 08-02-PLAN.md
+Resume file: .planning/phases/08-brownfield-support-and-project-lifecycle/08-02-PLAN.md
 Stash ref: None
 Last error: None
