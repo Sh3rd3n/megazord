@@ -25,6 +25,13 @@ export const workflowSchema = z.object({
 	verifier: z.boolean().default(true),
 });
 
+/** Agent Teams coordination settings */
+export const agentTeamsSchema = z.object({
+	enabled: z.enum(["auto", "always", "never"]).default("auto"),
+	worktree_dir: z.string().optional(),
+	strict_ownership: z.boolean().default(false),
+});
+
 // ─── Full config schema ─────────────────────────────────────────────────────
 
 /** Megazord project configuration schema — single source of truth */
@@ -34,6 +41,9 @@ export const configSchema = z.object({
 
 	/** Project identity */
 	project_name: z.string(),
+
+	/** Absolute path to the Megazord plugin directory (auto-detected by /mz:init) */
+	plugin_path: z.string().optional(),
 
 	/** Execution mode: yolo (autonomous) or interactive (confirm at each step) */
 	mode: z.enum(["yolo", "interactive"]).default("yolo"),
@@ -65,6 +75,12 @@ export const configSchema = z.object({
 		plan_check: true,
 		verifier: true,
 	}),
+
+	/** Agent Teams coordination settings */
+	agent_teams: agentTeamsSchema.default({
+		enabled: "auto",
+		strict_ownership: false,
+	}),
 });
 
 // ─── Type export ────────────────────────────────────────────────────────────
@@ -90,6 +106,10 @@ export const presets: Record<string, Partial<MegazordConfig>> = {
 			plan_check: true,
 			verifier: true,
 		},
+		agent_teams: {
+			enabled: "auto",
+			strict_ownership: true,
+		},
 	},
 	balanced: {
 		model_profile: "balanced",
@@ -105,6 +125,10 @@ export const presets: Record<string, Partial<MegazordConfig>> = {
 			plan_check: true,
 			verifier: true,
 		},
+		agent_teams: {
+			enabled: "auto",
+			strict_ownership: false,
+		},
 	},
 	minimal: {
 		model_profile: "budget",
@@ -119,6 +143,10 @@ export const presets: Record<string, Partial<MegazordConfig>> = {
 			research: false,
 			plan_check: false,
 			verifier: false,
+		},
+		agent_teams: {
+			enabled: "never",
+			strict_ownership: false,
 		},
 	},
 };
