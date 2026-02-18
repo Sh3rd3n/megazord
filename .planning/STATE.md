@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** One framework that handles the entire development lifecycle with agents that actually communicate and coordinate
-**Current focus:** Phase 5 complete -- ready for Phase 6
+**Current focus:** Phase 6 in progress -- Agent Teams integration
 
 ## Current Position
 
-Phase: 5 of 8 (Code Review and Verification) -- Complete
-Plan: 2 of 2 in current phase
-Status: Complete
-Last activity: 2026-02-18 -- Plan 05-02 complete (verifier agent + verify/review skills)
+Phase: 6 of 8 (Agent Teams Integration) -- In Progress
+Plan: 2 of 3 in current phase
+Status: In Progress
+Last activity: 2026-02-18 -- Plan 06-02 complete (executor and reviewer agent dual-mode updates)
 
-Progress: [████████████░░░░░░░░] 60%
+Progress: [██████████████░░░░░░] 70%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 14
 - Average duration: 4min
-- Total execution time: 0.77 hours
+- Total execution time: 0.87 hours
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [████████████░░░░░░░░] 60%
 | 03 | 3 | 12min | 4min |
 | 04 | 2 | 7min | 3.5min |
 | 05 | 2/2 | 9min | 4.5min |
+| 06 | 2/3 | 6min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 03-03 (3min), 04-01 (3min), 04-02 (4min), 05-01 (4min), 05-02 (5min)
+- Last 5 plans: 04-01 (3min), 04-02 (4min), 05-01 (4min), 05-02 (5min), 06-02 (3min)
 - Trend: Consistent
 
 *Updated after each plan completion*
@@ -90,6 +91,13 @@ Recent decisions affecting current work:
 - Phase 5-02: Hybrid verification mode: automated checks first, user confirmation only for UNCERTAIN items
 - Phase 5-02: /mz:review works independently of config.quality.review -- always available on demand
 - Phase 5-02: Help updated to 11 Available skills, 3 Coming soon (debug, discuss, map)
+- [Phase 06]: Phase 6-02: Teammate mode is additive -- all existing subagent content unchanged, new sections appended
+- [Phase 06]: Phase 6-02: Mode detection via execution_rules fields (execution_mode for executor, review_mode_type for reviewer)
+- [Phase 06]: Phase 6-02: Delta re-review in teammate mode (reviewer checks only changes since last review)
+- [Phase 06]: Phase 6-02: Reviewer never modifies implementer worktree -- minor fixes noted for lead, structural issues via SendMessage
+- Phase 6-01: Worktree branch naming: mz/{team}/{agent} convention for namespace isolation
+- Phase 6-01: Ownership validation uses prefix matching (not exact) for directory-level scope
+- Phase 6-01: Agent not in manifest defaults to unrestricted access (opt-in enforcement)
 
 ### Pending Todos
 
@@ -103,7 +111,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-agent-teams-integration/06-CONTEXT.md
+Stopped at: Completed 06-02-PLAN.md (executor and reviewer agent dual-mode updates)
+Resume file: .planning/phases/06-agent-teams-integration/06-02-SUMMARY.md
 Stash ref: None
 Last error: None
