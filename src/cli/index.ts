@@ -78,10 +78,14 @@ const { registerStateCommands } = await import("./commands/state.js");
 const { registerProgressCommands } = await import("./commands/progress.js");
 const { registerPlanCommands } = await import("./commands/plan-tools.js");
 const { registerWorktreeCommands } = await import("./commands/worktree-tools.js");
+const { registerRoadmapCommands } = await import("./commands/roadmap-tools.js");
+const { registerMilestoneCommands } = await import("./commands/milestone-tools.js");
 registerStateCommands(tools);
 registerProgressCommands(tools);
 registerPlanCommands(tools);
 registerWorktreeCommands(tools);
+registerRoadmapCommands(tools);
+registerMilestoneCommands(tools);
 
 // Default action (no subcommand) = install
 program.action(async () => {
