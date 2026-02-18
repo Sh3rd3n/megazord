@@ -49,6 +49,18 @@ If review is disabled, display a one-time notice:
 > Note: Code review is disabled (quality.review: "off"). Tasks will not be reviewed.
 ```
 
+Determine TDD configuration:
+- If `config.quality.tdd === true`: `tdd_enabled = true`
+- Otherwise: `tdd_enabled = false`
+
+Determine CORTEX configuration:
+- If `config.quality.cortex === true`: `cortex_enabled = true`
+- Otherwise: `cortex_enabled = false`
+
+Display activation notices (same pattern as the review disabled notice):
+- If TDD is enabled: `> TDD mode active: RED-GREEN-REFACTOR enforced per task`
+- If CORTEX is enabled: `> CORTEX classification active: tasks classified before execution`
+
 Parse the user's message (text after `/mz:go`) for arguments:
 - `--tasks N,M` -- execute only specific plan numbers (e.g., `--tasks 1,3`)
 - `--from N` -- start from plan N, skip earlier plans (e.g., `--from 2`)
@@ -237,6 +249,8 @@ Display: `  * Plan {NN}: {objective from plan file}...`
 - Use bun/bunx for all JS/TS operations (never npm/npx)
 - Review enabled: {true|false}
 - Review mode: {auto|manual} (only present if review_enabled is true)
+- TDD enabled: {true|false}
+- CORTEX enabled: {true|false}
 </execution_rules>
 ```
 
@@ -402,6 +416,8 @@ Task({
 - Use bun/bunx for all JS/TS operations (never npm/npx)
 - Review enabled: {true|false}
 - Review mode: {auto|manual}
+- TDD enabled: {true|false}
+- CORTEX enabled: {true|false}
 </execution_rules>",
   team_name: "{team_name}",
   name: "exec-{plan_id}"
