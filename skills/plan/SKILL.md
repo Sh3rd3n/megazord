@@ -40,8 +40,93 @@ If config exists, continue loading:
 - Parse the user's message for arguments:
   - A phase number (e.g., `/mz:plan 3` or `/mz:plan phase 3`)
   - The `--skip-research` flag
+  - Phase management subcommands: `add-phase`, `remove-phase`, `insert-phase` (see Step 2b)
 
 Store all loaded content in memory -- it will be embedded in Task prompts later.
+
+### Brownfield Codebase Map Detection
+
+After loading config, check for codebase map integration:
+
+1. Check if `.planning/codebase/SUMMARY.md` exists.
+2. **If it exists:** Read the summary content and store it in memory for later embedding in the planner prompt (Step 6).
+   ```
+   > Codebase Map
+     ✓ Loaded codebase summary (.planning/codebase/SUMMARY.md)
+   ```
+3. **If it does NOT exist** but existing code is detected (check for the presence of any of these in the project root: `package.json`, `src/`, `lib/`, `app/`, `Cargo.toml`, `go.mod`, `requirements.txt`, `pyproject.toml`, or `pom.xml`):
+   Display a soft warning:
+   ```
+   > Brownfield
+     ! Existing code detected but no codebase map found.
+     Run /mz:map first for better roadmap quality, or continue without.
+   ```
+   Use AskUserQuestion (header: "Brownfield", 10 chars):
+   - "Continue without map"
+   - "Run /mz:map first" (display "Run `/mz:map` to analyze the codebase, then re-run `/mz:plan`." and exit)
+4. **If no codebase map and no existing code detected:** Skip silently (greenfield project, no map needed).
+
+Determine the plugin path:
+1. Read `plugin_path` from the config JSON.
+2. If `plugin_path` is not set in config, try `~/.claude/plugins/mz`. Check if `~/.claude/plugins/mz/bin/megazord.mjs` exists.
+3. If neither exists, display error and stop:
+   > Plugin path not configured. Run `/mz:settings` and set `plugin_path`, or re-run `/mz:init`.
+
+## Step 2b: Phase Management Subcommands
+
+Parse the user's message for phase management subcommands. If a subcommand is detected, handle it directly without spawning researcher/planner agents:
+
+### `/mz:plan add-phase {description}`
+
+Add a new phase to the end of the roadmap.
+
+1. Run:
+   ```bash
+   node {plugin_path}/bin/megazord.mjs tools roadmap add-phase --description "{description}"
+   ```
+2. Parse the JSON result.
+3. Display success:
+   ```
+   > Phase Management
+     ✓ Phase {N} added: {description}
+   ```
+4. Exit (do not proceed to regular planning).
+
+### `/mz:plan remove-phase {N}`
+
+Remove an unstarted phase from the roadmap.
+
+1. Validate the phase number is provided.
+2. Run:
+   ```bash
+   node {plugin_path}/bin/megazord.mjs tools roadmap remove-phase --phase {N}
+   ```
+3. If error (phase is completed or in-progress): display the error message and exit.
+4. Display success with renumbering info:
+   ```
+   > Phase Management
+     ✓ Phase {N} removed. Subsequent phases renumbered.
+   ```
+5. Exit.
+
+### `/mz:plan insert-phase {N} {description}`
+
+Insert a new phase after phase N using decimal numbering.
+
+1. Parse the after-phase number and description from the user's message.
+2. Run:
+   ```bash
+   node {plugin_path}/bin/megazord.mjs tools roadmap insert-phase --after {N} --description "{description}"
+   ```
+3. Parse the JSON result for the assigned phase number (decimal, e.g., 6.1).
+4. Display success:
+   ```
+   > Phase Management
+     ✓ Phase {result_number} inserted after Phase {N}: {description}
+   ```
+5. Exit.
+
+**If no subcommand is detected:** Proceed to Step 3 (normal planning flow).
 
 ## Step 3: Determine Target Phase
 
@@ -78,6 +163,35 @@ Display the target phase:
 ▸ Target
   Phase {N}: {Phase Name}
 ```
+
+### Verification Gate Enforcement
+
+After determining the target phase and BEFORE any research or planning, check the verification gate for the previous phase:
+
+1. **If the target phase number is > 1:** Check the previous phase's verification status:
+   ```bash
+   node {plugin_path}/bin/megazord.mjs tools roadmap check-gate --phase {N-1}
+   ```
+2. Parse the JSON result.
+3. **If verification is not passed** (no VERIFICATION.md or status is not "passed" or "human_needed"):
+   Display a strong warning (advisory, not blocking -- the user has final authority):
+   ```
+   > Verification Gate
+     ! Phase {N-1} has not passed verification.
+     Run /mz:verify {N-1} before planning Phase {N}.
+   ```
+   Use AskUserQuestion (header: "Gate", 4 chars):
+   - "Continue anyway" (proceed with planning)
+   - "Run /mz:verify first" (display "Run `/mz:verify {N-1}` to verify the previous phase first." and exit)
+4. **If verification passed** (status is "passed" or "human_needed"):
+   Display confirmation:
+   ```
+   > Verification Gate
+     ✓ Phase {N-1} verified
+   ```
+5. **If the target phase is 1:** Skip the verification gate (no previous phase to check).
+
+**Important:** Phase transitions remain manual. The gate is a warning, not a hard block. The user always decides whether to proceed.
 
 ## Step 4: Soft Check for CONTEXT.md
 
@@ -123,7 +237,7 @@ Display:
 
 Spawn the researcher agent:
 
-1. Read `agents/mz-researcher.md` file content into memory.
+1. Read `{plugin_path}/agents/mz-researcher.md` file content into memory.
 2. Read all context files into memory: STATE.md, ROADMAP.md, CONTEXT.md (if exists).
 3. Extract the relevant phase section from ROADMAP.md -- the `### Phase {N}: {Name}` section, not the entire roadmap. Include the phase goal, dependencies, requirements, and success criteria.
 4. Spawn researcher via Task tool:
@@ -167,6 +281,7 @@ Gather all context for the planner:
 - CONTEXT.md content (if exists, from step 4)
 - megazord.config.json content (for depth, mode, quality settings)
 - Previous phase SUMMARY.md files (if relevant, for established patterns)
+- Codebase summary (if loaded in Step 2 brownfield detection)
 
 Display:
 ```
@@ -174,7 +289,7 @@ Display:
   ◆ Creating plans for Phase {N}...
 ```
 
-Read `agents/mz-planner.md` file content into memory.
+Read `{plugin_path}/agents/mz-planner.md` file content into memory.
 
 Spawn the planner via Task tool:
 - `subagent_type`: "general-purpose"
@@ -188,6 +303,13 @@ Spawn the planner via Task tool:
   - Config content from megazord.config.json
   - Requirement IDs that must be covered (from the phase's requirements list in ROADMAP.md)
   - Depth setting from config
+  - Codebase context (if loaded from brownfield detection in Step 2), embedded as:
+    ```
+    <codebase_context>
+    {content of .planning/codebase/SUMMARY.md}
+    </codebase_context>
+    ```
+    This gives the planner awareness of existing architecture, tech stack, conventions, and concerns when creating brownfield roadmaps.
   - Output directory: `{phase_dir}/`
 
 Wait for completion. The planner writes PLAN.md files directly to the phase directory.
@@ -283,4 +405,4 @@ End with the Next Up block:
 - All file contents are read BEFORE spawning Task subagents and embedded as inline text. @file references do NOT work across Task boundaries.
 - The plan skill is the conductor; agents are the musicians. The skill handles flow, error cases, and state updates. Agents do the domain work.
 - Keep subagent prompts focused: only include context relevant to the agent's task. Don't dump the entire project state into the researcher prompt if only the phase section is needed.
-- The `{plugin_path}` for CLI commands is the directory where Megazord is installed. Read it by checking the path of the current plugin (typically `~/.claude/plugins/mz/` or similar). The skill can also use a relative path from the project root if the plugin path is not deterministic.
+- The `{plugin_path}` for CLI commands and agent files is resolved from `config.plugin_path`, falling back to `~/.claude/plugins/mz`.
