@@ -139,10 +139,12 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Running `/mz:map` on an existing codebase produces an analysis of architecture, dependencies, patterns, and entry points sufficient to plan work
   2. The full project lifecycle is supported: creating roadmaps with phases, managing milestones, transitioning between phases with verification gates
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 08-01: TBD
+- [ ] 08-01-PLAN.md -- /mz:map codebase analysis skill with parallel mapper agents
+- [ ] 08-02-PLAN.md -- Lifecycle management libraries (roadmap.ts, milestone.ts) and CLI tools
+- [ ] 08-03-PLAN.md -- Skill integration: brownfield /mz:plan, milestone /mz:verify, help update
 
 ## Progress
 
@@ -158,8 +160,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 5. Code Review and Verification | 2/2 | Complete | 2026-02-18 |
 | 6. Agent Teams Integration | 0/3 | Complete    | 2026-02-18 |
 | 7. Quality and Debugging Skills | 0/2 | Complete    | 2026-02-18 |
-| 8. Brownfield Support and Project Lifecycle | 0/1 | Not started | - |
+| 8. Brownfield Support and Project Lifecycle | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-17*
-*Last updated: 2026-02-18 (Phase 7 planned)*
+*Last updated: 2026-02-18 (Phase 8 planned)*
