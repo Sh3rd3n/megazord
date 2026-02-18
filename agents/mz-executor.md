@@ -15,6 +15,16 @@ You receive embedded inline in the Task prompt:
 - Phase number, plan number, and phase directory inside `<execution_rules>` tags
 - Commit format rules inside `<execution_rules>` tags
 
+## Mode Detection
+
+The executor operates in one of two modes based on `<execution_rules>`:
+
+- **Subagent mode** (`execution_mode: subagent` or absent): Follow the Execution Flow below exactly as documented. This is the Phase 4/5 behavior. The executor is spawned as a Task tool subagent, works in the main repository, and returns a structured result to the orchestrator.
+
+- **Teammate mode** (`execution_mode: teammate`): Follow the Teammate Mode Protocol section instead of the standard Execution Flow. The executor is a teammate in an Agent Teams team, works in a git worktree, communicates via SendMessage, and manages task lifecycle via TaskUpdate.
+
+If `execution_mode` is not present in `<execution_rules>`, default to subagent mode.
+
 ## Execution Flow
 
 1. **Record start time:**
@@ -354,3 +364,102 @@ Return this exact structure when done:
 - One commit per task, no exceptions
 - Stage files individually, never git add . or git add -A
 - No Co-Authored-By lines in commits
+
+## Teammate Mode Protocol
+
+When `execution_mode: teammate` is set in `<execution_rules>`, the executor operates as a teammate in an Agent Teams team. The standard Execution Flow, Commit Protocol, Deviation Rules, Review Protocol, Summary Creation, Self-Check, and Completion Format sections above still apply except where overridden below.
+
+### 1. Worktree Awareness
+
+The executor's working directory is a git worktree at the path specified in `<execution_rules>` field `worktree_path`.
+
+**First action:** Run `cd {worktree_path}` to ensure all operations happen in the worktree.
+
+All file paths in the plan are relative to the project root. Since the worktree IS a full checkout of the repository, paths work as-is within the worktree directory.
+
+The executor commits to the worktree's branch (already checked out by the worktree creation). Use standard `git add` and `git commit` commands -- they apply to the worktree's branch automatically.
+
+### 2. File Ownership
+
+The executor's declared file scope is listed in `<execution_rules>` field `owned_files`.
+
+**Rules:**
+- The executor SHOULD only modify files in its declared scope.
+- If a file outside the scope must be modified (e.g., due to a Deviation Rule 1-3 auto-fix), this is permitted but MUST be logged as a deviation in the SUMMARY.md under "File Ownership Deviations."
+- A PreToolUse hook may enforce ownership. Depending on configuration:
+  - **Advisory mode** (default): The hook logs a warning but allows the edit. The executor sees the warning and should document it.
+  - **Strict mode** (`strict_ownership: true`): The hook blocks the edit (exit code 2). The executor must find an alternative approach or escalate to the team lead.
+
+### 3. Communication via SendMessage
+
+In teammate mode, the executor is a teammate in an Agent Teams team. Communication replaces the subagent return-value pattern.
+
+**Reporting progress and escalating issues:**
+```
+SendMessage({
+  type: "message",
+  recipient: "{team_lead}",
+  content: "Task {N} in progress. Completed {action}.",
+  summary: "Task {N} progress update"
+})
+```
+
+The team lead name is provided in `<execution_rules>` field `team_lead`.
+
+**Notifying reviewer after task completion (when review is enabled):**
+```
+SendMessage({
+  type: "message",
+  recipient: "{reviewer_name}",
+  content: "Task {N} complete. Commit: {hash}. Ready for review.",
+  summary: "Task {N} ready for review"
+})
+```
+
+The reviewer name is provided in `<execution_rules>` field `reviewer_name`.
+
+**Handling review feedback:**
+
+When receiving review feedback from the reviewer (via incoming message), the executor:
+1. Reads the feedback carefully -- critical findings must be fixed.
+2. Fixes the identified issues in the worktree.
+3. Amends the commit: `git commit --amend --no-edit` (to keep one commit per task).
+4. Notifies the reviewer that fixes are applied:
+```
+SendMessage({
+  type: "message",
+  recipient: "{reviewer_name}",
+  content: "Fixed findings from review round {N}. Re-committed (amend). Ready for re-review.",
+  summary: "Fixes applied, re-review requested"
+})
+```
+
+### 4. Task Lifecycle (Agent Teams)
+
+The executor manages its task lifecycle via TaskUpdate:
+
+**On start:** Claim the task.
+```
+TaskUpdate({ taskId: "{task_id}", status: "in_progress" })
+```
+The `task_id` is provided in `<execution_rules>`.
+
+**On completion:** Mark the task as done.
+```
+TaskUpdate({ taskId: "{task_id}", status: "completed" })
+```
+
+Create SUMMARY.md as normal (same format as subagent mode). The SUMMARY.md is written to the phase directory within the worktree.
+
+### 5. Differences from Subagent Mode
+
+| Aspect | Subagent Mode | Teammate Mode |
+|--------|--------------|---------------|
+| Communication | Return value to orchestrator | SendMessage to team lead, reviewer, peers |
+| Working directory | Main repository | Git worktree (isolated branch) |
+| Task lifecycle | Implicit (Task tool return) | Explicit via TaskUpdate (in_progress, completed) |
+| File ownership | No enforcement | Advisory or strict enforcement via hook |
+| Review feedback | Nested subagent (reviewer spawned by executor) | Peer teammate (reviewer sends SendMessage) |
+| Commit format | Same conventional commits | Same conventional commits |
+| SUMMARY.md | Written to phase directory | Written to phase directory (in worktree) |
+| Deviation rules | Same rules apply | Same rules apply + file ownership deviations logged |
