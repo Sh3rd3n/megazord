@@ -34,8 +34,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **QUAL-01**: Two-stage code review (spec compliance + code quality) runs automatically when enabled in config
 - [ ] **QUAL-02**: TDD workflow (RED-GREEN-REFACTOR) enforced when enabled: tests must fail before implementation, pass after, then refactor
-- [ ] **QUAL-03**: Socratic brainstorming explores 3+ alternative approaches before settling on a design with `/mz:discuss`
-- [ ] **QUAL-04**: Systematic debugging follows 4-phase methodology (reproduce, isolate, root-cause, fix) with `/mz:debug`
+- [x] **QUAL-03**: Socratic brainstorming explores 3+ alternative approaches before settling on a design with `/mz:discuss`
+- [x] **QUAL-04**: Systematic debugging follows 4-phase methodology (reproduce, isolate, root-cause, fix) with `/mz:debug`
 - [ ] **QUAL-05**: Quality settings configurable at init time: TDD on/off, review auto/manual/off, brainstorming on/off, debug systematic/quick
 - [x] **QUAL-06**: Verification/UAT with `/mz:verify` confirms phase deliverables match acceptance criteria before marking complete
 - [ ] **QUAL-07**: Quality configuration stored in `megazord.config.json` and respected by all execution workflows
@@ -120,8 +120,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | PROJ-12 | Phase 1 | Pending |
 | QUAL-01 | Phase 5 | Complete |
 | QUAL-02 | Phase 7 | Pending |
-| QUAL-03 | Phase 7 | Pending |
-| QUAL-04 | Phase 7 | Pending |
+| QUAL-03 | Phase 7 | Complete |
+| QUAL-04 | Phase 7 | Complete |
 | QUAL-05 | Phase 2 | Pending |
 | QUAL-06 | Phase 5 | Complete |
 | QUAL-07 | Phase 2 | Pending |
