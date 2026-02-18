@@ -93,10 +93,11 @@ Plans:
   1. When code review is enabled in config, a review subagent automatically runs two-stage review (spec compliance + code quality) after task execution
   2. Review findings are reported with actionable feedback and the task is not marked complete until review passes
   3. Running `/mz:verify` confirms phase deliverables match acceptance criteria, and the phase cannot transition to complete until verification passes
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: TBD
+- [ ] 05-01-PLAN.md -- Reviewer agent definition and execution pipeline review integration
+- [ ] 05-02-PLAN.md -- Verifier agent, /mz:verify skill, /mz:review standalone skill, help update
 
 ### Phase 6: Agent Teams Integration
 **Goal**: Coordination-heavy work uses native Agent Teams for real inter-agent communication -- reviewers send code back to implementers, agents share task state, and parallel work is isolated
@@ -155,7 +156,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Project Initialization and Configuration | 2/2 | Complete | 2026-02-17 |
 | 3. Core Skills and State Management | 4/4 | Complete | 2026-02-17 |
 | 4. Subagent Execution and Atomic Commits | 2/2 | Complete    | 2026-02-17 |
-| 5. Code Review and Verification | 0/1 | Not started | - |
+| 5. Code Review and Verification | 0/2 | Not started | - |
 | 6. Agent Teams Integration | 0/3 | Not started | - |
 | 7. Quality and Debugging Skills | 0/3 | Not started | - |
 | 8. Brownfield Support and Project Lifecycle | 0/1 | Not started | - |
