@@ -41,8 +41,15 @@ If config exists, continue loading:
 Parse the user's message (text after `/mz:verify`) for arguments:
 - `{phase_num}` -- verify a specific phase (optional, defaults to current)
 - `--partial` -- verify even if some plans are incomplete (skip completion check)
+- `--milestone {version}` -- run milestone audit mode instead of phase verification (see Step 3b)
 
-Determine the plugin path for CLI commands. The Megazord plugin directory is resolved from the skill's location. Use the path to the `bin/megazord.mjs` CLI entry point for all tool commands:
+Determine the plugin path for CLI commands:
+1. Read `plugin_path` from the config JSON.
+2. If `plugin_path` is not set in config, try `~/.claude/plugins/mz`. Check if `~/.claude/plugins/mz/bin/megazord.mjs` exists.
+3. If neither exists, display error and stop:
+   > Plugin path not configured. Run `/mz:settings` and set `plugin_path`, or re-run `/mz:init`.
+
+Use this resolved path for all `node {plugin_path}/bin/megazord.mjs` commands below:
 
 ```bash
 node {plugin_path}/bin/megazord.mjs tools plan incomplete --phase-dir {phase_dir}
@@ -61,6 +68,85 @@ Display:
   Phase {N}: {Name}
   Goal: {phase goal from ROADMAP.md}
 ```
+
+## Step 3b: Milestone Audit Mode (alternative path)
+
+**If `--milestone {version}` was provided,** the skill enters milestone audit mode instead of the regular phase verification flow (Steps 4-7 are skipped).
+
+### Milestone Audit Flow
+
+1. Display:
+   ```
+   > Milestone Audit: {version}
+   ```
+
+2. Determine which phases belong to this milestone:
+   - Check if `.planning/MILESTONE.md` exists with the specified version. If found, read the phases list from it.
+   - If no MILESTONE.md exists, treat all completed phases as the milestone scope. Scan ROADMAP.md for phases marked complete (`- [x]`) and collect their phase numbers.
+
+3. Run the milestone audit via CLI tool:
+   ```bash
+   node {plugin_path}/bin/megazord.mjs tools milestone audit --phases "{comma-separated phase numbers}"
+   ```
+
+4. Parse the JSON audit result.
+
+5. Display audit results:
+
+   **If all phases pass:**
+   ```
+   +===============================================+
+   |  Milestone {version} Audit: PASSED           |
+   +-----------------------------------------------+
+   |  Phases verified: {N}/{N}                     |
+   |  All verification gates passed.               |
+   +===============================================+
+   ```
+   Suggest: "Run `/mz:plan` to complete the milestone (archive and tag)."
+
+   **If some phases fail:**
+   ```
+   +===============================================+
+   |  Milestone {version} Audit: GAPS FOUND       |
+   +-----------------------------------------------+
+   |  Phases verified: {passed}/{total}            |
+   |                                               |
+   |  Failed:                                      |
+   |  - Phase {N}: {reason}                        |
+   |  - Phase {M}: No VERIFICATION.md             |
+   +===============================================+
+   ```
+   Suggest: "Run `/mz:verify {N}` for each failed phase."
+
+6. Write `MILESTONE-AUDIT.md` in `.planning/` with:
+   - Version and date
+   - Status: `passed` or `gaps_found`
+   - Per-phase verification status (phase number, name, status, details)
+   - Aggregate statistics (total phases, passed count, failed count)
+
+7. Display Next Up block:
+
+   If passed:
+   ```
+   ===============================================
+   > Next Up
+   **Milestone {version} audit passed.** Ready to archive.
+   `/mz:plan` to complete milestone lifecycle.
+   ===============================================
+   ```
+
+   If gaps found:
+   ```
+   ===============================================
+   > Next Up
+   **Address gaps before closing milestone.**
+   `/mz:verify {N}` for each failed phase.
+   ===============================================
+   ```
+
+8. Exit (do not proceed to regular phase verification).
+
+**If `--milestone` was NOT provided:** Continue to Step 4 (regular phase verification flow).
 
 ## Step 4: Check Plan Completion
 
@@ -90,7 +176,7 @@ node {plugin_path}/bin/megazord.mjs tools plan incomplete --phase-dir {phase_dir
 
 1. Read all PLAN.md files in the phase directory (extract must_haves from frontmatter for each).
 2. Read all SUMMARY.md files in the phase directory (extract key accomplishments, files, decisions).
-3. Read `agents/mz-verifier.md` content using the Read tool.
+3. Read `{plugin_path}/agents/mz-verifier.md` content using the Read tool.
 4. Extract requirement IDs from the phase's ROADMAP.md entry.
 5. Compose the Task prompt:
 
@@ -246,8 +332,8 @@ If human_needed (after user confirms all): Update and proceed as passed or gaps_
 ## Notes
 
 - All file contents are read BEFORE spawning Task subagents and embedded as inline text. @file references do NOT work across Task boundaries.
-- The verifier agent (agents/mz-verifier.md) performs all verification logic. This skill orchestrates: load context, check completion, spawn verifier, handle result.
+- The verifier agent (`{plugin_path}/agents/mz-verifier.md`) performs all verification logic. This skill orchestrates: load context, check completion, spawn verifier, handle result.
 - Only the orchestrator (this skill) presents UNCERTAIN items to the user in hybrid mode. The verifier identifies them; this skill manages the user interaction.
 - The verifier does NOT update STATE.md or ROADMAP.md. State updates happen at the orchestrator level (e.g., /mz:go after phase completion).
 - ALWAYS use bun/bunx for JavaScript/TypeScript operations (never npm/npx).
-- The `{plugin_path}` for CLI commands is the Megazord plugin directory. Resolve it from the skill's installation location or use a known path.
+- The `{plugin_path}` for CLI commands and agent files is resolved from `config.plugin_path`, falling back to `~/.claude/plugins/mz`.

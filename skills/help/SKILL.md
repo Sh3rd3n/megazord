@@ -35,7 +35,7 @@ Display the stage banner:
 | `/mz:verify` | Verify phase deliverables match criteria | Available |
 | `/mz:debug` | Systematic four-phase debugging | Available |
 | `/mz:discuss` | Socratic brainstorming before implementation | Available |
-| `/mz:map` | Analyze existing codebase for brownfield support | Coming soon |
+| `/mz:map` | Analyze existing codebase for brownfield support | Available |
 
 ## Usage
 
@@ -64,17 +64,22 @@ Run any skill by typing its name as a slash command:
 /mz:verify           Verify current phase deliverables
 /mz:verify 5         Verify a specific phase
 /mz:verify --partial Verify even with incomplete plans
+/mz:verify --milestone v1.0   Audit all phases for milestone v1.0
+/mz:map              Analyze full codebase (4 areas)
+/mz:map architecture  Map architecture only
+/mz:map tech          Map tech stack only
+/mz:plan add-phase "New feature"    Add a phase to the roadmap
+/mz:plan remove-phase 9             Remove an unstarted phase
+/mz:plan insert-phase 6 "Hotfix"    Insert phase after phase 6
 /mz:discuss {topic}  Brainstorm approaches for a topic
 /mz:discuss 7        Brainstorm for phase 7 context
 /mz:debug {issue}    Debug an issue systematically
 /mz:debug "tests failing in auth module"  Debug with description
 ```
 
-Skills marked "Coming soon" are planned for future phases and not yet functional.
-
 ## About Megazord
 
 Megazord unifies project management, code quality discipline, and multi-agent coordination into one Claude Code framework.
 
 **Version:** 0.1.0
-**Phase:** 7 of 8 (Quality and Debugging Skills)
+**Phase:** 8 of 8 (Brownfield Support and Project Lifecycle)
