@@ -33,8 +33,8 @@ Display the stage banner:
 | `/mz:go` | Execute the current phase plan (subagent or Agent Teams mode) | Available |
 | `/mz:review` | Two-stage code review (spec + quality) | Available |
 | `/mz:verify` | Verify phase deliverables match criteria | Available |
-| `/mz:debug` | Systematic four-phase debugging | Coming soon |
-| `/mz:discuss` | Socratic brainstorming before implementation | Coming soon |
+| `/mz:debug` | Systematic four-phase debugging | Available |
+| `/mz:discuss` | Socratic brainstorming before implementation | Available |
 | `/mz:map` | Analyze existing codebase for brownfield support | Coming soon |
 
 ## Usage
@@ -64,6 +64,10 @@ Run any skill by typing its name as a slash command:
 /mz:verify           Verify current phase deliverables
 /mz:verify 5         Verify a specific phase
 /mz:verify --partial Verify even with incomplete plans
+/mz:discuss {topic}  Brainstorm approaches for a topic
+/mz:discuss 7        Brainstorm for phase 7 context
+/mz:debug {issue}    Debug an issue systematically
+/mz:debug "tests failing in auth module"  Debug with description
 ```
 
 Skills marked "Coming soon" are planned for future phases and not yet functional.
@@ -73,4 +77,4 @@ Skills marked "Coming soon" are planned for future phases and not yet functional
 Megazord unifies project management, code quality discipline, and multi-agent coordination into one Claude Code framework.
 
 **Version:** 0.1.0
-**Phase:** 6 of 8 (Agent Teams Integration)
+**Phase:** 7 of 8 (Quality and Debugging Skills)
