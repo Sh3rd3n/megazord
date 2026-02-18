@@ -109,12 +109,12 @@ Plans:
   3. Each parallel teammate operates in its own git worktree, preventing file conflicts during simultaneous execution
   4. File ownership enforcement blocks agents from modifying files outside their declared scope
   5. Delegate mode allows a team lead to coordinate work using only spawn/message/shutdown/task tools without implementing directly
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
-- [ ] 06-03: TBD
+- [ ] 06-01-PLAN.md -- Worktree management library, ownership validation, config extension, CLI tools
+- [ ] 06-02-PLAN.md -- Executor and reviewer agent dual-mode updates (subagent + teammate)
+- [ ] 06-03-PLAN.md -- /mz:go hybrid detection, Agent Teams execution path, ownership hook, help update
 
 ### Phase 7: Quality and Debugging Skills
 **Goal**: Developers have access to structured thinking tools -- TDD enforcement, brainstorming before coding, systematic debugging, and adaptive task classification that matches approach depth to problem complexity
@@ -163,4 +163,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 
 ---
 *Roadmap created: 2026-02-17*
-*Last updated: 2026-02-18 (Phase 5 complete)*
+*Last updated: 2026-02-18 (Phase 6 planned)*
