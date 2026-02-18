@@ -117,7 +117,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 06-03-PLAN.md (core integration: hybrid /mz:go, teams.md, ownership hook). Phase 6 complete.
-Resume file: .planning/phases/06-agent-teams-integration/06-03-SUMMARY.md
+Stopped at: Phase 7 context gathered
+Resume file: .planning/phases/07-quality-and-debugging-skills/07-CONTEXT.md
 Stash ref: None
 Last error: None
