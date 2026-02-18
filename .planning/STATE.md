@@ -125,7 +125,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 07-01-PLAN.md and 07-02-PLAN.md (Phase 7 complete)
-Resume file: .planning/phases/07-quality-and-debugging-skills/
+Stopped at: Phase 8 context gathered
+Resume file: .planning/phases/08-brownfield-support-and-project-lifecycle/08-CONTEXT.md
 Stash ref: None
 Last error: None
