@@ -50,6 +50,8 @@ The executor receives a prompt with these sections:
 - Use bun/bunx for all JS/TS operations (never npm/npx)
 - Review enabled: {true|false}
 - Review mode: {auto|manual} (only present if review_enabled is true)
+- TDD enabled: {true|false}
+- CORTEX enabled: {true|false}
 </execution_rules>
 ```
 
@@ -108,6 +110,8 @@ Same sections as subagent mode, plus additional fields in `<execution_rules>`:
 - Use bun/bunx for all JS/TS operations (never npm/npx)
 - Review enabled: {true|false}
 - Review mode: {auto|manual} (only present if review_enabled is true)
+- TDD enabled: {true|false}
+- CORTEX enabled: {true|false}
 </execution_rules>
 ```
 
@@ -268,3 +272,19 @@ Key difference: In teammate mode, the reviewer does NOT modify the implementer's
 | `"auto"` | Review runs, critical findings auto-fixed, retry up to 3 passes |
 | `"manual"` | Review runs, critical findings reported to user (not auto-fixed) |
 | `"off"` | No review, one-time notice displayed by orchestrator |
+
+## Quality Integration
+
+### TDD Flag Forwarding
+
+The `tdd_enabled` flag is forwarded from `config.quality.tdd` and controls the executor's TDD Protocol section. When `true`, the executor follows RED-GREEN-REFACTOR for each task with stage banners. When `false` or absent, the TDD Protocol is inactive and the executor uses standard single-commit-per-task behavior.
+
+When TDD is active, the one-commit-per-task rule is overridden: each task produces 2-3 commits (RED test, GREEN implementation, optional REFACTOR cleanup).
+
+### CORTEX Flag Forwarding
+
+The `cortex_enabled` flag is forwarded from `config.quality.cortex` and controls the executor's CORTEX Classification section. When `true`, every task gets a one-line classification (Clear/Complicated/Complex/Chaotic) before execution, with challenge blocks on Complicated+ tasks. When `false` or absent, the CORTEX Classification is inactive and the executor proceeds without classification.
+
+### Config Source
+
+Both flags are read by the orchestrator in Step 2 (Load Context and Validate) and embedded in the `<execution_rules>` block for both subagent and teammate prompt structures. The executor reads them from `<execution_rules>` -- it never reads the config file for these flags.
