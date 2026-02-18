@@ -25,7 +25,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **PROJ-06**: User can resume from any previous session with `/mz:resume` restoring full context from STATE.md
 - [ ] **PROJ-07**: User can execute quick tasks with `/mz:quick` bypassing full project ceremony
 - [x] **PROJ-08**: Each completed task produces exactly one atomic git commit with descriptive message
-- [x] **PROJ-09**: User can manage full project lifecycle: roadmap, phases, milestones, phase transitions
+- [ ] **PROJ-09**: User can manage full project lifecycle: roadmap, phases, milestones, phase transitions
 - [x] **PROJ-10**: User can analyze existing codebases with `/mz:map` for brownfield project support
 - [ ] **PROJ-11**: Context management prevents context rot via fresh subagent spawning, dimensioned state files, and lazy loading
 - [ ] **PROJ-12**: Framework overhead stays under 15% of context window at session start
@@ -103,7 +103,7 @@ Deferred to future release. Tracked but not in current roadmap.
 |-------------|-------|--------|
 | DIST-01 | Phase 1 | Pending |
 | DIST-02 | Phase 3 | Pending |
-| DIST-03 | Phase 1 | Pending |
+| DIST-03 | Phase 10 | Pending |
 | DIST-04 | Phase 1 | Pending |
 | DIST-05 | Phase 1 | Pending |
 | PROJ-01 | Phase 2 | Pending |
@@ -114,7 +114,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | PROJ-06 | Phase 3 | Pending |
 | PROJ-07 | Phase 3 | Pending |
 | PROJ-08 | Phase 4 | Complete |
-| PROJ-09 | Phase 8 | Complete |
+| PROJ-09 | Phase 11 | Pending |
 | PROJ-10 | Phase 8 | Complete |
 | PROJ-11 | Phase 3 | Pending |
 | PROJ-12 | Phase 1 | Pending |
@@ -140,8 +140,8 @@ Deferred to future release. Tracked but not in current roadmap.
 | AGNT-07 | Phase 6 | Complete |
 | AGNT-08 | Phase 6 | Complete |
 | CONF-01 | Phase 2 | Pending |
-| CONF-02 | Phase 2 | Pending |
-| CONF-03 | Phase 2 | Pending |
+| CONF-02 | Phase 9 | Pending |
+| CONF-03 | Phase 9 | Pending |
 | CONF-04 | Phase 2 | Pending |
 
 **Coverage:**
@@ -151,4 +151,4 @@ Deferred to future release. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-02-17*
-*Last updated: 2026-02-17 after roadmap creation*
+*Last updated: 2026-02-19 gap closure phases 9-11 assigned*

@@ -146,10 +146,40 @@ Plans:
 - [ ] 08-02-PLAN.md -- Lifecycle management libraries (roadmap.ts, milestone.ts) and CLI tools
 - [ ] 08-03-PLAN.md -- Skill integration: brownfield /mz:plan, milestone /mz:verify, help update
 
+### Phase 9: Config Consumption Wiring
+**Goal**: Configuration settings collected during `/mz:init` actually influence framework behavior — model selection affects agent spawns, workflow toggles gate agent execution
+**Depends on**: Phase 2 (config schema), Phase 3 (skills that spawn agents)
+**Requirements**: CONF-03, CONF-02
+**Gap Closure:** Closes gaps from v1.0 audit
+**Success Criteria** (what must be TRUE):
+  1. Setting `model_profile` to quality/balanced/budget in config causes `/mz:plan`, `/mz:go`, and `/mz:map` to pass the corresponding model parameter to Task tool spawns
+  2. Setting `workflow.plan_check` to false in config causes `/mz:plan` to skip the plan-checker agent
+  3. Setting `workflow.verifier` to false in config causes the execution pipeline to skip post-phase verification
+  4. Dead `ownership.ts` library exports are removed (enforcement works via shell hook)
+
+### Phase 10: Distribution and Autocomplete Fixes
+**Goal**: npm-installed users get full autocomplete for all skills, and the REQUIREMENTS.md traceability table accurately reflects project status
+**Depends on**: Phase 1 (package.json, commands/)
+**Requirements**: DIST-03
+**Gap Closure:** Closes gaps from v1.0 audit
+**Success Criteria** (what must be TRUE):
+  1. `commands/` directory is listed in `package.json` `files` array and included in npm distribution
+  2. `commands/debug.md` and `commands/discuss.md` autocomplete proxies exist and follow the established pattern
+  3. REQUIREMENTS.md traceability table reflects actual status (20 stale Pending markers updated to Complete)
+
+### Phase 11: Milestone Lifecycle Completion
+**Goal**: Users can complete the full milestone lifecycle through skills — from audit through archive — without falling back to CLI commands
+**Depends on**: Phase 8 (milestone CLI tools), Phase 5 (verification)
+**Requirements**: PROJ-09
+**Gap Closure:** Closes gaps from v1.0 audit
+**Success Criteria** (what must be TRUE):
+  1. A skill-level path exists for milestone creation and archive (not CLI-only)
+  2. After `/mz:verify --milestone` audit passes, the user can archive the milestone and prepare for the next version through a guided skill flow
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -161,7 +191,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 6. Agent Teams Integration | 0/3 | Complete    | 2026-02-18 |
 | 7. Quality and Debugging Skills | 0/2 | Complete    | 2026-02-18 |
 | 8. Brownfield Support and Project Lifecycle | 1/3 | Complete    | 2026-02-18 |
+| 9. Config Consumption Wiring | 0/0 | Pending | — |
+| 10. Distribution and Autocomplete Fixes | 0/0 | Pending | — |
+| 11. Milestone Lifecycle Completion | 0/0 | Pending | — |
 
 ---
 *Roadmap created: 2026-02-17*
-*Last updated: 2026-02-18 (Phase 8 planned)*
+*Last updated: 2026-02-19 (gap closure phases 9-11 added)*
