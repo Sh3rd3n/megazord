@@ -32,7 +32,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Code Quality
 
-- [ ] **QUAL-01**: Two-stage code review (spec compliance + code quality) runs automatically when enabled in config
+- [x] **QUAL-01**: Two-stage code review (spec compliance + code quality) runs automatically when enabled in config
 - [ ] **QUAL-02**: TDD workflow (RED-GREEN-REFACTOR) enforced when enabled: tests must fail before implementation, pass after, then refactor
 - [ ] **QUAL-03**: Socratic brainstorming explores 3+ alternative approaches before settling on a design with `/mz:discuss`
 - [ ] **QUAL-04**: Systematic debugging follows 4-phase methodology (reproduce, isolate, root-cause, fix) with `/mz:debug`
@@ -118,7 +118,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | PROJ-10 | Phase 8 | Pending |
 | PROJ-11 | Phase 3 | Pending |
 | PROJ-12 | Phase 1 | Pending |
-| QUAL-01 | Phase 5 | Pending |
+| QUAL-01 | Phase 5 | Complete |
 | QUAL-02 | Phase 7 | Pending |
 | QUAL-03 | Phase 7 | Pending |
 | QUAL-04 | Phase 7 | Pending |
