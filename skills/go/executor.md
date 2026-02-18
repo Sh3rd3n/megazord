@@ -13,7 +13,8 @@ Before spawning an executor subagent, the orchestrator must:
 1. **Read** `agents/mz-executor.md` into memory
 2. **Read** the target PLAN.md content (full file including frontmatter)
 3. **Read** `megazord.config.json` content
-4. **Compose** the Task prompt with all content embedded inline
+4. If review is enabled: **Read** `agents/mz-reviewer.md` into memory
+5. **Compose** the Task prompt with all content embedded inline
 
 ### Prompt Structure
 
@@ -32,6 +33,10 @@ The executor receives a prompt with these sections:
 {Content of .planning/megazord.config.json}
 </config>
 
+<reviewer_agent>
+{Content of agents/mz-reviewer.md -- only included if review_enabled is true}
+</reviewer_agent>
+
 <execution_rules>
 - Phase: {phase_number}
 - Plan: {plan_number}
@@ -43,6 +48,8 @@ The executor receives a prompt with these sections:
 - Create SUMMARY.md at {phase_dir}/{padded}-{plan}-SUMMARY.md
 - Do NOT update STATE.md or ROADMAP.md
 - Use bun/bunx for all JS/TS operations (never npm/npx)
+- Review enabled: {true|false}
+- Review mode: {auto|manual} (only present if review_enabled is true)
 </execution_rules>
 ```
 
@@ -88,3 +95,55 @@ If an executor fails (returns without `## PLAN COMPLETE`):
 Within a wave, plans with no file conflicts can run in parallel via multiple Task tool calls. Plans with file conflicts are serialized within the wave.
 
 The orchestrator determines parallelism from the wave computation and conflict analysis performed in Step 3.
+
+## Review Integration
+
+When code review is enabled in config (`quality.review: "auto"` or `"manual"`), the executor performs a review cycle after each task commit.
+
+| Responsibility | Owner |
+|---------------|-------|
+| Spawn reviewer subagent | Executor |
+| Perform two-stage review | Reviewer |
+| Write review report | Reviewer |
+| Auto-fix critical findings | Executor |
+| Re-spawn reviewer after fix | Executor |
+| Log unresolved findings | Executor |
+| Display review warnings | Orchestrator |
+
+The reviewer agent definition is pre-loaded by the orchestrator and passed to the executor in `<reviewer_agent>` tags. The executor does not need to read it from disk.
+
+### Review Prompt Structure
+
+```
+<agent_role>
+{Content of agents/mz-reviewer.md}
+</agent_role>
+
+<task_definition>
+{The specific task block that was just executed}
+</task_definition>
+
+<diff>
+{git diff HEAD~1 HEAD}
+</diff>
+
+<affected_files>
+{Full content of modified files -- omit if diff > 300 lines}
+</affected_files>
+
+<plan_requirements>
+{Requirement IDs from plan frontmatter}
+</plan_requirements>
+
+<review_rules>
+{Phase, plan, task numbers, report path, severity rules}
+</review_rules>
+```
+
+### Review Modes
+
+| Config Value | Behavior |
+|-------------|----------|
+| `"auto"` | Review runs, critical findings auto-fixed, retry up to 3 passes |
+| `"manual"` | Review runs, critical findings reported to user (not auto-fixed) |
+| `"off"` | No review, one-time notice displayed by orchestrator |
