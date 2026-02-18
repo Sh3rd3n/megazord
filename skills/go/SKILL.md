@@ -38,6 +38,16 @@ If config exists, continue loading:
 - Read `.planning/STATE.md` for current position.
 - Read `.planning/ROADMAP.md` for phase details.
 
+Determine review configuration from the config:
+- If `config.quality.review === "auto"`: `review_enabled = true`, `review_mode = "auto"`
+- If `config.quality.review === "manual"`: `review_enabled = true`, `review_mode = "manual"`
+- If `config.quality.review === "off"`: `review_enabled = false`
+
+If review is disabled, display a one-time notice:
+```
+> Note: Code review is disabled (quality.review: "off"). Tasks will not be reviewed.
+```
+
 Parse the user's message (text after `/mz:go`) for arguments:
 - `--tasks N,M` -- execute only specific plan numbers (e.g., `--tasks 1,3`)
 - `--from N` -- start from plan N, skip earlier plans (e.g., `--from 2`)
@@ -139,7 +149,8 @@ Display: `  * Plan {NN}: {objective from plan file}...`
 1. Read the full PLAN.md content using the Read tool.
 2. Read `agents/mz-executor.md` content using the Read tool.
 3. Read `.planning/megazord.config.json` content using the Read tool.
-4. Compose the Task prompt with all content inline (see `@skills/go/executor.md` for prompt structure):
+4. If `review_enabled` is `true`: Read `agents/mz-reviewer.md` content using the Read tool.
+5. Compose the Task prompt with all content inline (see `@skills/go/executor.md` for prompt structure):
 
 ```
 <agent_role>
@@ -154,6 +165,10 @@ Display: `  * Plan {NN}: {objective from plan file}...`
 {content of megazord.config.json}
 </config>
 
+<reviewer_agent>
+{content of agents/mz-reviewer.md -- only included if review_enabled is true}
+</reviewer_agent>
+
 <execution_rules>
 - Phase: {phase_number}
 - Plan: {plan_number}
@@ -165,22 +180,26 @@ Display: `  * Plan {NN}: {objective from plan file}...`
 - Create SUMMARY.md at {phase_dir}/{padded}-{plan}-SUMMARY.md
 - Do NOT update STATE.md or ROADMAP.md
 - Use bun/bunx for all JS/TS operations (never npm/npx)
+- Review enabled: {true|false}
+- Review mode: {auto|manual} (only present if review_enabled is true)
 </execution_rules>
 ```
 
-5. Spawn the executor via the Task tool:
+Note: The `<reviewer_agent>` section is only included when `review_enabled` is `true`. When review is disabled, omit this section entirely to save context budget.
+
+6. Spawn the executor via the Task tool:
    - `subagent_type`: `"general-purpose"`
    - `description`: `"Execute Plan {phase}-{plan}: {brief objective}"`
 
-6. Wait for completion.
+7. Wait for completion.
 
-7. Parse the structured result. Look for `## PLAN COMPLETE` in the response to extract:
+8. Parse the structured result. Look for `## PLAN COMPLETE` in the response to extract:
    - Task count
    - Commit hashes and messages
    - SUMMARY.md path
    - Duration
 
-8. Display result:
+9. Display result:
 ```
   > Plan {NN}: {duration}, {N} tasks, {commit_count} commits
 ```
@@ -245,7 +264,16 @@ After all waves complete (or after stopping due to failure):
   - Change `- [ ]` to `- [x]` for plans that now have SUMMARY.md files.
 - Update the Progress table row for this phase with the current plan completion count.
 
-## Step 7: Post-Execution Summary
+## Step 7: Check for Unresolved Review Findings
+
+After all waves complete, check each completed plan's SUMMARY.md for "Unresolved Review Findings". If any plan mentions unresolved review findings, display a warning:
+
+```
+> Warning: Some tasks have unresolved review findings.
+  Run /mz:review for manual review, or check the SUMMARY.md files for details.
+```
+
+## Step 8: Post-Execution Summary
 
 Display summary using the design system action box:
 
