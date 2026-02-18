@@ -33,7 +33,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Code Quality
 
 - [x] **QUAL-01**: Two-stage code review (spec compliance + code quality) runs automatically when enabled in config
-- [ ] **QUAL-02**: TDD workflow (RED-GREEN-REFACTOR) enforced when enabled: tests must fail before implementation, pass after, then refactor
+- [x] **QUAL-02**: TDD workflow (RED-GREEN-REFACTOR) enforced when enabled: tests must fail before implementation, pass after, then refactor
 - [x] **QUAL-03**: Socratic brainstorming explores 3+ alternative approaches before settling on a design with `/mz:discuss`
 - [x] **QUAL-04**: Systematic debugging follows 4-phase methodology (reproduce, isolate, root-cause, fix) with `/mz:debug`
 - [ ] **QUAL-05**: Quality settings configurable at init time: TDD on/off, review auto/manual/off, brainstorming on/off, debug systematic/quick
@@ -42,11 +42,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Adaptive Thinking (CORTEX)
 
-- [ ] **CRTX-01**: Task classification (Clear/Complicated/Complex/Chaotic) determines approach depth before any non-trivial task
-- [ ] **CRTX-02**: Challenge blocks (FAIL/ASSUME/COUNTER/VERDICT) mandatory before implementation on Complicated+ tasks
-- [ ] **CRTX-03**: Pushback mandate active: framework challenges unsound architecture, unnecessary complexity, sub-optimal choices
-- [ ] **CRTX-04**: Anti-sycophancy enforced: no performative agreement, only evidence-based evaluation
-- [ ] **CRTX-05**: Verification gate before completion claims: identify proof, run it, read output, verify, then claim done
+- [x] **CRTX-01**: Task classification (Clear/Complicated/Complex/Chaotic) determines approach depth before any non-trivial task
+- [x] **CRTX-02**: Challenge blocks (FAIL/ASSUME/COUNTER/VERDICT) mandatory before implementation on Complicated+ tasks
+- [x] **CRTX-03**: Pushback mandate active: framework challenges unsound architecture, unnecessary complexity, sub-optimal choices
+- [x] **CRTX-04**: Anti-sycophancy enforced: no performative agreement, only evidence-based evaluation
+- [x] **CRTX-05**: Verification gate before completion claims: identify proof, run it, read output, verify, then claim done
 - [ ] **CRTX-06**: CORTEX configurable at init: on/off like other quality settings
 
 ### Multi-Agent Coordination
@@ -119,17 +119,17 @@ Deferred to future release. Tracked but not in current roadmap.
 | PROJ-11 | Phase 3 | Pending |
 | PROJ-12 | Phase 1 | Pending |
 | QUAL-01 | Phase 5 | Complete |
-| QUAL-02 | Phase 7 | Pending |
+| QUAL-02 | Phase 7 | Complete |
 | QUAL-03 | Phase 7 | Complete |
 | QUAL-04 | Phase 7 | Complete |
 | QUAL-05 | Phase 2 | Pending |
 | QUAL-06 | Phase 5 | Complete |
 | QUAL-07 | Phase 2 | Pending |
-| CRTX-01 | Phase 7 | Pending |
-| CRTX-02 | Phase 7 | Pending |
-| CRTX-03 | Phase 7 | Pending |
-| CRTX-04 | Phase 7 | Pending |
-| CRTX-05 | Phase 7 | Pending |
+| CRTX-01 | Phase 7 | Complete |
+| CRTX-02 | Phase 7 | Complete |
+| CRTX-03 | Phase 7 | Complete |
+| CRTX-04 | Phase 7 | Complete |
+| CRTX-05 | Phase 7 | Complete |
 | CRTX-06 | Phase 2 | Pending |
 | AGNT-01 | Phase 6 | Complete |
 | AGNT-02 | Phase 4 | Complete |
