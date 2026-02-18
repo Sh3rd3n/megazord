@@ -37,7 +37,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **QUAL-03**: Socratic brainstorming explores 3+ alternative approaches before settling on a design with `/mz:discuss`
 - [ ] **QUAL-04**: Systematic debugging follows 4-phase methodology (reproduce, isolate, root-cause, fix) with `/mz:debug`
 - [ ] **QUAL-05**: Quality settings configurable at init time: TDD on/off, review auto/manual/off, brainstorming on/off, debug systematic/quick
-- [ ] **QUAL-06**: Verification/UAT with `/mz:verify` confirms phase deliverables match acceptance criteria before marking complete
+- [x] **QUAL-06**: Verification/UAT with `/mz:verify` confirms phase deliverables match acceptance criteria before marking complete
 - [ ] **QUAL-07**: Quality configuration stored in `megazord.config.json` and respected by all execution workflows
 
 ### Adaptive Thinking (CORTEX)
@@ -123,7 +123,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | QUAL-03 | Phase 7 | Pending |
 | QUAL-04 | Phase 7 | Pending |
 | QUAL-05 | Phase 2 | Pending |
-| QUAL-06 | Phase 5 | Pending |
+| QUAL-06 | Phase 5 | Complete |
 | QUAL-07 | Phase 2 | Pending |
 | CRTX-01 | Phase 7 | Pending |
 | CRTX-02 | Phase 7 | Pending |
