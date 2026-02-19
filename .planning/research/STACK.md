@@ -1,265 +1,262 @@
-# Stack Research
+# Stack Research: Distribution & Publication
 
-**Domain:** Claude Code framework / npm-distributed AI developer tooling
-**Researched:** 2026-02-17
-**Confidence:** HIGH (core stack) / MEDIUM (some library versions evolving rapidly)
+**Domain:** npm package publishing, CI/CD, Claude Code plugin marketplace
+**Researched:** 2026-02-19
+**Confidence:** HIGH
+
+## Executive Summary
+
+Megazord needs three distribution channels: npm registry (for `bun install megazord`), GitHub-hosted plugin marketplace (for `/plugin marketplace add`), and optionally the official Anthropic plugin directory. The stack additions are minimal: GitHub Actions workflows (YAML files, no new dependencies), npm account configuration, and marketplace.json refinement. No new runtime dependencies are needed.
+
+**Critical finding:** `bun publish` does NOT support npm's OIDC trusted publishing or `--provenance` flag (open issues #22423 and #15601 on oven-sh/bun). The CI/CD publish step MUST use `npm publish` with a granular npm token, not `bun publish`. This is the single most important gotcha for a bun-based project publishing to npm.
+
+---
 
 ## Recommended Stack
 
-### Core Technologies
+### CI/CD Infrastructure
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| TypeScript | ~5.8 (latest 5.x) | Language for all orchestration logic, CLI, state management | Type safety is non-negotiable for a framework others depend on. TS 5.8 has stable ESM support, erasable syntax for direct Node execution. TS 6.0 beta is out but 5.8 is the stable target. | HIGH |
-| Node.js | >=22 (LTS) | Runtime requirement | Node 22 is current LTS (supported through 2027-04-30). Commander 14 requires >=20 anyway. Node 22 gives native `fs.cp()` for recursive copy, stable ESM, and is the ecosystem standard for 2026. | HIGH |
-| Bun | >=1.2 | Package manager, script runner, test runner (secondary) | Per project constraint. Used for `bun install`, `bun run`, `bunx`. Not used as runtime target -- the npm package must work with Node.js since users may not have Bun. | HIGH |
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| GitHub Actions | N/A (platform) | CI/CD pipeline | Already hosting the repo; free for public repos; native npm token support |
+| `oven-sh/setup-bun` | v2 (latest: v2.1.2) | Install bun in CI | Official action from Oven (bun creators); caches bun binary; auto-detects version from package.json |
+| `actions/checkout` | v4 | Checkout repo | Standard; required by every workflow |
+| `actions/setup-node` | v4 | Install Node.js for `npm publish` | Required because `bun publish` lacks OIDC/provenance support; provides `npm` CLI for the publish step |
 
-### Build & Bundle
+### Publishing Tools
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| tsdown | ^0.20 | TypeScript bundler | Successor to tsup (which is no longer actively maintained). Built on Rolldown (Rust-based), ESM-first with proper CJS output, excellent `.d.ts` generation. From the void(0)/Vite ecosystem. Smooth migration path from tsup. | MEDIUM -- tsdown is pre-1.0 (0.20.3) but actively developed and the clear direction |
-| tsc | (bundled with TS) | Type checking only | tsdown handles bundling; `tsc --noEmit` handles type-checking in CI. Separation of concerns. | HIGH |
+| Tool | Version | Purpose | Why Recommended |
+|------|---------|---------|-----------------|
+| `npm` CLI (via setup-node) | >=11.5.1 (Node 22+) | Publishing to npmjs.com | Only `npm publish` supports `--provenance` and trusted publishing; `bun publish` cannot do this yet |
+| npm Granular Access Token | N/A | CI authentication | Classic tokens were permanently revoked Dec 2025; granular tokens are now the only option; 90-day max lifetime for write tokens |
+| `bun publish --dry-run` | Current | Pre-publish validation | Validates package contents without uploading; use in CI before the actual npm publish step |
 
-### CLI Framework
+### Plugin Marketplace
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| Commander.js | ^14.0 | CLI argument parsing, subcommands | 14.0.3 is current. 113k+ dependents, battle-tested, excellent TypeScript types, requires Node >=20. The `megazord` CLI only needs basic subcommand routing (not complex interactive prompts), which is Commander's sweet spot. | HIGH |
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| `marketplace.json` | Claude Code plugin spec | Plugin discovery catalog | Standard format for Claude Code plugin distribution; already scaffolded in `.megazord-marketplace/` |
+| GitHub repository (as marketplace host) | N/A | Host the marketplace | Recommended by Anthropic docs; free; users add with `/plugin marketplace add owner/repo`; supports auto-updates |
+| Anthropic plugin directory submission | N/A | Official listing | Optional but high-visibility; submit via Google Form at `clau.de/plugin-directory-submission` |
 
-### Validation & Configuration
+---
 
-| Technology | Version | Purpose | Why Recommended | Confidence |
-|------------|---------|---------|-----------------|------------|
-| Zod | ^4.3 | Schema validation for config files, STATE.md parsing, CLI input validation | Zod v4 is 14x faster than v3, 57% smaller core. Built-in `.toJSONSchema()`. Ecosystem dominance (every TS project uses it). For a CLI tool, bundle size is irrelevant vs. Valibot's advantage. | HIGH |
+## Detailed Decisions
 
-### Supporting Libraries
+### 1. GitHub Actions Workflows Needed
 
-| Library | Version | Purpose | When to Use | Confidence |
-|---------|---------|---------|-------------|------------|
-| gray-matter | ^4.0.3 | YAML frontmatter parsing from SKILL.md / agent .md files | Parsing all `.md` files with frontmatter (skills, agents, workflows). Battle-tested (used by Astro, Gatsby, VitePress, etc.). Note: original package last published 5 years ago but stable. Alternative: `@11ty/gray-matter` (2.0.1, more recent fork). | HIGH |
-| picocolors | ^1.1 | Terminal color output | CLI output formatting. 7 kB vs chalk's 101 kB. Zero dependencies. Used by PostCSS, Vite, Browserslist. For a CLI tool distributed via npm, minimal footprint matters. | HIGH |
-| fs-extra | ^11.0 | Filesystem operations (copy, move, mkdirs) | Installing files to `~/.claude/`. Native `fs.cp()` exists in Node 22 but fs-extra provides `ensureDir`, `copy` with filter, `move`, `remove` -- all needed for install/uninstall lifecycle. Worth the small dep for reliability. | MEDIUM |
-| glob | ^11.0 | File globbing | Discovering skill/agent/workflow files in source tree during install. Native `fs.glob()` is still experimental in Node 22. | MEDIUM |
+**Two workflows, not one.** Keep CI (test on every push) separate from CD (publish on release).
 
-### Development Tools
+#### CI Workflow: `.github/workflows/ci.yml`
+- **Trigger:** push to `main`, pull requests
+- **Steps:** checkout, setup-bun, `bun install`, `bun run lint`, `bun run typecheck`, `bun test`
+- **Why separate:** Runs on every push/PR, fast feedback, no secrets needed
 
-| Tool | Purpose | Notes | Confidence |
-|------|---------|-------|------------|
-| Biome | Linting + formatting (replaces ESLint + Prettier) | v2.3 current. Single binary, 10-25x faster than ESLint+Prettier. Type-aware linting. One config file. Perfect for a new project -- no legacy ESLint config to migrate. | HIGH |
-| Vitest | Unit/integration testing | v4.0.18 current. Used for testing TypeScript orchestration logic (CLI, state management, config parsing). NOT for testing .md skills (those are tested by running Claude). Bun's test runner is secondary -- Vitest has better ecosystem (mocking, coverage, watch mode). | MEDIUM -- `bun test` is simpler but Vitest has richer features |
-| Changesets | Version management + changelog | Intent-based versioning. Developer writes a changeset describing the change; release PR aggregates them. Better for a single-maintainer project than semantic-release (which requires strict commit conventions). | HIGH |
+#### CD Workflow: `.github/workflows/publish.yml`
+- **Trigger:** GitHub Release (type: published)
+- **Steps:** checkout, setup-bun, `bun install`, `bun run build`, setup-node (for npm CLI), `npm publish --provenance`
+- **Why release trigger:** Manual control over when to publish; version bumped in package.json before tagging; GitHub Release creates the git tag
+- **Authentication:** npm granular access token stored as `NPM_TOKEN` repository secret
+- **Permissions:** `id-token: write` (for provenance), `contents: read`
 
-## Distribution Architecture
+#### Why NOT use `bun publish` in CI:
+`bun publish` does not support OIDC authentication or `--provenance` (oven-sh/bun issues #22423, #15601). Using `npm publish` in the publish step is the standard workaround. This is NOT a violation of the "always use bun" rule -- it is a CI-only exception forced by a bun limitation that has no workaround.
 
-### The Dual Distribution Problem
+### 2. npm Package Configuration
 
-Megazord has two distinct artifact types that must be distributed:
-
-1. **Markdown files** (skills, agents, workflows) -- installed to `~/.claude/` or project `.claude/`
-2. **TypeScript code** (CLI, orchestration) -- compiled to JS, runs as `megazord` binary
-
-### Recommended Approach: Claude Code Plugin + npm bin
-
-**Primary: Claude Code Plugin format**
-
-Structure the package as a proper Claude Code plugin:
-
-```
-megazord/
-  .claude-plugin/
-    plugin.json          # Plugin manifest (name, version, description)
-  skills/
-    mz-init/SKILL.md
-    mz-plan/SKILL.md
-    mz-go/SKILL.md
-    mz-quick/SKILL.md
-    mz-review/SKILL.md
-    mz-debug/SKILL.md
-    mz-verify/SKILL.md
-    mz-discuss/SKILL.md
-    mz-pause/SKILL.md
-    mz-resume/SKILL.md
-    mz-status/SKILL.md
-    mz-map/SKILL.md
-  agents/
-    mz-executor.md
-    mz-planner.md
-    mz-reviewer.md
-    mz-debugger.md
-    mz-verifier.md
-    mz-researcher.md
-  hooks/
-    hooks.json           # Hook definitions for commit quality, etc.
-  bin/
-    megazord.mjs         # Compiled CLI entrypoint
-  dist/
-    index.mjs            # Compiled orchestration library
-    index.d.mts          # Type declarations
-```
-
-**Why plugin format over GSD's approach:**
-- GSD copies files to `~/.claude/` via a postinstall script -- this is fragile, creates version conflicts, and makes uninstall messy
-- Claude Code's native plugin system (`--plugin-dir`, marketplace install) handles discovery, namespacing (`/megazord:init`), and lifecycle
-- Plugin skills get namespaced (`/megazord:go` not `/go`), preventing conflicts with other frameworks
-- Users can install via marketplace OR `--plugin-dir` for local dev
-
-**Secondary: npm bin for orchestration CLI**
-
-The `megazord` CLI (state management, team orchestration, context tools) is distributed as a normal npm binary:
+Current `package.json` needs these additions for publishing:
 
 ```json
 {
-  "bin": { "megazord": "bin/megazord.mjs" },
-  "type": "module"
-}
-```
-
-Skills invoke this CLI via `!`megazord state read`` (dynamic context injection) or `Bash(megazord *)` (allowed-tools).
-
-### package.json Shape
-
-```json
-{
-  "name": "megazord",
-  "version": "0.1.0",
-  "type": "module",
-  "description": "Claude Code framework unifying project management, code quality, and multi-agent coordination",
-  "license": "MIT",
-  "engines": { "node": ">=22" },
-  "bin": { "megazord": "bin/megazord.mjs" },
-  "main": "dist/index.mjs",
-  "types": "dist/index.d.mts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.mts"
-    }
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
-  "files": [
-    "dist",
-    "bin",
-    "skills",
-    "agents",
-    "hooks",
-    ".claude-plugin"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OWNER/megazord.git"
+  },
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "ai-agent",
+    "project-management",
+    "code-quality",
+    "agent-teams"
   ]
 }
 ```
 
-## Installation
+**Why `publishConfig.access: "public"`:** Prevents accidental restricted publish. Unscoped packages are always public, but explicit is safer.
 
-```bash
-# Core dependencies
-bun add commander@^14 zod@^4 gray-matter@^4 picocolors@^1 fs-extra@^11 glob@^11
+**Why `publishConfig.provenance: true`:** Enables npm provenance attestation automatically. Users see a "Built and signed on GitHub Actions" badge on npmjs.com, proving the package came from your CI pipeline.
 
-# Dev dependencies
-bun add -D typescript@~5.8 tsdown@^0.20 vitest@^4 @biomejs/biome@^2.3 @changesets/cli@^2
+**Why `repository` field:** Required for npm provenance to work. Must match the GitHub repo URL exactly.
+
+### 3. Claude Code Plugin Marketplace Strategy
+
+**Two-track distribution:**
+
+**Track A: Self-hosted marketplace (immediate)**
+- Already scaffolded in `.megazord-marketplace/`
+- Host as separate GitHub repo (e.g., `OWNER/megazord-marketplace`) OR as a directory in the main repo
+- Users install with: `/plugin marketplace add OWNER/megazord-marketplace`
+- Plugin source can point to the GitHub repo with a tag/SHA for version pinning
+- Full control over updates and listing
+
+**Track B: Anthropic official directory (deferred)**
+- Submit via form at `clau.de/plugin-directory-submission`
+- Required fields: plugin name, 50-100 word description, 3+ use case examples, company/org URL, contact email
+- Target platform: Claude Code (option for both Claude Code and Cowork)
+- No guaranteed inclusion; reviewed for quality and security
+- All future updates require resubmission for safety screening
+- Plugin names are permanent once submitted
+
+**Recommendation:** Launch with Track A first. Submit to Track B after the marketplace has real users and battle-tested stability. The official directory has friction (resubmission for every update, review delays) that conflicts with rapid iteration.
+
+### 4. Marketplace Plugin Source Format
+
+The official Anthropic plugin directory uses ONLY two source types in practice:
+- Relative paths (`"source": "./plugins/plugin-name"`) for plugins within the marketplace repo
+- Git URL sources (`"source": { "source": "url", "url": "https://github.com/owner/repo.git" }`) for external plugins
+
+**No plugins in the official directory use the `npm` source type.** While the spec supports `"source": { "source": "npm", "package": "megazord" }`, it is explicitly warned as "not yet fully implemented" in validation warnings. Use GitHub source type instead.
+
+Recommended marketplace.json entry for external distribution:
+```json
+{
+  "name": "mz",
+  "source": {
+    "source": "github",
+    "repo": "OWNER/megazord",
+    "ref": "v1.0.0"
+  },
+  "description": "Unified framework for project management, code quality, and multi-agent coordination",
+  "version": "1.0.0",
+  "category": "development"
+}
 ```
 
-## Alternatives Considered
+### 5. Version Management
 
-| Recommended | Alternative | Why Not |
-|-------------|-------------|---------|
-| tsdown | tsup (^8.5) | tsup is no longer actively maintained. tsdown is its spiritual successor from the Rolldown/Vite ecosystem, built on Rust, ESM-first. Migration is smooth (similar config). |
-| tsdown | tsc only (no bundler) | tsc emits verbose output, no tree-shaking, no bundling. A CLI tool benefits from single-file output. |
-| Commander.js | citty / clerc / yargs | Yargs has inferior TS types. Citty and Clerc are newer with smaller ecosystems. Commander has 113k dependents and proven stability. For ~12 subcommands, Commander is the right weight class. |
-| Zod | Valibot | Valibot is 90% smaller in bundle size -- irrelevant for a CLI (not browser). Zod v4 closed the performance gap. Zod's ecosystem (integration with everything) and developer familiarity are decisive for adoption. |
-| Biome | ESLint + Prettier | For a greenfield project in 2026, there is no reason to set up 4+ config files and 127+ npm packages when Biome does the same thing in one binary, 25x faster. Biome v2.3 covers ~85% of typescript-eslint rules. |
-| Vitest | bun test | `bun test` is faster but lacks Vitest's mocking, coverage reporting, watch mode with HMR, and IDE integration. For a framework that enforces TDD, the test runner needs to be feature-rich. |
-| Vitest | Jest | Jest requires babel/ts-jest transforms, slower startup, no native ESM. Vitest is the 2026 standard for TS projects. |
-| gray-matter | Custom YAML parser | gray-matter handles edge cases (TOML, JSON frontmatter, custom delimiters) that a hand-rolled parser would miss. The entire Claude Code skill ecosystem uses this format. |
-| Changesets | semantic-release | semantic-release requires strict commit message conventions (Conventional Commits). Changesets is more flexible -- you write a changeset per PR, not per commit. Better for solo/small team workflows. |
-| picocolors | chalk | Chalk 5 is ESM-only (good) but 14x larger. For a CLI that prints status messages, picocolors covers 100% of needs at 1/14th the size. |
-| fs-extra | native fs.cp | native `fs.cp()` handles recursive copy but fs-extra adds `ensureDir`, `move`, `remove`, `pathExists` -- all needed for install/uninstall lifecycle. Worth one dependency. |
-| Plugin format | GSD-style postinstall copy | Claude Code has a native plugin system now. Postinstall scripts that copy to `~/.claude/` are fragile (path issues, permission errors, no uninstall, version conflicts). Plugin format is the official distribution path. |
+**Use manual version bumps, not semantic-release.** Rationale:
 
-## What NOT to Use
+- Megazord is a single package (not a monorepo needing changesets)
+- Manual version bump scripts give full control
+- semantic-release adds complexity (conventional commits enforcement, release branches) that is overkill for a single-package project
+- The release flow: bump version in package.json AND plugin.json, commit, push, create GitHub Release, CI publishes automatically
+
+Add version scripts to package.json:
+```json
+{
+  "scripts": {
+    "version:patch": "npm version patch --no-git-tag-version",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:major": "npm version major --no-git-tag-version"
+  }
+}
+```
+
+**Why `--no-git-tag-version`:** Let the developer commit the version bump and create the GitHub Release manually. The CD workflow triggers on the release event.
+
+**Important:** Version must be updated in BOTH `package.json` AND `.claude-plugin/plugin.json`. Claude Code uses the plugin.json version to determine whether to update a plugin. If versions diverge, users will not receive updates.
+
+### 6. Plugin Validation
+
+Claude Code provides built-in validation:
+```bash
+claude plugin validate .
+```
+Or from within Claude Code: `/plugin validate .`
+
+This should be added to the CI workflow to catch plugin manifest issues before publish.
+
+---
+
+## What NOT to Add
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| npm / npx / yarn / pnpm | Project constraint: always use bun | `bun`, `bunx` |
-| tsup | No longer actively maintained (2025). ESM support has holes. | tsdown (same API shape, Rust-based, actively maintained) |
-| Jest | Requires transforms for TS/ESM, slow startup, heavy config | Vitest (native ESM, zero-config for TS) |
-| ESLint + Prettier | 4+ config files, 127+ npm packages, slow. Outdated approach for greenfield 2026 projects. | Biome (single binary, single config, 25x faster) |
-| chalk | 101 kB for terminal colors in a CLI. Overkill. | picocolors (7 kB, same API surface needed) |
-| postinstall copy scripts | Fragile cross-platform, no uninstall story, path resolution bugs with different package managers | Claude Code plugin format (native discovery, namespace, lifecycle) |
-| Webpack / Rollup directly | Over-engineered for a library/CLI bundle. Requires extensive config. | tsdown (zero-config, purpose-built for libraries) |
-| CJS-only package | ESM is the standard. CJS causes issues with modern tooling. | ESM-first (`"type": "module"`) with CJS shim only if needed |
-| Agent Teams for everything | Agent Teams are experimental, high token cost, coordination overhead | Hybrid: Agent Teams for coordination-heavy work, subagents (Task tool) for fire-and-forget |
+| `semantic-release` | Overkill for single package; enforces conventional commits; complex config | Manual version bump + GitHub Release trigger |
+| `changesets` | Designed for monorepo release coordination; unnecessary for single package | Manual version bump |
+| `bun publish` in CI | No OIDC, no provenance, no trusted publishing support | `npm publish --provenance` in CI only |
+| `np` (npm publish helper) | Interactive CLI tool, not CI-friendly | Direct `npm publish` command |
+| npm classic tokens | Permanently revoked as of Dec 2025 | npm granular access tokens |
+| Trusted Publishing (OIDC) initially | Complex setup; requires npm >= 11.5.1; bun has zero support; granular tokens work fine for single-package | npm granular access token as GitHub secret; migrate to OIDC later |
+| Self-hosted npm registry | Unnecessary complexity for a public package | npmjs.com directly |
+| GitHub Packages (npm) | Adds friction for users (`@owner/megazord` scope, registry config needed); npmjs.com is the standard | npmjs.com directly |
+| `.npmrc` committed to repo | Risk of token leakage; not needed when using CI secrets | `NODE_AUTH_TOKEN` env var in CI |
+| npm source type in marketplace | Warned as "not yet fully implemented" in Claude Code validation | GitHub source type with repo + ref |
+| `release-please` / `auto` / `release-it` | All add complexity for a problem (single-package release) that a 3-line script solves | Manual version bump scripts |
 
-## Stack Patterns by Variant
+### On Trusted Publishing vs Granular Tokens
 
-**If Agent Teams proves too unstable (experimental feature):**
-- Fall back to Task tool (subagent) orchestration only
-- Skills still work identically
-- The TS orchestration layer becomes the coordinator (like GSD's approach)
-- Agent-to-agent communication simulated via file system (STATE.md pattern)
+npm's Trusted Publishing (OIDC) eliminates long-lived tokens entirely -- GitHub Actions gets a short-lived OIDC token per run. However:
+- Requires `npm` CLI >= 11.5.1 (which means Node 22.14.0+)
+- `bun publish` does not support it at all
+- Setup requires configuring trusted publishers per-package on npmjs.com
+- Granular tokens (90-day rotation) are secure enough for a single-package project
 
-**If distributing as plugin is blocked (marketplace requirements):**
-- Fall back to GSD-style `bin/install.js` that copies to `~/.claude/`
-- Use `megazord install` CLI command instead of postinstall
-- Explicit `megazord uninstall` for cleanup
-- Less elegant but works everywhere
+**Decision:** Start with granular access tokens. Migrate to OIDC trusted publishing later if/when `bun publish` gains support, or if the 90-day rotation becomes annoying.
 
-**If tsdown 0.x proves too unstable:**
-- Fall back to tsup ^8.5 (still works, just not maintained)
-- Or use tsc + a simple esbuild script for bundling
-- tsdown API is compatible with tsup, so switching is trivial
+---
+
+## Alternatives Considered
+
+| Recommended | Alternative | When to Use Alternative |
+|-------------|-------------|-------------------------|
+| GitHub Release trigger for CD | Push tag trigger (`on: push: tags: 'v*'`) | If you want fully automated publish on tag push without writing GitHub Release notes |
+| npm granular token | OIDC Trusted Publishing | When bun supports it, or if you switch to `npm publish` only and want zero secrets management |
+| GitHub source in marketplace | npm source in marketplace.json | When Claude Code marks npm source as stable (currently warned as not fully implemented) |
+| Manual version bump | `semantic-release` | If the project grows to multiple packages or you want conventional commit enforcement |
+| Two separate workflow files | Single workflow with conditional jobs | If you prefer one file; separate files are clearer and easier to maintain |
+| Self-hosted marketplace repo | Marketplace directory in main repo | If you want a single repo; separate repo is cleaner for users who only want the marketplace |
+
+---
 
 ## Version Compatibility
 
-| Package | Compatible With | Notes |
-|---------|-----------------|-------|
-| TypeScript ~5.8 | tsdown ^0.20 | tsdown uses its own TS transforms; project tsc is for type-checking only |
-| Commander ^14 | Node >=20 | Commander 14 dropped Node 18 support |
-| Zod ^4.3 | TypeScript >=5.0 | Zod v4 has full TS 5.x support |
-| Vitest ^4.0 | Node >=22, TypeScript ~5.8 | Vitest 4 requires modern Node |
-| Biome ^2.3 | TypeScript (built-in parser) | Biome has its own TS parser, no tsc dependency |
-| tsdown ^0.20 | Node >=18, Rolldown (bundled) | Rolldown is bundled inside tsdown, not a peer dep |
-| gray-matter ^4.0 | Node >=6 (very permissive) | Stable, no breaking changes expected |
+| Package A | Compatible With | Notes |
+|-----------|-----------------|-------|
+| `oven-sh/setup-bun@v2` | bun 1.x | Auto-detects version from `package.json` `engines.bun` or `packageManager` field |
+| `actions/setup-node@v4` | Node 22+ | Needed only for npm publish step; provides npm CLI >= 11.5.1 |
+| npm granular tokens | npmjs.com | 90-day max lifetime for write tokens; must rotate before expiry |
+| `bun publish` (local dev) | npm registry | Works for auth via `NPM_CONFIG_TOKEN` env var; lacks OIDC/provenance |
+| Claude Code plugin system | Claude Code >= 1.0.33 | Plugin marketplace features require this minimum version |
+| `marketplace.json` schema | Claude Code >= 1.0.33 | Supports github, url, relative, npm (experimental), pip source types |
 
-## Key Architectural Decision: Plugin vs. Standalone
+---
 
-The most consequential stack decision is **distributing as a Claude Code plugin** rather than GSD's approach of copying files to `~/.claude/`.
+## Files to Create/Modify
 
-**Evidence supporting plugin format:**
-- Official Claude Code docs (2026-02-17) explicitly describe the plugin system with `plugin.json`, namespaced skills, `--plugin-dir` for dev, and marketplace distribution
-- Plugin skills are namespaced (`/megazord:go`), preventing conflicts with GSD, Superpowers, or other frameworks
-- Plugins support agents, hooks, MCP servers, and LSP servers in one package
-- Plugin lifecycle is managed by Claude Code itself (install, update, uninstall)
-- The `--plugin-dir` flag enables local development without installation
+| File | Action | Purpose |
+|------|--------|---------|
+| `.github/workflows/ci.yml` | CREATE | Lint + typecheck + test on push/PR |
+| `.github/workflows/publish.yml` | CREATE | Build + publish to npm on GitHub Release |
+| `package.json` | MODIFY | Add `publishConfig`, `repository`, `keywords`, version scripts |
+| `.claude-plugin/plugin.json` | MODIFY | Ensure version field, author, repository, homepage match |
+| `.megazord-marketplace/.claude-plugin/marketplace.json` | MODIFY | Update source to use GitHub source type with version pinning |
+| `.npmrc` | DO NOT CREATE | Use CI env vars instead; no committed auth config |
 
-**Risk:**
-- Plugin marketplace is relatively new
-- Users must install the plugin (not just `bunx megazord`)
-- Plugin system may evolve in breaking ways
-
-**Mitigation:**
-- Support both: `bunx megazord install` as CLI fallback + plugin format for native integration
-- The file structure is compatible with both approaches (skills/, agents/ directories work standalone or as plugin)
+---
 
 ## Sources
 
-- [Claude Code Skills Documentation](https://code.claude.com/docs/en/skills) -- Official docs, verified 2026-02-17 (HIGH confidence)
-- [Claude Code Agent Teams Documentation](https://code.claude.com/docs/en/agent-teams) -- Official docs, verified 2026-02-17 (HIGH confidence)
-- [Claude Code Plugins Documentation](https://code.claude.com/docs/en/plugins) -- Official docs, verified 2026-02-17 (HIGH confidence)
-- [tsdown documentation](https://tsdown.dev/guide/) -- Official site (MEDIUM confidence, pre-1.0)
-- [tsup npm page](https://www.npmjs.com/package/tsup) -- v8.5.1, confirmed no longer actively maintained (HIGH confidence)
-- [Commander.js npm page](https://www.npmjs.com/package/commander) -- v14.0.3 (HIGH confidence)
-- [Zod v4 release notes](https://zod.dev/v4) -- v4.3.6 (HIGH confidence)
-- [Vitest npm page](https://www.npmjs.com/package/vitest) -- v4.0.18 (HIGH confidence)
-- [Biome migration guide](https://biomejs.dev/guides/migrate-eslint-prettier/) -- v2.3 (HIGH confidence)
-- [Changesets documentation](https://changesets-docs.vercel.app/) -- (HIGH confidence)
-- [Node.js releases](https://nodejs.org/en/about/previous-releases) -- Node 22 LTS through 2027 (HIGH confidence)
-- [TypeScript 5.8 announcement](https://devblogs.microsoft.com/typescript/announcing-typescript-5-8/) -- (HIGH confidence)
-- [GSD package.json](https://github.com/gsd-build/get-shit-done/blob/main/package.json) -- v1.20.3, reference implementation (HIGH confidence)
-- [gray-matter npm page](https://www.npmjs.com/package/gray-matter) -- v4.0.3 (HIGH confidence)
-- [picocolors npm page](https://www.npmjs.com/package/picocolors) -- v1.1.1 (HIGH confidence)
-- [TypeScript in 2025 ESM/CJS publishing](https://lirantal.com/blog/typescript-in-2025-with-esm-and-cjs-npm-publishing) -- ESM-first best practices (MEDIUM confidence)
-- [tsdown migration from tsup](https://tsdown.dev/guide/migrate-from-tsup) -- Official migration guide (MEDIUM confidence)
-- [Switching from tsup to tsdown](https://alan.norbauer.com/articles/tsdown-bundler/) -- Real-world migration report (MEDIUM confidence)
+- [oven-sh/setup-bun](https://github.com/oven-sh/setup-bun) -- v2.1.2 (Jan 2026), input options, usage (HIGH confidence)
+- [bun publish docs](https://bun.com/docs/pm/cli/publish) -- flags, `--tolerate-republish`, `NPM_CONFIG_TOKEN` env var (HIGH confidence)
+- [bun CI/CD guide](https://bun.com/docs/guides/runtime/cicd) -- GitHub Actions setup patterns (HIGH confidence)
+- [oven-sh/bun#22423](https://github.com/oven-sh/bun/issues/22423) -- `bun publish` does not support OIDC, closed as dup of #15601 (HIGH confidence)
+- [oven-sh/bun#15601](https://github.com/oven-sh/bun/issues/15601) -- `--provenance` not implemented (HIGH confidence)
+- [Claude Code plugin marketplace docs](https://code.claude.com/docs/en/plugin-marketplaces) -- marketplace.json schema, hosting, distribution, validation (HIGH confidence)
+- [Claude Code plugins reference](https://code.claude.com/docs/en/plugins-reference) -- plugin.json schema, caching, versioning (HIGH confidence)
+- [Claude Code plugins guide](https://code.claude.com/docs/en/plugins) -- plugin structure, development workflow (HIGH confidence)
+- [Anthropic claude-plugins-official](https://github.com/anthropics/claude-plugins-official) -- official directory format, no npm source usage, submission form link (HIGH confidence)
+- [Plugin directory submission form](https://clau.de/plugin-directory-submission) -- required fields: name, description, 3+ use cases, org URL, contact email (HIGH confidence)
+- [npm access tokens docs](https://docs.npmjs.com/about-access-tokens/) -- classic tokens revoked Dec 2025, granular token 90-day cap (MEDIUM confidence)
+- [philna.sh trusted publishing guide](https://philna.sh/blog/2026/01/28/trusted-publishing-npm/) -- practical gotchas: provenance flag must be explicit, repository field must match (HIGH confidence)
+- [npm provenance docs](https://docs.npmjs.com/generating-provenance-statements/) -- provenance attestation setup (MEDIUM confidence)
+- [GitHub Actions publishing Node.js packages](https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages) -- workflow patterns (HIGH confidence)
 
 ---
-*Stack research for: Claude Code framework (Megazord)*
-*Researched: 2026-02-17*
+*Stack research for: Megazord distribution & publication*
+*Researched: 2026-02-19*

@@ -1,595 +1,520 @@
-# Architecture Research
+# Architecture Patterns: Distribution & Publication
 
-**Domain:** Claude Code Framework (Skills + Agents + Workflows + Agent Teams Orchestration)
-**Researched:** 2026-02-17
-**Confidence:** MEDIUM (Agent Teams integration is unproven in any framework; all other components are well-documented)
+**Domain:** Claude Code plugin framework distribution (npm + marketplace + CI/CD)
+**Researched:** 2026-02-19
+**Overall confidence:** HIGH
 
-## Standard Architecture
+## Recommended Architecture
 
-### System Overview
-
-```
-                           MEGAZORD ARCHITECTURE
-                           =====================
-
-   ┌─────────────────────────────────────────────────────────────────────┐
-   │                        USER INTERFACE LAYER                         │
-   │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────┐  │
-   │  │ Slash Cmds   │  │ CLAUDE.md    │  │ Settings / Config        │  │
-   │  │ /mz init     │  │ Memory +     │  │ .claude/settings.json    │  │
-   │  │ /mz plan     │  │ Instructions │  │ megazord.config.json     │  │
-   │  │ /mz go ...   │  │              │  │                          │  │
-   │  └──────┬───────┘  └──────┬───────┘  └────────────┬─────────────┘  │
-   │         │                 │                        │                │
-   ├─────────┴─────────────────┴────────────────────────┴────────────────┤
-   │                      SKILL / WORKFLOW LAYER                         │
-   │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌─────────────┐  │
-   │  │ Project     │  │ Quality    │  │ Execution  │  │ Utility     │  │
-   │  │ Skills      │  │ Skills     │  │ Skills     │  │ Skills      │  │
-   │  │ (init,plan) │  │ (tdd,      │  │ (go,quick, │  │ (status,    │  │
-   │  │             │  │  review,   │  │  debug)    │  │  pause,     │  │
-   │  │             │  │  discuss)  │  │            │  │  resume)    │  │
-   │  └──────┬──────┘  └─────┬──────┘  └─────┬──────┘  └──────┬──────┘  │
-   │         │               │               │                │         │
-   ├─────────┴───────────────┴───────────────┴────────────────┴─────────┤
-   │                      ORCHESTRATION LAYER (TypeScript)               │
-   │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────┐  │
-   │  │ Team         │  │ State        │  │ Config                   │  │
-   │  │ Manager      │  │ Manager      │  │ Manager                  │  │
-   │  │ (create,     │  │ (STATE.md,   │  │ (quality settings,       │  │
-   │  │  coordinate, │  │  handoff,    │  │  project prefs,          │  │
-   │  │  shutdown)   │  │  resume)     │  │  defaults)               │  │
-   │  └──────┬───────┘  └──────┬───────┘  └────────────┬─────────────┘  │
-   │         │                 │                        │                │
-   ├─────────┴─────────────────┴────────────────────────┴────────────────┤
-   │                      AGENT LAYER                                    │
-   │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌─────────────┐  │
-   │  │ Executor   │  │ Reviewer   │  │ Researcher │  │ Debugger    │  │
-   │  │ Agent      │  │ Agent      │  │ Agent      │  │ Agent       │  │
-   │  │ (.md def)  │  │ (.md def)  │  │ (.md def)  │  │ (.md def)   │  │
-   │  └──────┬──────┘  └─────┬──────┘  └─────┬──────┘  └──────┬──────┘  │
-   │         │               │               │                │         │
-   ├─────────┴───────────────┴───────────────┴────────────────┴─────────┤
-   │                      COORDINATION LAYER                             │
-   │  ┌────────────────────────────────────────────────────────────────┐ │
-   │  │  Agent Teams (TeamCreate, SendMessage, TaskList, TaskUpdate)   │ │
-   │  │  + Subagent Tool (Task) for fire-and-forget work               │ │
-   │  ├────────────────────────────────────────────────────────────────┤ │
-   │  │  Hooks: TeammateIdle, TaskCompleted, SubagentStart/Stop, Stop │ │
-   │  └────────────────────────────────────────────────────────────────┘ │
-   │                                                                     │
-   ├─────────────────────────────────────────────────────────────────────┤
-   │                      PERSISTENCE LAYER                              │
-   │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────────────┐ │
-   │  │ STATE.md │  │ PROJECT  │  │ ROADMAP  │  │ Git Worktrees      │ │
-   │  │ (session │  │ .md      │  │ .md      │  │ (parallel          │ │
-   │  │  state)  │  │ (spec)   │  │ (phases) │  │  isolation)        │ │
-   │  └──────────┘  └──────────┘  └──────────┘  └────────────────────┘ │
-   └─────────────────────────────────────────────────────────────────────┘
-```
-
-### Component Responsibilities
-
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| **Slash Commands** | User-facing entry points that route to skills | SKILL.md files in `skills/` with frontmatter, invoked via `/mz:command` |
-| **Skills (Markdown)** | Procedural knowledge and workflow instructions | SKILL.md files with YAML frontmatter; some with `context: fork`, some inline |
-| **Agents (Markdown)** | Specialized subagent definitions with tool restrictions | .md files in `agents/` with frontmatter (name, description, tools, model) |
-| **Orchestration (TypeScript)** | State management, team lifecycle, config resolution | TS scripts callable via `Bash` hook or skill `!`command`` injection |
-| **Agent Teams** | Multi-agent coordination with messaging | Native Claude Code feature: TeamCreate, SendMessage, TaskList |
-| **Subagents (Task tool)** | Fire-and-forget delegation for focused tasks | Built-in Task tool with `subagent_type` referencing agent definitions |
-| **Hooks** | Quality gates, lifecycle automation, team enforcement | JSON config in settings.json or hooks/hooks.json; shell scripts |
-| **Persistence (Markdown files)** | Cross-session state, project context, phase tracking | STATE.md, PROJECT.md, ROADMAP.md, PHASE-*.md on disk |
-| **Config** | User preferences, quality settings, project defaults | megazord.config.json + settings.json for hook/permission config |
-
-## Recommended Project Structure
-
-### Distribution Format: Plugin (not raw npm installer)
-
-**Recommendation:** Distribute Megazord as a Claude Code **plugin**, not a raw npm package that copies files to `~/.claude/`. This is the correct approach because:
-
-1. **Native support.** Claude Code has a first-class plugin system with `.claude-plugin/plugin.json` manifests, namespaced skills, and `/plugin install` commands.
-2. **Clean namespacing.** Plugin skills get `mz:` prefix automatically (`/mz:init`, `/mz:plan`, `/mz:go`), preventing conflicts with other frameworks.
-3. **Update path.** Plugins support versioning, easy updates, and marketplace distribution.
-4. **Component separation.** Plugins natively organize skills/, agents/, hooks/, and .mcp.json without a custom installer script.
-
-**Confidence: HIGH** -- Plugin system is well-documented in official Claude Code docs.
-
-GSD uses a raw npm installer that copies files to `~/.claude/` because the plugin system did not exist when GSD was created. Superpowers ships as a marketplace plugin. Megazord should follow the plugin path from day one.
-
-### Repository Structure
+Megazord has **three distribution channels** that must work in concert. Each serves a different audience and installation path, but they share a single source of truth: the GitHub repository.
 
 ```
-megazord/
-├── .claude-plugin/
-│   └── plugin.json              # Plugin manifest (name, version, description)
-│
-├── skills/                      # All slash commands and workflow skills
-│   ├── init/
-│   │   └── SKILL.md             # /mz:init — project initialization
-│   ├── plan/
-│   │   └── SKILL.md             # /mz:plan — phase planning
-│   ├── go/
-│   │   ├── SKILL.md             # /mz:go — execute phase (orchestrates teams)
-│   │   └── templates/           # Supporting files for execution
-│   │       └── wave-plan.md
-│   ├── quick/
-│   │   └── SKILL.md             # /mz:quick — fast single-task mode
-│   ├── review/
-│   │   └── SKILL.md             # /mz:review — two-stage code review
-│   ├── debug/
-│   │   └── SKILL.md             # /mz:debug — systematic debugging
-│   ├── discuss/
-│   │   └── SKILL.md             # /mz:discuss — Socratic brainstorming
-│   ├── verify/
-│   │   └── SKILL.md             # /mz:verify — UAT verification
-│   ├── status/
-│   │   └── SKILL.md             # /mz:status — project/phase status
-│   ├── pause/
-│   │   └── SKILL.md             # /mz:pause — context handoff for session end
-│   ├── resume/
-│   │   └── SKILL.md             # /mz:resume — context restore for session start
-│   └── map/
-│       └── SKILL.md             # /mz:map — brownfield codebase analysis
-│
-├── agents/                      # Subagent definitions
-│   ├── mz-executor.md           # Implements code with TDD discipline
-│   ├── mz-reviewer.md           # Two-stage code review (spec + quality)
-│   ├── mz-researcher.md         # Domain research with source verification
-│   ├── mz-debugger.md           # Systematic root-cause debugging
-│   ├── mz-planner.md            # Phase decomposition and wave planning
-│   ├── mz-verifier.md           # UAT and acceptance testing
-│   └── mz-mapper.md             # Brownfield codebase analysis
-│
-├── hooks/
-│   └── hooks.json               # Plugin hook definitions
-│
-├── bin/                         # TypeScript orchestration tools
-│   ├── mz-tools.ts              # CLI helper (state management, config, git)
-│   └── tsconfig.json
-│
-├── templates/                   # File templates for project initialization
-│   ├── PROJECT.md
-│   ├── ROADMAP.md
-│   ├── PHASE.md
-│   └── STATE.md
-│
-├── package.json                 # For bun build of TS tools + distribution
-├── tsconfig.json
-└── README.md
+                     +-------------------+
+                     |   GitHub Repo     |
+                     | sh3rd3n/megazord  |
+                     +--------+----------+
+                              |
+              +---------------+---------------+
+              |               |               |
+     +--------v---+   +------v------+   +----v-----------+
+     | npm publish |   | Marketplace |   | Direct clone   |
+     | (bunx)      |   | (plugin)    |   | (developers)   |
+     +--------+----+   +------+------+   +----+-----------+
+              |               |               |
+     +--------v---+   +------v------+   +----v-----------+
+     | bunx        |   | /plugin     |   | git clone +    |
+     | megazord    |   | install     |   | megazord       |
+     | install     |   | mz@...      |   | install        |
+     +-----------+-+   +------+------+   +----+-----------+
+                 |            |               |
+                 +------------+---------------+
+                              |
+                     +--------v----------+
+                     | ~/.claude/plugins/ |
+                     | cache/mz/         |
+                     +-------------------+
 ```
 
-### Structure Rationale
+All three paths end at the same destination: plugin files installed in `~/.claude/plugins/cache/`.
 
-- **skills/:** Each skill is a directory with SKILL.md (required) plus optional supporting files. Claude Code discovers these natively. The skill name becomes the slash command after the plugin namespace prefix.
-- **agents/:** Subagent definitions as Markdown with YAML frontmatter. Claude Code loads these from the plugin's agents/ directory and makes them available for Task tool delegation.
-- **hooks/:** Plugin hooks defined in hooks.json. Used for quality gates (TaskCompleted, TeammateIdle, Stop) and lifecycle automation (SessionStart for context restore).
-- **bin/:** TypeScript tooling compiled with bun. Called via `Bash` from skills or hooks. Handles operations that pure Markdown cannot: file manipulation, JSON parsing, git worktree management, state file updates.
-- **templates/:** Markdown templates for initialized project files. Skills reference these via relative paths when creating new projects.
+### Component Boundaries
 
-## Architectural Patterns
+| Component | Responsibility | Communicates With |
+|-----------|---------------|-------------------|
+| **GitHub Repo** (`sh3rd3n/megazord`) | Source of truth for all code, issues, PRs | GitHub Actions, npm registry, marketplace repo |
+| **GitHub Actions CI** (`.github/workflows/ci.yml`) | Test, lint, typecheck on every PR to main | GitHub repo (trigger), Biome/Vitest (tools) |
+| **GitHub Actions Publish** (`.github/workflows/publish.yml`) | Build + publish to npm on version tag | npm registry (output), GitHub repo (trigger) |
+| **npm Package** (`megazord` on npmjs.com) | Distributes CLI + plugin files via `bunx megazord` | npm registry (hosted), user machine (installed) |
+| **Marketplace Repo** (`sh3rd3n/megazord-marketplace`) | Plugin catalog for Claude Code native discovery | Claude Code plugin system, GitHub (hosted) |
+| **package.json** | Version source of truth, deps, scripts, files manifest | npm (publish), tsdown (build), GitHub Actions (CI) |
+| **plugin.json** (`.claude-plugin/plugin.json`) | Plugin manifest for Claude Code recognition | Claude Code plugin system |
+| **tsdown** | Bundles TypeScript CLI to `bin/` | `src/cli/` (input), `bin/` (output) |
+| **README.md** | User-facing docs and quickstart | GitHub (landing page), npm (package page) |
 
-### Pattern 1: Skill-as-Orchestrator
+### Data Flow: Publish Pipeline
 
-**What:** Skills serve as the primary orchestration layer. A skill's SKILL.md contains the full workflow instructions, references agents by name, and coordinates the overall process. The skill does NOT execute code -- it instructs Claude on what to do.
+```
+Developer bumps version in package.json + plugin.json
+  -> Commits: "chore: release v1.1.0"
+  -> Tags: git tag v1.1.0
+  -> Pushes: git push && git push --tags
+  -> GitHub Actions triggers on tag v*
+     -> Checkout code
+     -> Setup Bun + Node
+     -> bun install --frozen-lockfile
+     -> bun run typecheck
+     -> bun run lint
+     -> bun test
+     -> bun run build (tsdown -> bin/)
+     -> npm publish --provenance --access public (OIDC auth, no token)
+  -> Package live on npm
+  -> Users: bunx megazord install
+```
 
-**When to use:** For every user-facing command. The skill is the entry point; it decides whether to use Agent Teams, subagents, or inline execution.
+```
+Developer updates marketplace repo (separate repo)
+  -> marketplace.json version/ref updated to match
+  -> Push to sh3rd3n/megazord-marketplace
+  -> Users: /plugin marketplace update megazord-marketplace
+  -> Claude Code fetches updated plugin from GitHub source
+  -> Plugin files cached in ~/.claude/plugins/cache/
+```
 
-**Trade-offs:** Keeps orchestration in readable Markdown (easy to understand, modify, distribute). Limited by what prompt instructions can express -- complex conditional logic may need TypeScript helpers.
+## Files: New vs Modified
 
-**Example:**
+### Files to CREATE (new)
+
+| File | Purpose | Priority |
+|------|---------|----------|
+| `.github/workflows/ci.yml` | Quality gates on PRs: typecheck + lint + test + build | P0 |
+| `.github/workflows/publish.yml` | npm publish with provenance on version tags | P0 |
+| `README.md` | Quickstart, commands reference, installation for both paths | P0 |
+| `LICENSE` | MIT license file (referenced in package.json but missing from repo) | P0 |
+| `CHANGELOG.md` | Version history visible on npm and GitHub | P1 |
+
+### Files to MODIFY (existing)
+
+| File | Changes Needed | Why |
+|------|---------------|-----|
+| **`package.json`** | Add `author`, `repository`, `homepage`, `bugs`, `keywords`, `publishConfig`, `prepublishOnly` script | npm publication requires these fields for proper package page rendering and build safety |
+| **`.claude-plugin/plugin.json`** | Update `homepage`, `repository` to real GitHub URLs; add `version` field if missing; sync with package.json version | Marketplace discovery links and version tracking |
+| **`.gitignore`** | No changes needed -- `bin/` is excluded from git, and `files` array in package.json includes it for npm | Already correct |
+| **`src/cli/commands/install.ts`** | Replace hardcoded `const VERSION = "0.1.0"` with dynamic read from package.json | Eliminates version drift between package.json and install code |
+| **`src/cli/commands/update.ts`** | Same hardcoded VERSION fix | Same reason |
+
+### Files to CREATE in separate marketplace repo
+
+| File | Location | Purpose |
+|------|----------|---------|
+| `.claude-plugin/marketplace.json` | `sh3rd3n/megazord-marketplace` repo | Plugin catalog with GitHub source pointing to main repo |
+| `README.md` | `sh3rd3n/megazord-marketplace` repo | Marketplace description and installation instructions |
+
+**Critical insight:** The `.megazord-marketplace/` directory inside the main repo is a LOCAL marketplace for development testing. For public distribution, the marketplace MUST be a separate GitHub repository because Claude Code's `/plugin marketplace add` clones the repo and expects `.claude-plugin/marketplace.json` at the repository root.
+
+## Architecture Patterns
+
+### Pattern 1: Dual Distribution (npm + Marketplace)
+
+**What:** Megazord is distributed through BOTH npm (for CLI installation via `bunx megazord`) AND the Claude Code marketplace (for `/plugin install` discovery).
+
+**When:** Always -- these serve complementary purposes for different user personas.
+
+**npm path (power users):** `bunx megazord` downloads from npm, runs the install command, which copies plugin files into `~/.claude/plugins/cache/`. Best for users comfortable with package managers.
+
+**Marketplace path (discovery users):** `/plugin marketplace add sh3rd3n/megazord-marketplace` then `/plugin install mz@megazord-marketplace` fetches directly from GitHub. Best for users who discover plugins through Claude Code's native UI.
+
+**Why both:** npm gives the `bunx` one-liner install experience. Marketplace gives native Claude Code discovery, auto-updates, and the `/plugin > Discover` browsing experience. Neither alone covers all users.
+
+**Confidence:** HIGH
+
+### Pattern 2: Tag-Triggered npm Publish with Trusted Publishing
+
+**What:** GitHub Actions workflow that publishes to npm when a version tag (e.g., `v1.1.0`) is pushed. Uses OIDC-based trusted publishing instead of long-lived npm tokens.
+
+**When:** Every release.
+
+**Implementation:**
+
 ```yaml
----
-name: go
-description: Execute the current phase. Creates an Agent Team for parallel implementation with coordinated review.
-context: fork
-disable-model-invocation: true
----
+# .github/workflows/publish.yml
+name: Publish to npm
+on:
+  push:
+    tags: ['v*']
 
-# Execute Phase
-
-## Step 1: Load Context
-Read `.planning/STATE.md` to determine current phase.
-Read `.planning/ROADMAP.md` for phase details.
-Read the current PHASE-{N}.md for task breakdown.
-
-## Step 2: Determine Execution Strategy
-- If phase has 1 task: use subagent (Task tool with mz-executor)
-- If phase has 2+ independent tasks: create Agent Team
-- If phase has dependent tasks: create Agent Team with task dependencies
-
-## Step 3: Agent Team Execution
-Create a team with:
-- One mz-executor teammate per independent task
-- One mz-reviewer teammate for code review
-- Shared TaskList with all phase tasks and dependencies
-
-After all tasks complete:
-- mz-reviewer reviews all changes
-- If review passes: commit and update STATE.md
-- If review fails: send feedback to relevant executor via SendMessage
-
-## Step 4: Update State
-Run: `bun ~/.claude/plugins/megazord/bin/mz-tools.ts update-state --phase-complete`
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # Required for OIDC trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun run lint
+      - run: bun test
+      - run: bun run build
+      # Use setup-node for npm publish (bun publish lacks --provenance support)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm publish --provenance --access public
 ```
 
-### Pattern 2: Hybrid Agent Approach (Teams + Subagents)
+**Critical detail about bun vs npm for publishing:** Even though the project uses bun for everything in development, `npm publish` must be used for the actual publish step. npm's trusted publishing/OIDC integration requires the npm CLI. `bun publish` does not support `--provenance` or OIDC token exchange. The `actions/setup-node` step configures `.npmrc` with the registry URL, and trusted publishing provides authentication automatically via OIDC -- no `NODE_AUTH_TOKEN` secret needed.
 
-**What:** Use Agent Teams when agents need to communicate (executor + reviewer feedback loop, parallel research with synthesis). Use plain subagents (Task tool) when work is fire-and-forget (single research query, quick code generation, file exploration).
+**npmjs.com setup required:** Before first publish, configure trusted publishing on npmjs.com:
+1. Log into npmjs.com, navigate to the `megazord` package settings
+2. Under "Trusted Publisher", select "GitHub Actions"
+3. Enter: org/user = `sh3rd3n`, repo = `megazord`, workflow = `publish.yml`
+4. Save
 
-**When to use:** Always. This is a core architectural decision, not a situational pattern.
+**Confidence:** HIGH -- verified against npm trusted publishing docs and setup-bun action.
 
-**Trade-offs:** Agent Teams cost significantly more tokens (each teammate is a full Claude instance). Subagents are cheaper but cannot communicate. The skill-as-orchestrator decides which approach based on task complexity.
+### Pattern 3: PR CI Pipeline
 
-**Decision matrix:**
+**What:** GitHub Actions workflow that runs quality checks on every pull request and push to main.
 
-| Scenario | Mechanism | Why |
-|----------|-----------|-----|
-| Single task, no review needed | Subagent (Task) | No coordination overhead |
-| Parallel tasks, independent | Agent Team | Shared TaskList for coordination |
-| Implementation + review cycle | Agent Team | Reviewer sends feedback to executor via SendMessage |
-| Quick research query | Subagent (Explore) | Read-only, result returned to caller |
-| Multi-angle research | Agent Team | Researchers share and challenge findings |
-| Debugging with hypotheses | Agent Team | Competing hypotheses in parallel |
+**Implementation:**
 
-### Pattern 3: State-on-Disk with TypeScript Helpers
+```yaml
+# .github/workflows/ci.yml
+name: CI
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
 
-**What:** All project state lives in Markdown files on disk (.planning/ directory). TypeScript helpers in `bin/mz-tools.ts` handle structured operations (parse/update STATE.md, manage config, create worktrees). Skills call these helpers via `!`command`` injection or Bash tool.
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun run lint
+      - run: bun test
+      - run: bun run build
+```
 
-**When to use:** For any state mutation that needs to be reliable (updating phase progress, parsing JSON config, git operations).
+**Confidence:** HIGH -- standard pattern, verified with oven-sh/setup-bun docs.
 
-**Trade-offs:** Adding TypeScript introduces a build step and dependency on bun. But pure Markdown skills cannot reliably parse JSON, manage git worktrees, or handle complex state transitions. The TS layer is deliberately thin -- it is a CLI tool, not an application framework.
+### Pattern 4: Version Synchronization
 
-**Example:**
+**What:** Single source of truth for version numbers with dynamic reading.
+
+**Problem:** Currently `VERSION` is hardcoded as `"0.1.0"` in both `src/cli/commands/install.ts` (line 16) and `src/cli/commands/update.ts` (line 8), separate from the `package.json` version field. This causes version drift.
+
+**Solution:** Both files should read version from package.json dynamically. The CLI entry point (`bin/megazord.mjs`) already reads package.json for the `--version` flag, so the pattern exists. Apply it to install.ts and update.ts:
+
 ```typescript
-// bin/mz-tools.ts -- thin CLI helper
-import { parseArgs } from "util";
+// Replace in install.ts and update.ts:
+// const VERSION = "0.1.0";
 
-const commands = {
-  "update-state": async (args: string[]) => {
-    // Read STATE.md, update phase/task status, write back
-  },
-  "create-worktree": async (args: string[]) => {
-    // git worktree add for parallel isolation
-  },
-  "read-config": async (args: string[]) => {
-    // Read megazord.config.json, return as structured output
-  },
-  "init-project": async (args: string[]) => {
-    // Copy templates, create .planning/ structure
-  }
-};
+// With:
+function getVersion(): string {
+  const pkgPath = join(import.meta.dirname, "..", "package.json");
+  return JSON.parse(readFileSync(pkgPath, "utf-8")).version;
+}
+const VERSION = getVersion();
 ```
 
-### Pattern 4: Quality Gates via Hooks
+**The release flow becomes:**
+1. Bump version in `package.json` (single source of truth)
+2. Bump version in `.claude-plugin/plugin.json` to match (manual, same commit)
+3. Run `bun run build` (rebuilds bin/ which will read version at runtime)
+4. Commit: `chore: release v1.1.0`
+5. Tag: `git tag v1.1.0`
+6. Push: `git push && git push --tags`
+7. GitHub Actions publishes to npm automatically
 
-**What:** Hooks enforce quality discipline without baking it into agent prompts. `TaskCompleted` hooks run tests before allowing task closure. `TeammateIdle` hooks verify work quality before agents go idle. `Stop` hooks check overall phase completion.
+**Confidence:** HIGH -- standard npm versioning pattern.
 
-**When to use:** For enforcing TDD, code review, test coverage, and other quality constraints. Hooks are the enforcement mechanism; agent prompts are the instruction mechanism.
+### Pattern 5: files Array as npm Allowlist
 
-**Trade-offs:** Hooks add latency (scripts run before actions complete). But they provide hard guarantees that prompt-only instructions cannot. A prompt saying "run tests" is a suggestion; a `TaskCompleted` hook that fails on test failure is a gate.
+**What:** The `package.json` `files` array controls what ships in the npm package. When present, it acts as an allowlist and `.gitignore` is NOT consulted by npm.
 
-**Example hook configuration:**
+**Current state (already correct):**
+
+```json
+"files": [
+  "bin",
+  "dist",
+  "skills",
+  "agents",
+  "hooks",
+  "commands",
+  ".claude-plugin"
+]
+```
+
+This means `bin/` is excluded from git (via `.gitignore`) but INCLUDED in the npm package (via `files` array). This is the correct behavior: build output should not be in version control but must be in the published package.
+
+**One addition needed:** `README.md` and `LICENSE` are automatically included by npm regardless of the `files` array, so they will appear in the package without explicit listing.
+
+**No `.npmignore` needed:** The `files` allowlist is sufficient and clearer than a dual `.gitignore` + `.npmignore` approach. Adding `.npmignore` would actually OVERRIDE the `files` array behavior in confusing ways.
+
+**Confidence:** HIGH -- confirmed by npm documentation.
+
+### Pattern 6: Marketplace Repository Structure
+
+**What:** A separate GitHub repository that serves as the marketplace catalog.
+
+**Structure for `sh3rd3n/megazord-marketplace`:**
+
+```
+megazord-marketplace/
+  .claude-plugin/
+    marketplace.json
+  README.md
+```
+
+**marketplace.json content:**
+
 ```json
 {
-  "hooks": {
-    "TaskCompleted": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/mz-verify-task.sh"
-          }
-        ]
-      }
-    ],
-    "TeammateIdle": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/mz-check-idle.sh"
-          }
-        ]
-      }
-    ]
+  "name": "megazord-marketplace",
+  "owner": {
+    "name": "sh3rd3n"
+  },
+  "metadata": {
+    "description": "Official Megazord framework marketplace",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "mz",
+      "source": {
+        "source": "github",
+        "repo": "sh3rd3n/megazord",
+        "ref": "main"
+      },
+      "description": "Unified framework for project management, code quality, and multi-agent coordination",
+      "version": "1.1.0",
+      "author": {
+        "name": "sh3rd3n"
+      },
+      "homepage": "https://github.com/sh3rd3n/megazord",
+      "repository": "https://github.com/sh3rd3n/megazord",
+      "license": "MIT",
+      "keywords": [
+        "project-management",
+        "code-quality",
+        "agent-teams",
+        "tdd",
+        "workflow"
+      ],
+      "category": "productivity",
+      "tags": ["framework", "project-management", "multi-agent", "code-quality"]
+    }
+  ]
+}
+```
+
+**Key design decisions:**
+
+1. **GitHub source (not relative path):** The plugin source uses `"source": "github"` pointing to the main repo. This means Claude Code clones the main repo to get the plugin files. Relative paths would only work if the plugin files were inside the marketplace repo itself.
+
+2. **`ref: "main"`:** Points to the main branch. For versioned releases, this could be changed to `"ref": "v1.1.0"` to pin to a specific tag. Starting with `main` simplifies the initial setup.
+
+3. **npm source alternative:** The marketplace schema supports `"source": { "source": "npm", "package": "megazord" }` but the Claude Code docs note this is "not yet fully implemented" (it triggers a validation warning). Use GitHub source for now.
+
+**Confidence:** HIGH -- follows the exact schema from official Claude Code marketplace documentation.
+
+### Pattern 7: Official Anthropic Directory Submission
+
+**What:** Submit Megazord to the official Anthropic plugin directory (`anthropics/claude-plugins-official`) for discovery via `/plugin > Discover`.
+
+**Process:**
+1. Plugin must have proper `plugin.json` manifest with name, description, version, author -- already exists
+2. Must have a public GitHub repository -- will exist after Phase 1
+3. Submit via [clau.de/plugin-directory-submission](https://clau.de/plugin-directory-submission)
+4. Anthropic performs basic automated review
+5. If approved, plugin appears in the official directory and is browsable via `/plugin > Discover`
+
+**Timing:** Submit AFTER npm publication and marketplace setup are working. The official directory is a bonus discovery channel, not the primary distribution mechanism.
+
+**Confidence:** MEDIUM -- the submission form exists and is referenced in the official repo README, but review criteria and timeline are not publicly documented.
+
+### Pattern 8: package.json Enrichment
+
+**What:** Additional fields needed in package.json for proper npm publication metadata.
+
+**Fields to add:**
+
+```jsonc
+{
+  // Existing fields stay as-is, ADD these:
+  "author": "sh3rd3n",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sh3rd3n/megazord.git"
+  },
+  "homepage": "https://github.com/sh3rd3n/megazord#readme",
+  "bugs": {
+    "url": "https://github.com/sh3rd3n/megazord/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "claude",
+    "ai",
+    "framework",
+    "project-management",
+    "code-quality",
+    "agent-teams",
+    "tdd",
+    "plugin"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    // ... existing scripts unchanged ...
+    "prepublishOnly": "bun run build"
   }
 }
 ```
 
-## Data Flow
+**Why each field matters:**
+- `author`: Shown on npm package page
+- `repository`/`homepage`/`bugs`: npm renders clickable links on the package page
+- `keywords`: npm search discoverability
+- `publishConfig.access`: Ensures public publish (avoids "payment required" error on first publish)
+- `publishConfig.provenance`: Default provenance generation
+- `prepublishOnly`: Safety net -- ensures `bun run build` runs before every `npm publish`, preventing stale `bin/` artifacts
 
-### Primary Flow: Phase Execution (`/mz:go`)
+**Confidence:** HIGH -- standard npm package fields.
 
-```
-User: /mz:go
-    │
-    ▼
-┌──────────────────┐
-│  go/SKILL.md     │ ◄── Skill loaded (context: fork, in subagent)
-│  reads context   │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐     ┌──────────────────┐
-│ STATE.md         │────►│ PHASE-{N}.md     │  Read current phase + tasks
-│ (current phase)  │     │ (task breakdown)  │
-└──────────────────┘     └────────┬──────────┘
-                                  │
-                                  ▼
-                         ┌──────────────────┐
-                         │ Decision:        │
-                         │ Teams or Task?   │
-                         └───────┬──────────┘
-                        ┌────────┴────────┐
-                        ▼                 ▼
-              ┌─────────────────┐  ┌──────────────┐
-              │  TeamCreate     │  │  Task tool   │
-              │  (2+ tasks)     │  │  (1 task)    │
-              └────────┬────────┘  └──────┬───────┘
-                       │                  │
-                       ▼                  │
-        ┌──────────────────────┐          │
-        │  Shared TaskList     │          │
-        │  Task 1: Pending     │          │
-        │  Task 2: Pending     │          │
-        │  Task 3: Blocked(1)  │          │
-        └──────────┬───────────┘          │
-                   │                      │
-          ┌────────┴────────┐             │
-          ▼                 ▼             │
-   ┌─────────────┐  ┌─────────────┐      │
-   │ mz-executor │  │ mz-executor │      │
-   │ Teammate A  │  │ Teammate B  │      │
-   │ Claims T1   │  │ Claims T2   │      │
-   └──────┬──────┘  └──────┬──────┘      │
-          │                │              │
-          ▼                ▼              │
-   ┌─────────────────────────────┐        │
-   │  TaskCompleted hook fires   │        │
-   │  (runs tests, blocks if     │        │
-   │   tests fail)               │        │
-   └──────────┬──────────────────┘        │
-              │                           │
-              ▼                           │
-   ┌─────────────────────┐               │
-   │  mz-reviewer        │               │
-   │  Teammate           │               │
-   │  Reviews all changes│               │
-   └──────┬──────────────┘               │
-          │                              │
-          ├── Pass ──► Commit + Update STATE.md
-          │
-          └── Fail ──► SendMessage(executor, feedback)
-                       ──► Executor revises
-                       ──► Re-review cycle
-```
+## Anti-Patterns to Avoid
 
-### Context Handoff Flow (Cross-Session Persistence)
+### Anti-Pattern 1: Committing bin/ to Git
 
-```
-Session N ending:
-    │
-    ▼
-User: /mz:pause
-    │
-    ▼
-┌──────────────────────┐
-│  pause/SKILL.md      │
-│  Captures:           │
-│  - Current phase     │
-│  - In-progress tasks │
-│  - Open questions    │
-│  - Key decisions     │
-│  - File locations    │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│  STATE.md updated    │  ◄── bun mz-tools.ts update-state --pause
-│  {                   │
-│    phase: 2,         │
-│    status: "paused", │
-│    tasks: [...],     │
-│    context: "..."    │
-│  }                   │
-└──────────────────────┘
+**What:** Adding `bin/` to git because npm needs it in the package.
+**Why bad:** Build artifacts in version control create merge conflicts, noise in diffs, and confusion about source vs output. The current `.gitignore` correctly excludes `bin/`.
+**Instead:** The `prepublishOnly` script runs `bun run build` before every `npm publish`, ensuring `bin/` is fresh. The `files` array includes it in the npm package. The `postbuild` script already runs after local builds.
 
-           ═══════════════ Session boundary ═══════════════
+### Anti-Pattern 2: Long-Lived npm Token as GitHub Secret
 
-Session N+1 starting:
-    │
-    ▼
-User: /mz:resume
-    │
-    ▼
-┌──────────────────────┐
-│  resume/SKILL.md     │
-│  Reads STATE.md      │
-│  Restores context:   │
-│  - Where we left off │
-│  - What's next       │
-│  - Open questions    │
-└──────────────────────┘
-```
+**What:** Creating an npm automation token, storing it as `NPM_TOKEN` in GitHub repository secrets, and using it with `NODE_AUTH_TOKEN`.
+**Why bad:** Token theft risk if secrets are exposed, rotation burden, overly broad permissions (a single token can publish any of your packages).
+**Instead:** Use npm Trusted Publishing (OIDC). Zero secrets to manage. The authentication token is short-lived (minutes), automatically generated by GitHub Actions, and scoped to the specific workflow run.
 
-### Key Data Flows
+### Anti-Pattern 3: Marketplace Inside Main Repo for Public Distribution
 
-1. **Skill invocation flow:** User types `/mz:go` -> Claude loads SKILL.md -> Skill reads state files -> Skill decides execution strategy -> Creates Agent Team or spawns subagent -> Agents do work -> Hooks enforce quality -> State updated on disk.
+**What:** Using the existing `.megazord-marketplace/` directory inside the megazord repo as the public marketplace.
+**Why bad:** `/plugin marketplace add` expects a Git repository (or URL) containing `.claude-plugin/marketplace.json` at the REPOSITORY ROOT. Having it as a subdirectory means users would need to add it with a path like `sh3rd3n/megazord/.megazord-marketplace`, which is not a supported format. The marketplace must be a standalone repo.
+**Instead:** Create `sh3rd3n/megazord-marketplace` as a separate repo with `.claude-plugin/marketplace.json` at its root. Keep `.megazord-marketplace/` in the main repo for local development testing only (or remove it to reduce confusion).
 
-2. **Agent communication flow (within Team):** Lead spawns teammates with prompts -> Teammates claim tasks from shared TaskList -> On completion, TaskCompleted hook fires -> mz-reviewer teammate gets notified -> Review result sent via SendMessage -> If rejected, executor receives feedback message -> Executor revises -> Re-review cycle.
+### Anti-Pattern 4: Manual Version Bumping in Multiple Files
 
-3. **Configuration flow:** `megazord.config.json` (project-level quality settings) -> Read by skills at invocation time -> Determines TDD on/off, review mode, brainstorming mode -> Passed to agent prompts and hook behavior.
+**What:** Manually updating version in package.json, plugin.json, install.ts, update.ts, and marketplace.json independently.
+**Why bad:** Guaranteed version drift. Currently install.ts and update.ts hardcode `"0.1.0"` while package.json says `"0.1.0"` -- they match now but will diverge on first version bump.
+**Instead:** `package.json` is the single source of truth. `install.ts` and `update.ts` read from it dynamically. `plugin.json` is bumped in the same release commit. Marketplace `marketplace.json` is updated in the marketplace repo as part of the release checklist.
 
-4. **Git worktree flow:** `/mz:go` on multi-task phase -> `mz-tools.ts create-worktree` creates isolated branch per task -> Each Agent Team teammate works in its own worktree -> On completion, worktrees merged to main branch.
+### Anti-Pattern 5: Publishing Without Quality Gates
 
-## Scaling Considerations
+**What:** An npm publish workflow that skips typecheck, lint, or tests.
+**Why bad:** Broken packages shipped to users. Once published, an npm version cannot be re-published (only deprecated).
+**Instead:** The publish workflow runs the full `typecheck + lint + test + build` pipeline before `npm publish`. The `prepublishOnly` script provides a local safety net for manual publishes.
 
-Megazord's "scale" is not about users -- it is about project complexity, task parallelism, and context window management.
+### Anti-Pattern 6: Using bun publish Instead of npm publish
 
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| Single task (quick mode) | No Team, single subagent or inline execution. Minimal overhead. |
-| Small phase (2-3 tasks) | Agent Team with 2-3 executors + 1 reviewer. ~4 Claude instances. |
-| Large phase (5+ tasks) | Wave execution: 3-4 executors per wave, reviewer after each wave. Git worktrees for isolation. |
-| Multi-phase project | Full state management via STATE.md + ROADMAP.md. Context handoff between sessions. |
-| Brownfield codebase | `/mz:map` first to build codebase understanding. Agent memory for persistent knowledge. |
+**What:** Using `bun publish` in the GitHub Actions workflow instead of `npm publish`.
+**Why bad:** `bun publish` does not support `--provenance` or OIDC token exchange (trusted publishing). The publish would fail or require a long-lived npm token.
+**Instead:** Use `oven-sh/setup-bun` for install/build/test, then `actions/setup-node` for the publish step only. This gives bun's speed for development tasks and npm's OIDC support for publishing.
 
-### Scaling Priorities
+## Scalability Considerations
 
-1. **First bottleneck: Context window saturation.** Long phases with many tasks fill the lead's context. Mitigation: wave execution (do 3 tasks, compact, do 3 more). The `PreCompact` hook can save state before compaction.
+| Concern | Now (v1.1) | At 100 users | At 1K+ users |
+|---------|------------|--------------|--------------|
+| **npm publish** | Manual tag push | Same workflow | Same -- consider `bun run release` script that automates bump + tag |
+| **Marketplace updates** | Manual push to marketplace repo | Same | Pin to tags instead of `main` for stability |
+| **Version management** | Manual bump in package.json + plugin.json | Same | Add script: `bun run release patch/minor/major` that bumps both + creates tag |
+| **Plugin size** | ~500KB total (skills, agents, commands, bin) | Same | Monitor; if >5MB, split experimental skills into separate plugin |
+| **CI time** | <2 min (typecheck + lint + test + build) | Same | No user-scaling concern for CI |
+| **Official directory** | Submit once | Keep listing updated | Submit updates for major releases only |
+| **Download volume** | Negligible | npm CDN handles it | npm CDN handles it |
 
-2. **Second bottleneck: Token cost.** Agent Teams are expensive (each teammate is a full Claude instance). Mitigation: hybrid approach -- use subagents for simple tasks, Teams only when coordination matters. The skill-as-orchestrator makes this decision per-invocation.
+## Build Order Recommendation
 
-3. **Third bottleneck: File conflicts between teammates.** Two agents editing the same file causes overwrites. Mitigation: git worktree isolation (each teammate gets its own branch/worktree) plus task design that assigns file ownership.
+Based on dependency analysis of what must exist before what:
 
-## Anti-Patterns
+### Phase 1: Repository Foundation (no external dependencies)
 
-### Anti-Pattern 1: Everything-in-Agent-Prompt
+**Tasks:**
+1. Create GitHub repo `sh3rd3n/megazord` and push existing code
+2. Add `README.md` with quickstart, commands reference, installation for both paths
+3. Add `LICENSE` (MIT)
+4. Fix VERSION hardcoding in `install.ts` and `update.ts` to read from package.json
+5. Enrich `package.json` with publication fields (author, repository, homepage, bugs, keywords, publishConfig, prepublishOnly)
+6. Update `.claude-plugin/plugin.json` with real GitHub URLs and version sync
 
-**What people do:** Put all workflow logic, state management, quality checks, and coordination instructions into the agent's .md system prompt, creating 500+ line agent definitions.
+**Rationale:** Everything else depends on code being on GitHub with proper metadata.
 
-**Why it's wrong:** Agent prompts should define the agent's role and capabilities, not orchestrate workflows. Overloaded prompts lead to instruction-following degradation, are hard to maintain, and cannot be enforced (Claude can ignore prompt instructions).
+### Phase 2: CI Pipeline (depends on Phase 1 -- needs GitHub repo)
 
-**Do this instead:** Keep agent definitions focused on role + tools + behavior. Put workflow orchestration in skills. Put enforcement in hooks. A well-designed agent .md should be under 100 lines.
+**Tasks:**
+7. Create `.github/workflows/ci.yml` (test + lint + typecheck + build)
+8. Verify CI passes on a test PR to main
 
-### Anti-Pattern 2: Agent Teams for Everything
+**Rationale:** Must have safety net before publishing anything to npm.
 
-**What people do:** Create an Agent Team even for single tasks or sequential work, because "Teams are the core differentiator."
+### Phase 3: npm Publication (depends on Phase 1 + 2 -- needs repo + CI)
 
-**Why it's wrong:** Agent Teams add coordination overhead and use significantly more tokens. For a single task, a subagent is faster, cheaper, and simpler. For sequential work, the lead can do it directly or use chained subagents.
+**Tasks:**
+9. Check npm name availability for `megazord` (may need scoped name like `@sh3rd3n/megazord`)
+10. Configure npm Trusted Publishing on npmjs.com (link GitHub repo + workflow)
+11. Create `.github/workflows/publish.yml`
+12. Bump version to `1.1.0`, tag `v1.1.0`, push -- verify automated publish works
 
-**Do this instead:** The skill-as-orchestrator pattern decides the execution mechanism based on task count and dependency structure. One task = subagent. Multiple independent tasks = Team. Sequential dependent tasks = chained subagents or lead execution.
+**Rationale:** npm is the primary distribution path. Must work before marketplace (which is a secondary channel).
 
-### Anti-Pattern 3: TypeScript Doing Too Much
+### Phase 4: Marketplace (can run in parallel with Phase 3)
 
-**What people do:** Build a full TypeScript application framework with a CLI, configuration system, plugin loader, and state machine, essentially reimplementing what Claude Code already provides.
+**Tasks:**
+13. Create separate `sh3rd3n/megazord-marketplace` GitHub repo
+14. Write `.claude-plugin/marketplace.json` with GitHub source pointing to main repo
+15. Add marketplace README.md
+16. Test locally: `/plugin marketplace add sh3rd3n/megazord-marketplace` then `/plugin install mz@megazord-marketplace`
+17. Submit to `anthropics/claude-plugins-official` via the submission form
 
-**Why it's wrong:** Claude Code already has skills, agents, hooks, plugins, settings, and Agent Teams. A heavy TypeScript layer duplicates these capabilities and adds maintenance burden.
+**Rationale:** Marketplace has no dependency on npm publication -- it fetches directly from GitHub. Can be set up in parallel with Phase 3. Official directory submission is last because it requires everything else to be working.
 
-**Do this instead:** TypeScript should be a thin helper layer for operations that Markdown skills cannot do: file parsing, JSON manipulation, git worktree commands, state file updates. It is a CLI tool (`mz-tools.ts`), not an application.
-
-### Anti-Pattern 4: Coupling Skills to Specific Agent Team Topology
-
-**What people do:** Hard-code "create 3 executors named Alice, Bob, Charlie" into skill instructions, making the team structure rigid.
-
-**Why it's wrong:** The optimal team size depends on the phase's task count and complexity. Hard-coded topology cannot adapt.
-
-**Do this instead:** Skills should describe the desired outcome ("execute these N tasks in parallel with review"). Claude Code decides the team size based on the task list. The skill provides constraints ("max 4 executors per wave") not topology.
-
-## Integration Points
-
-### External Services
-
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| Git (worktrees, branches, commits) | `mz-tools.ts` via Bash from skills | Core isolation mechanism for parallel work |
-| Claude Code Agent Teams API | Native (TeamCreate, SendMessage, TaskList) | Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings |
-| Claude Code Plugin System | Plugin manifest + directory structure | Distribution and installation |
-| npm / bun registry | Package distribution via npm | For installing the plugin itself |
-
-### Internal Boundaries
-
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| Skills <-> Agents | Skills reference agents by `subagent_type` name in Task tool calls or team spawn prompts | Skills never import agents; they name them |
-| Skills <-> TypeScript | Skills call TS via `!`bun mz-tools.ts command`` or Bash tool | One-way: skills invoke TS, TS returns stdout |
-| Skills <-> State Files | Skills Read/Write .planning/*.md files directly | State format is defined by templates/ |
-| Agents <-> Agents (within Team) | SendMessage (DM or broadcast) + shared TaskList | Only within an active Agent Team |
-| Hooks <-> Skills | Hooks enforce what skills instruct | Hooks are in hooks.json, independent of skill content |
-| Config <-> Everything | megazord.config.json read by skills and hooks at runtime | Determines quality discipline level |
-
-## Build Order (Dependencies Between Components)
-
-The components have clear dependencies that determine build order:
+### Dependency Graph
 
 ```
-Phase 1: Foundation (no dependencies)
-├── Plugin manifest (.claude-plugin/plugin.json)
-├── Templates (PROJECT.md, STATE.md, ROADMAP.md, PHASE.md)
-├── Config schema (megazord.config.json format)
-└── Agent definitions (mz-executor.md, mz-reviewer.md, etc.)
-
-Phase 2: Core Skills (depends on Phase 1)
-├── /mz:init (needs templates, config schema)
-├── /mz:status (needs STATE.md format)
-├── /mz:pause + /mz:resume (needs STATE.md format)
-└── /mz:map (needs mz-mapper agent)
-
-Phase 3: TypeScript Tooling (depends on Phase 1)
-├── mz-tools.ts: state management commands
-├── mz-tools.ts: git worktree commands
-├── mz-tools.ts: config management
-└── Build pipeline (bun build)
-
-Phase 4: Agent Teams Integration (depends on Phases 1-3)
-├── /mz:go with Team execution
-├── TaskCompleted hook
-├── TeammateIdle hook
-├── SendMessage-based review cycle
-└── Wave execution logic
-
-Phase 5: Quality Skills (depends on Phase 4)
-├── /mz:review (two-stage, uses mz-reviewer agent)
-├── /mz:debug (systematic, uses mz-debugger agent)
-├── /mz:discuss (Socratic brainstorming)
-└── /mz:verify (UAT)
-
-Phase 6: Planning Skills (depends on Phases 2-3)
-├── /mz:plan (phase planning with wave decomposition)
-├── /mz:quick (fast single-task mode)
-└── Quality configuration integration (TDD on/off at runtime)
+Phase 1 (repo setup)
+  |
+  +---> Phase 2 (CI)
+  |       |
+  |       +---> Phase 3 (npm publish)
+  |
+  +---> Phase 4 (marketplace) -- can run parallel with Phase 2+3
 ```
-
-**Build order rationale:**
-- **Phase 1 first** because everything else depends on the foundational formats and agent definitions.
-- **Phase 2 before Phase 4** because Agent Teams integration needs working state management and basic skills to test against.
-- **Phase 3 (TypeScript) before Phase 4** because Team execution needs git worktree management and state updates.
-- **Phase 4 (Agent Teams) is the critical path** and the highest-risk component. Building it after solid foundations means we can validate the core differentiator against working infrastructure.
-- **Phase 5 (Quality) after Phase 4** because code review and debugging workflows leverage Agent Teams coordination (reviewer sends feedback to executor).
-- **Phase 6 (Planning) can partially overlap with Phase 4-5** since planning skills are less dependent on Agent Teams.
-
-## Key Architectural Decision: Plugin vs. npm Installer
-
-| Criterion | Plugin (recommended) | npm Installer (GSD approach) |
-|-----------|---------------------|------------------------------|
-| **Installation** | `/plugin install megazord` or `--plugin-dir` | `bunx megazord --global` copies files |
-| **Namespacing** | Automatic (`/mz:init`) | Manual (risk of conflicts) |
-| **Updates** | Plugin version management | Re-run installer |
-| **Component discovery** | Native (skills/, agents/, hooks/) | Custom installer logic |
-| **TS tooling** | Bundled in plugin, called via Bash | Copied to ~/.claude/bin/ |
-| **Hook registration** | hooks/hooks.json in plugin | Must modify user's settings.json |
-| **Maintenance** | Plugin API is stable, documented | Custom installer needs ongoing maintenance |
-
-**Decision: Use the plugin system.** The npm package exists only to provide a convenient install command (`bunx megazord` that runs `/plugin install`), not as the distribution mechanism itself.
-
-**Confidence: HIGH** -- Plugin system is official, well-documented, and already used by Superpowers.
-
-## Key Architectural Decision: Agent Teams Lifecycle
-
-Agent Teams are experimental. The lifecycle must be defensive:
-
-1. **Enable check:** Verify `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is set before attempting TeamCreate. If not, fall back to subagent-only execution with a warning.
-2. **Team creation:** One team per execution. Clean up before starting new work.
-3. **Teammate spawning:** Spawn with detailed prompts (teammates don't inherit lead's conversation). Include all relevant file paths, constraints, and expected deliverables.
-4. **Task dependencies:** Use TaskList dependencies to prevent blocked tasks from being claimed prematurely.
-5. **Graceful degradation:** If Agent Teams fail or are unavailable, every workflow must have a subagent-only fallback path.
-6. **Cleanup:** Always shut down teammates before cleaning up team. Lead handles cleanup.
-
-**Confidence: MEDIUM** -- Agent Teams are experimental with known limitations (no session resumption, task status lag, one team per session). Defensive design is essential.
 
 ## Sources
 
-- [Claude Code Agent Teams documentation](https://code.claude.com/docs/en/agent-teams) -- HIGH confidence, official docs
-- [Claude Code Skills documentation](https://code.claude.com/docs/en/skills) -- HIGH confidence, official docs
-- [Claude Code Subagents documentation](https://code.claude.com/docs/en/sub-agents) -- HIGH confidence, official docs
-- [Claude Code Plugins documentation](https://code.claude.com/docs/en/plugins) -- HIGH confidence, official docs
-- [Claude Code Hooks reference](https://code.claude.com/docs/en/hooks) -- HIGH confidence, official docs
-- [Superpowers vs GSD analysis](../../../superpowers-vs-gsd-analysis.md) -- MEDIUM confidence, first-party research
-- [GSD npm package](https://www.npmjs.com/package/get-shit-done-cc) -- MEDIUM confidence, community framework
-- [Addy Osmani: Claude Code Swarms](https://addyosmani.com/blog/claude-code-agent-teams/) -- MEDIUM confidence, practitioner blog
-- [Superpowers GitHub Issues on Agent Teams](https://github.com/obra/superpowers/issues/429) -- LOW confidence, discussion only
+- [Claude Code Plugin Marketplaces docs](https://code.claude.com/docs/en/plugin-marketplaces) -- HIGH confidence, official Anthropic documentation
+- [Claude Code Discover Plugins docs](https://code.claude.com/docs/en/discover-plugins) -- HIGH confidence, official Anthropic documentation
+- [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) -- HIGH confidence, official Anthropic repo, includes submission form link
+- [npm Trusted Publishing docs](https://docs.npmjs.com/trusted-publishers/) -- HIGH confidence, official npm documentation
+- [npm Provenance docs](https://docs.npmjs.com/generating-provenance-statements/) -- HIGH confidence, official npm documentation
+- [oven-sh/setup-bun GitHub Action](https://github.com/oven-sh/setup-bun) -- HIGH confidence, official Bun CI action
+- [Bun CI/CD guide](https://bun.com/docs/guides/runtime/cicd) -- HIGH confidence, official Bun documentation
+- [npm Trusted Publishing setup guide](https://remarkablemark.org/blog/2025/12/19/npm-trusted-publishing/) -- MEDIUM confidence, community guide verified against official docs
+- [NPM Publish GitHub Action](https://github.com/marketplace/actions/npm-publish) -- MEDIUM confidence, popular third-party action (not recommended over direct npm publish)
+- [Automatic npm publish with granular tokens](https://httptoolkit.com/blog/automatic-npm-publish-gha/) -- MEDIUM confidence, community reference
 
 ---
-*Architecture research for: Claude Code framework (Megazord)*
-*Researched: 2026-02-17*
+*Architecture research for: Megazord v1.1 Distribution & Publication*
+*Researched: 2026-02-19*
