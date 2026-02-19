@@ -61,10 +61,10 @@ Plans:
   2. README.md contains a quickstart section with copy-pasteable install and first-use commands
   3. README.md contains a full command reference listing all 15 `/mz:` commands with one-line descriptions
   4. README.md contains at least 3 usage examples showing real workflows (init, plan+go, verify)
-**Plans**: TBD
+**Plans:** 1 plan
 
 Plans:
-- [ ] 13-01: TBD
+- [ ] 13-01-PLAN.md — README with hero image, badges, quickstart, command reference, and workflow examples
 
 ### Phase 14: CI/CD Pipeline
 **Goal**: Every PR is automatically quality-checked and every version tag triggers a verified npm publish
