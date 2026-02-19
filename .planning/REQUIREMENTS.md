@@ -21,14 +21,14 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 
 - [x] **DOCS-01**: README.md with hero paragraph, quickstart guide, and full command list with descriptions
 - [x] **DOCS-02**: README includes usage examples for key commands
-- [ ] **DOCS-03**: README includes badges (npm version, CI status, license)
+- [x] **DOCS-03**: README includes badges (npm version, CI status, license)
 - [x] **DOCS-04**: CHANGELOG.md initialized with v1.0 and v1.1 entries
 
 ### CI/CD Pipeline
 
-- [ ] **CICD-01**: GitHub Actions CI workflow — lint + typecheck + test on every PR
+- [x] **CICD-01**: GitHub Actions CI workflow — lint + typecheck + test on every PR
 - [ ] **CICD-02**: GitHub Actions CD workflow — build + npm publish on tag/release
-- [ ] **CICD-03**: CI uses `oven-sh/setup-bun@v2` for bun and `actions/setup-node@v4` for npm publish
+- [x] **CICD-03**: CI uses `oven-sh/setup-bun@v2` for bun and `actions/setup-node@v4` for npm publish
 - [ ] **CICD-04**: npm publish with provenance (OIDC or granular token)
 
 ### npm Publication
@@ -81,11 +81,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REPO-07 | Phase 12 | Complete |
 | DOCS-01 | Phase 13 | Complete |
 | DOCS-02 | Phase 13 | Complete |
-| DOCS-03 | Phase 14 | Pending |
+| DOCS-03 | Phase 14 | Complete |
 | DOCS-04 | Phase 12 | Complete |
-| CICD-01 | Phase 14 | Pending |
+| CICD-01 | Phase 14 | Complete |
 | CICD-02 | Phase 14 | Pending |
-| CICD-03 | Phase 14 | Pending |
+| CICD-03 | Phase 14 | Complete |
 | CICD-04 | Phase 14 | Pending |
 | NPM-01 | Phase 15 | Pending |
 | NPM-02 | Phase 15 | Pending |
