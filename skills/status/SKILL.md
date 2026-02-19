@@ -20,7 +20,9 @@ Reference `@skills/init/design-system.md` for all visual output formatting.
 
 ## Step 2: Load Context
 
-Read `.planning/megazord.config.json`. If the file does not exist, display:
+Read `.planning/megazord.config.json`. Extract `plugin_path` from the config. If `plugin_path` is not set, try `~/.claude/plugins/mz`. If neither exists, display a warning but continue (status can still show state data without CLI tools).
+
+If the config file does not exist, display:
 
 ```
 ╔═══════════════════════════════════════════════╗
@@ -64,7 +66,7 @@ Parse the JSON result which contains:
 - `plan`, `totalPlans`
 - `status`
 
-Where `{plugin_path}` is the absolute path to the Megazord plugin directory (the root of this repository where `package.json` lives).
+Where `{plugin_path}` is resolved from `config.plugin_path`, falling back to `~/.claude/plugins/mz`.
 
 ## Step 5: Compact Mode (Default)
 
@@ -95,6 +97,40 @@ Use these status symbols:
 - `✓` for completed phases (all plans have SUMMARY.md files, or marked `[x]` in ROADMAP.md)
 - `◆` for the current in-progress phase
 - `○` for pending/future phases
+
+### Config
+
+Read the loaded config and display active toggle states:
+
+```
+▸ Config
+  Model:       {model_profile} ({resolved default model, e.g., "opus"})
+  TDD:         {on | off}
+  Review:      {auto | manual | off}
+  Brainstorm:  {on | off}
+  CORTEX:      {on | off}
+  Debug:       {systematic | quick}
+  Research:    {on | off}
+  Plan check:  {on | off}
+  Verifier:    {on | off}
+```
+
+Map config values to display:
+- `model_profile`: Show as "{profile} ({model name})" -- e.g., "quality (opus)", "balanced (sonnet)", "budget (haiku)"
+- `quality.tdd`: true -> "on", false -> "off"
+- `quality.review`: Show the enum value directly: "auto", "manual", or "off"
+- `quality.brainstorming`: true -> "on", false -> "off"
+- `quality.cortex`: true -> "on", false -> "off"
+- `quality.debug`: Show the enum value directly: "systematic" or "quick"
+- `workflow.research`: true -> "on", false -> "off"
+- `workflow.plan_check`: true -> "on", false -> "off"
+- `workflow.verifier`: true -> "on", false -> "off"
+
+If `model_overrides` has any entries, display them after the Model line:
+```
+  Overrides:   executor=opus, researcher=haiku
+```
+Only show the Overrides line if model_overrides is non-empty. Omit entirely if no overrides are set.
 
 ### Last Error (if applicable)
 
@@ -152,6 +188,10 @@ List every phase from ROADMAP.md with status symbol, plan counts, and duration (
 ```
 
 For completed phases, show plan counts and duration. For the current phase, show plan progress. For future phases, show just the name.
+
+### Config
+
+Same Config section as Step 5 -- display all toggle states in verbose mode as well. This section appears in both compact and verbose output since the user specifically requested config visibility at a glance.
 
 ### Current Phase Tasks
 
