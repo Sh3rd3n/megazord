@@ -19,8 +19,8 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 
 ### Documentation
 
-- [ ] **DOCS-01**: README.md with hero paragraph, quickstart guide, and full command list with descriptions
-- [ ] **DOCS-02**: README includes usage examples for key commands
+- [x] **DOCS-01**: README.md with hero paragraph, quickstart guide, and full command list with descriptions
+- [x] **DOCS-02**: README includes usage examples for key commands
 - [ ] **DOCS-03**: README includes badges (npm version, CI status, license)
 - [x] **DOCS-04**: CHANGELOG.md initialized with v1.0 and v1.1 entries
 
@@ -79,8 +79,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REPO-05 | Phase 12 | Complete |
 | REPO-06 | Phase 12 | Complete |
 | REPO-07 | Phase 12 | Complete |
-| DOCS-01 | Phase 13 | Pending |
-| DOCS-02 | Phase 13 | Pending |
+| DOCS-01 | Phase 13 | Complete |
+| DOCS-02 | Phase 13 | Complete |
 | DOCS-03 | Phase 14 | Pending |
 | DOCS-04 | Phase 12 | Complete |
 | CICD-01 | Phase 14 | Pending |
