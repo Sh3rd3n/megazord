@@ -75,11 +75,11 @@ Plans:
   2. Pushing a version tag (e.g., `v1.1.0`) triggers a GitHub Actions workflow that builds and publishes to npm with provenance
   3. The publish workflow uses `oven-sh/setup-bun@v2` for build/test and `actions/setup-node@v4` + `npm publish` for the publish step
   4. README.md displays working badges for npm version, CI status, and license
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 14-01: TBD
-- [ ] 14-02: TBD
+- [ ] 14-01-PLAN.md — CI workflow (typecheck, lint, test on PR) + smoke test
+- [ ] 14-02-PLAN.md — Release workflow (npm publish with OIDC provenance on tag) + repo public + branch protection
 
 ### Phase 15: npm Publication
 **Goal**: Anyone can install Megazord from npm and it works on a clean machine with no prior setup
