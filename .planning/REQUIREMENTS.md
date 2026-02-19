@@ -72,33 +72,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPO-01 | — | Pending |
-| REPO-02 | — | Pending |
-| REPO-03 | — | Pending |
-| REPO-04 | — | Pending |
-| REPO-05 | — | Pending |
-| REPO-06 | — | Pending |
-| REPO-07 | — | Pending |
-| DOCS-01 | — | Pending |
-| DOCS-02 | — | Pending |
-| DOCS-03 | — | Pending |
-| DOCS-04 | — | Pending |
-| CICD-01 | — | Pending |
-| CICD-02 | — | Pending |
-| CICD-03 | — | Pending |
-| CICD-04 | — | Pending |
-| NPM-01 | — | Pending |
-| NPM-02 | — | Pending |
-| NPM-03 | — | Pending |
-| MKT-01 | — | Pending |
-| MKT-02 | — | Pending |
-| MKT-03 | — | Pending |
+| REPO-01 | Phase 12 | Pending |
+| REPO-02 | Phase 12 | Pending |
+| REPO-03 | Phase 12 | Pending |
+| REPO-04 | Phase 12 | Pending |
+| REPO-05 | Phase 12 | Pending |
+| REPO-06 | Phase 12 | Pending |
+| REPO-07 | Phase 12 | Pending |
+| DOCS-01 | Phase 13 | Pending |
+| DOCS-02 | Phase 13 | Pending |
+| DOCS-03 | Phase 14 | Pending |
+| DOCS-04 | Phase 12 | Pending |
+| CICD-01 | Phase 14 | Pending |
+| CICD-02 | Phase 14 | Pending |
+| CICD-03 | Phase 14 | Pending |
+| CICD-04 | Phase 14 | Pending |
+| NPM-01 | Phase 15 | Pending |
+| NPM-02 | Phase 15 | Pending |
+| NPM-03 | Phase 15 | Pending |
+| MKT-01 | Phase 16 | Pending |
+| MKT-02 | Phase 16 | Pending |
+| MKT-03 | Phase 16 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21
+- Mapped to phases: 21
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-19*
-*Last updated: 2026-02-19 after initial definition*
+*Last updated: 2026-02-19 — traceability updated with phase mappings*
