@@ -25,7 +25,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PROJ-06**: User can resume from any previous session with `/mz:resume` restoring full context from STATE.md
 - [x] **PROJ-07**: User can execute quick tasks with `/mz:quick` bypassing full project ceremony
 - [x] **PROJ-08**: Each completed task produces exactly one atomic git commit with descriptive message
-- [ ] **PROJ-09**: User can manage full project lifecycle: roadmap, phases, milestones, phase transitions
+- [x] **PROJ-09**: User can manage full project lifecycle: roadmap, phases, milestones, phase transitions
 - [x] **PROJ-10**: User can analyze existing codebases with `/mz:map` for brownfield project support
 - [x] **PROJ-11**: Context management prevents context rot via fresh subagent spawning, dimensioned state files, and lazy loading
 - [x] **PROJ-12**: Framework overhead stays under 15% of context window at session start
