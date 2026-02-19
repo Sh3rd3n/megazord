@@ -11,7 +11,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **DIST-01**: Framework distributed as Claude Code plugin with `plugin.json` manifest and namespaced skills (`/mz:command`)
 - [ ] **DIST-02**: ~12 slash commands available: init, plan, go, status, resume, quick, review, debug, verify, discuss, pause, map
-- [ ] **DIST-03**: npm fallback installation via `bunx megazord` for environments without plugin marketplace
+- [x] **DIST-03**: npm fallback installation via `bunx megazord` for environments without plugin marketplace
 - [ ] **DIST-04**: Plugin coexists safely with other installed frameworks (no conflicts with GSD, Superpowers)
 - [ ] **DIST-05**: TypeScript orchestration CLI (`mz-tools`) compiled and bundled for state management, git operations, config parsing
 
@@ -103,7 +103,7 @@ Deferred to future release. Tracked but not in current roadmap.
 |-------------|-------|--------|
 | DIST-01 | Phase 1 | Pending |
 | DIST-02 | Phase 3 | Pending |
-| DIST-03 | Phase 10 | Pending |
+| DIST-03 | Phase 10 | Complete |
 | DIST-04 | Phase 1 | Pending |
 | DIST-05 | Phase 1 | Pending |
 | PROJ-01 | Phase 2 | Pending |
