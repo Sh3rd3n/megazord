@@ -1,59 +1,70 @@
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { createInterface } from "node:readline";
-import { success, dim } from "../utils/colors.js";
-import { createSpinner, spinnerSuccess } from "../utils/spinner.js";
+import { megazordDir, installedPluginsPath, settingsPath } from "../../lib/paths.js";
 
-/** Prompt user for a yes/no confirmation. Returns true if confirmed. */
-async function confirm(message: string): Promise<boolean> {
-	const rl = createInterface({ input: process.stdin, output: process.stdout });
-	return new Promise((resolve) => {
-		rl.question(`${message} (y/N) `, (answer) => {
-			rl.close();
-			resolve(
-				answer.trim().toLowerCase() === "y" ||
-					answer.trim().toLowerCase() === "yes",
-			);
-		});
-	});
-}
+const PLUGIN_KEY = "mz@megazord-marketplace";
 
-/** Main uninstall flow. */
+/** Main uninstall flow. Silent, removes ~/.claude/megazord/ and deregisters. */
 export async function uninstall(): Promise<void> {
-	const skipPrompts = process.argv.includes("--yes") || !process.stdin.isTTY;
-
-	if (!skipPrompts) {
-		const proceed = await confirm("  Uninstall Megazord?");
-		if (!proceed) {
-			console.log(dim("  Cancelled."));
-			return;
+	try {
+		// Remove megazord directory
+		if (existsSync(megazordDir)) {
+			rmSync(megazordDir, { recursive: true, force: true });
 		}
+
+		// Deregister via claude CLI
+		try {
+			execSync("claude plugin uninstall mz", {
+				stdio: "pipe",
+				timeout: 15_000,
+			});
+		} catch {
+			// Plugin may not be registered — continue
+		}
+
+		// Remove marketplace
+		try {
+			execSync("claude plugin marketplace remove megazord-marketplace", {
+				stdio: "pipe",
+				timeout: 15_000,
+			});
+		} catch {
+			// Marketplace may not exist — continue
+		}
+
+		// Clean up installed_plugins.json
+		if (existsSync(installedPluginsPath)) {
+			try {
+				const installed = JSON.parse(readFileSync(installedPluginsPath, "utf-8"));
+				const plugins = (installed.plugins ?? {}) as Record<string, unknown>;
+				if (plugins[PLUGIN_KEY]) {
+					delete plugins[PLUGIN_KEY];
+					installed.plugins = plugins;
+					writeFileSync(installedPluginsPath, JSON.stringify(installed, null, 2));
+				}
+			} catch {
+				// Best-effort cleanup
+			}
+		}
+
+		// Clean up settings.json
+		if (existsSync(settingsPath)) {
+			try {
+				const settings = JSON.parse(readFileSync(settingsPath, "utf-8"));
+				const enabledPlugins = (settings.enabledPlugins ?? {}) as Record<string, boolean>;
+				if (enabledPlugins[PLUGIN_KEY] !== undefined) {
+					delete enabledPlugins[PLUGIN_KEY];
+					settings.enabledPlugins = enabledPlugins;
+					writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
+				}
+			} catch {
+				// Best-effort cleanup
+			}
+		}
+
+		console.log("Megazord uninstalled");
+	} catch (err) {
+		console.log(`Error: ${err instanceof Error ? err.message : String(err)}`);
+		process.exit(1);
 	}
-
-	const spinner = createSpinner("Uninstalling Megazord...");
-	spinner.start();
-
-	// Uninstall via claude CLI (handles cache, registry, settings)
-	try {
-		execSync("claude plugin uninstall mz", {
-			stdio: "pipe",
-			timeout: 15_000,
-		});
-	} catch {
-		// Plugin may not be registered — continue
-	}
-
-	// Remove marketplace
-	try {
-		execSync("claude plugin marketplace remove megazord-marketplace", {
-			stdio: "pipe",
-			timeout: 15_000,
-		});
-	} catch {
-		// Marketplace may not exist
-	}
-
-	spinnerSuccess(spinner, "Megazord uninstalled");
-	console.log("");
-	console.log(success("  Megazord has been removed."));
-	console.log("");
 }
