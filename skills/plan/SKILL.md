@@ -203,7 +203,16 @@ Check if `{phase_dir}/{padded}-CONTEXT.md` exists (e.g., `.planning/phases/03-co
   ✓ Found {padded}-CONTEXT.md
 ```
 
-**If CONTEXT.md is missing:** Display a warning (not an error):
+**If CONTEXT.md is missing:** Display a warning (not an error). The warning varies based on the `quality.brainstorming` config setting:
+
+When `quality.brainstorming` is **true** in config:
+```
+▸ Context
+  ⚠ No context found for Phase {N}.
+  💡 Brainstorming is enabled -- run /mz:discuss first for better results, or continue without.
+```
+
+When `quality.brainstorming` is **false** in config:
 ```
 ▸ Context
   ⚠ No context found for Phase {N}. Run /mz:discuss first for better results, or continue without.
@@ -240,17 +249,21 @@ Spawn the researcher agent:
 1. Read `{plugin_path}/agents/mz-researcher.md` file content into memory.
 2. Read all context files into memory: STATE.md, ROADMAP.md, CONTEXT.md (if exists).
 3. Extract the relevant phase section from ROADMAP.md -- the `### Phase {N}: {Name}` section, not the entire roadmap. Include the phase goal, dependencies, requirements, and success criteria.
-4. Spawn researcher via Task tool:
-   - `subagent_type`: "general-purpose"
+4. **Resolve the model for the researcher agent:**
+   - Read `model_profile` and `model_overrides` from the loaded config.
+   - Determine the model: check if `model_overrides.researcher` is set and not `"inherit"`. If so, use that value. Otherwise, use the profile mapping: quality->opus, balanced->sonnet, budget->haiku.
+   - Update the researcher agent file's YAML frontmatter `model` field to the resolved value. Use simple string replacement to rewrite the `model: {value}` line in `{plugin_path}/agents/mz-researcher.md` (e.g., replace `model: inherit` or `model: sonnet` with `model: {resolved_value}`).
+5. Spawn researcher via Task tool:
+   - `subagent_type`: `"mz-researcher"`
    - `description`: "Research Phase {N}: {Name}"
-   - `prompt`: Compose the prompt with all content inline (see agents.md for the exact pattern):
-     - Agent definition text from mz-researcher.md
+   - `prompt`: Compose the prompt with per-invocation context only (the agent definition is loaded from the registered agent file):
      - Project state from STATE.md
      - Phase section from ROADMAP.md
      - Context decisions from CONTEXT.md (if available)
      - Output path: `{phase_dir}/{padded}-RESEARCH.md`
+   - **Fallback:** If spawning with `subagent_type="mz-researcher"` fails, fall back to `subagent_type="general-purpose"` with the agent definition embedded inline in `<agent_role>` tags (same as the pre-model-aware pattern).
 
-5. Wait for completion. After the researcher finishes, read the produced RESEARCH.md.
+6. Wait for completion. After the researcher finishes, read the produced RESEARCH.md.
 
 Display:
 ```
@@ -291,11 +304,15 @@ Display:
 
 Read `{plugin_path}/agents/mz-planner.md` file content into memory.
 
+**Resolve the model for the planner agent:**
+- Read `model_profile` and `model_overrides` from the loaded config.
+- Determine the model: check if `model_overrides.planner` is set and not `"inherit"`. If so, use that value. Otherwise, use differentiated profile mapping: quality->opus, balanced->opus (planner is promoted), budget->sonnet (planner is promoted).
+- Update the planner agent file's YAML frontmatter `model` field to the resolved value. Use simple string replacement to rewrite the `model: {value}` line in `{plugin_path}/agents/mz-planner.md`.
+
 Spawn the planner via Task tool:
-- `subagent_type`: "general-purpose"
+- `subagent_type`: `"mz-planner"`
 - `description`: "Plan Phase {N}: {Name}"
-- `prompt`: Compose the prompt with all content inline (see agents.md for the exact pattern):
-  - Agent definition text from mz-planner.md
+- `prompt`: Compose the prompt with per-invocation context only (the agent definition is loaded from the registered agent file):
   - Project state from STATE.md
   - Phase section from ROADMAP.md
   - Research findings from RESEARCH.md
@@ -311,6 +328,7 @@ Spawn the planner via Task tool:
     ```
     This gives the planner awareness of existing architecture, tech stack, conventions, and concerns when creating brownfield roadmaps.
   - Output directory: `{phase_dir}/`
+- **Fallback:** If spawning with `subagent_type="mz-planner"` fails, fall back to `subagent_type="general-purpose"` with the agent definition embedded inline in `<agent_role>` tags (same as the pre-model-aware pattern).
 
 Wait for completion. The planner writes PLAN.md files directly to the phase directory.
 
@@ -330,6 +348,53 @@ Display:
 ```
 ▸ Planning
   ✓ Created {N} plan(s)
+```
+
+## Step 6b: Plan Verification (conditional)
+
+Determine whether to run plan verification:
+
+1. **Check config:** Read `workflow.plan_check` from megazord.config.json. If false, skip to Step 7.
+
+**If plan_check is enabled:**
+
+Display:
+```
+▸ Plan Check
+  ◆ Validating plans...
+```
+
+For each created PLAN.md file, validate using the CLI tool:
+```bash
+node {plugin_path}/bin/megazord.mjs tools frontmatter validate "{plan_path}" --schema plan
+```
+
+And validate plan structure:
+```bash
+node {plugin_path}/bin/megazord.mjs tools verify plan-structure "{plan_path}"
+```
+
+If validation errors are found:
+- Display each error with the plan file and issue description
+- Attempt to fix common issues (missing elements, frontmatter problems) by re-reading the plan file and making targeted edits
+- Re-validate after fixes
+
+Display result:
+```
+▸ Plan Check
+  ✓ {N} plan(s) validated
+```
+
+Or if issues remain:
+```
+▸ Plan Check
+  ⚠ {N} issue(s) found -- check plan files manually
+```
+
+**If plan_check was skipped (config):**
+```
+▸ Plan Check
+  ~ Skipped (disabled in config)
 ```
 
 ## Step 7: Update State
