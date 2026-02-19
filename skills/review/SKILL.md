@@ -72,8 +72,12 @@ Display the scope:
 
 - Read `.planning/megazord.config.json` (optional -- review works even without config).
 - If a plan is specified (--plan), read the PLAN.md for task definitions and requirements context.
-- Read `agents/mz-reviewer.md` content using the Read tool.
-- Determine the plugin path for CLI commands.
+- Determine the plugin path:
+  1. Read `plugin_path` from the config JSON (if config was loaded).
+  2. If `plugin_path` is not set in config, try `~/.claude/plugins/mz`. Check if `~/.claude/plugins/mz/bin/megazord.mjs` exists.
+  3. If neither exists, display error and stop:
+     > Plugin path not configured. Run `/mz:settings` and set `plugin_path`, or re-run `/mz:init`.
+- Read `{plugin_path}/agents/mz-reviewer.md` content using the Read tool.
 
 ## Step 4: Prepare Review Context
 
@@ -210,7 +214,7 @@ If issues found:
 ## Notes
 
 - This skill works independently of `config.quality.review`. Even if review is set to "off" in config, `/mz:review` can still be invoked manually.
-- The reviewer agent (agents/mz-reviewer.md) is the same agent used by the /mz:go execution pipeline. Reports use the same format and severity levels.
+- The reviewer agent (`{plugin_path}/agents/mz-reviewer.md`) is the same agent used by the /mz:go execution pipeline. Reports use the same format and severity levels.
 - For plan-scoped reviews, the SUMMARY.md commit hashes are used to compute the diff range covering all tasks in that plan.
-- The `{plugin_path}` for CLI commands is the Megazord plugin directory. Resolve it from the skill's installation location or use a known path.
+- The `{plugin_path}` for CLI commands and agent files is resolved from `config.plugin_path`, falling back to `~/.claude/plugins/mz`.
 - ALWAYS use bun/bunx for JavaScript/TypeScript operations (never npm/npx).

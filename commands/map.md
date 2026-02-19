@@ -1,5 +1,4 @@
 ---
-name: map
 description: Analyze existing codebase for brownfield project support
 ---
 
