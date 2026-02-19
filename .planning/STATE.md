@@ -10,15 +10,15 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Phase: 9 of 9 (Config Consumption Wiring)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In Progress
-Last activity: 2026-02-19 -- Plan 09-01 complete (model resolution, agent frontmatter, dead code cleanup)
+Last activity: 2026-02-19 -- Plan 09-02 complete (model selection and toggle gating in /mz:plan and /mz:map)
 
-Progress: [████████████████████░░] 93%
+Progress: [█████████████████████░] 96%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 22
+- Total plans completed: 23
 - Average duration: 3min
 - Total execution time: 1.32 hours
 
@@ -35,13 +35,14 @@ Progress: [████████████████████░░] 9
 | 07 | 2/2 | 6min | 3min |
 
 | 08 | 3/3 | 10min | 3.3min |
-| 09 | 1/3 | 3min | 3min |
+| 09 | 2/3 | 6min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 07-02 (3min), 08-01 (3min), 08-02 (4min), 08-03 (3min), 09-01 (3min)
+- Last 5 plans: 08-01 (3min), 08-02 (4min), 08-03 (3min), 09-01 (3min), 09-02 (3min)
 - Trend: Consistent
 
 *Updated after each plan completion*
+| Phase 09 P02 | 3min | 2 tasks | 4 files |
 | Phase 09 P01 | 3min | 2 tasks | 8 files |
 | Phase 08 P01 | 3min | 2 tasks | 4 files |
 | Phase 07 P02 | 3min | 3 tasks | 3 files |
@@ -130,6 +131,8 @@ Recent decisions affecting current work:
 - [Phase 08]: Phase 8-03: Milestone audit writes MILESTONE-AUDIT.md to .planning/ root (spans all phases)
 - Phase 9-01: z.object with optional fields for modelOverridesSchema (z.record with z.enum key requires all keys, incompatible with partial overrides)
 - Phase 9-01: Differentiated balanced profile: planner->opus, others->sonnet; budget profile: planner->sonnet, others->haiku
+- Phase 9-02: Named subagent types (mz-researcher, mz-planner, mz-mapper) with fallback to general-purpose + inline embedding
+- Phase 9-02: Task prompts carry only per-invocation context when using registered subagent names
 
 ### Pending Todos
 
@@ -143,7 +146,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 09-01-PLAN.md
-Resume file: .planning/phases/09-config-consumption-wiring/09-02-PLAN.md
+Stopped at: Completed 09-02-PLAN.md
+Resume file: .planning/phases/09-config-consumption-wiring/09-03-PLAN.md
 Stash ref: None
 Last error: None
