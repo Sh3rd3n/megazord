@@ -89,7 +89,7 @@ Plans:
   1. `npm view megazord-cli` returns package metadata from the npm registry
   2. `bunx megazord-cli` on a clean machine installs successfully and the CLI responds
   3. After `bunx megazord-cli install`, all plugin files (skills, agents, hooks, commands) are in `~/.claude/`
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [ ] 15-01-PLAN.md — Package.json publishConfig, dual bin entry, version bump to 1.1.0, paths.ts megazordDir
@@ -131,7 +131,7 @@ Phases 12 through 16 execute sequentially. Phase 14 depends on Phase 12 (not 13)
 | 12. Package Foundation | 2/2 | Complete    | 2026-02-19 | - |
 | 13. Documentation | 1/1 | Complete    | 2026-02-19 | - |
 | 14. CI/CD Pipeline | 2/2 | Complete    | 2026-02-19 | - |
-| 15. npm Publication | 1/3 | In Progress|  | - |
+| 15. npm Publication | 2/3 | In Progress|  | - |
 | 16. Marketplace | v1.1 | 0/? | Not started | - |
 
 ---
