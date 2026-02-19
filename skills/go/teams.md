@@ -105,6 +105,10 @@ TaskCreate({
 
 Tasks are pre-assigned to their respective executors via `TaskUpdate({ taskId, owner: "exec-{plan_id}" })` to avoid race conditions in task claiming.
 
+## Model Selection for Teammates
+
+Before spawning teammates, the orchestrator updates agent frontmatter `model` fields based on config `model_profile` and `model_overrides`. This uses the same `resolveAgentModel()` resolution as subagent mode. Model selection is transparent to teammates -- they run on whatever model the orchestrator configured.
+
 ## Teammate Spawning
 
 Spawn teammates via the Task tool with the `team_name` parameter. All teammates must be spawned BEFORE the lead enters coordination mode.
