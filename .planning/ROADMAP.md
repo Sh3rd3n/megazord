@@ -156,6 +156,12 @@ Plans:
   2. Setting `workflow.plan_check` to false in config causes `/mz:plan` to skip the plan-checker agent
   3. Setting `workflow.verifier` to false in config causes the execution pipeline to skip post-phase verification
   4. Dead `ownership.ts` library exports are removed (enforcement works via shell hook)
+**Plans**: 3 plans
+
+Plans:
+- [ ] 09-01-PLAN.md -- Config schema extension, model resolution function, agent frontmatter, dead code cleanup
+- [ ] 09-02-PLAN.md -- Wire model selection and toggle gating into /mz:plan and /mz:map
+- [ ] 09-03-PLAN.md -- Wire model selection and toggles into /mz:go, /mz:status, /mz:debug, /mz:verify
 
 ### Phase 10: Distribution and Autocomplete Fixes
 **Goal**: npm-installed users get full autocomplete for all skills, and the REQUIREMENTS.md traceability table accurately reflects project status
@@ -191,7 +197,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 6. Agent Teams Integration | 0/3 | Complete    | 2026-02-18 |
 | 7. Quality and Debugging Skills | 0/2 | Complete    | 2026-02-18 |
 | 8. Brownfield Support and Project Lifecycle | 1/3 | Complete    | 2026-02-18 |
-| 9. Config Consumption Wiring | 0/0 | Pending | — |
+| 9. Config Consumption Wiring | 0/3 | Planned | — |
 | 10. Distribution and Autocomplete Fixes | 0/0 | Pending | — |
 | 11. Milestone Lifecycle Completion | 0/0 | Pending | — |
 
