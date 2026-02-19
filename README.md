@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/megazord-hero.svg" alt="Megazord" width="600" />
+  <img src="https://raw.githubusercontent.com/Sh3rd3n/megazord/master/assets/megazord-hero.svg" alt="Megazord" width="600" />
 </p>
 
 <p align="center">
