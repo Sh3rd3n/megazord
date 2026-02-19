@@ -32,6 +32,19 @@ export const agentTeamsSchema = z.object({
 	strict_ownership: z.boolean().default(false),
 });
 
+/** Model values for agent overrides */
+const modelEnum = z.enum(["opus", "sonnet", "haiku", "inherit"]);
+
+/** Per-agent model overrides — optional, override wins over profile */
+export const modelOverridesSchema = z.object({
+	researcher: modelEnum.optional(),
+	planner: modelEnum.optional(),
+	executor: modelEnum.optional(),
+	reviewer: modelEnum.optional(),
+	verifier: modelEnum.optional(),
+	mapper: modelEnum.optional(),
+}).optional();
+
 // ─── Full config schema ─────────────────────────────────────────────────────
 
 /** Megazord project configuration schema — single source of truth */
@@ -59,6 +72,9 @@ export const configSchema = z.object({
 
 	/** AI model selection for planning agents */
 	model_profile: z.enum(["quality", "balanced", "budget"]).default("quality"),
+
+	/** Per-agent model overrides (optional, override wins over profile) */
+	model_overrides: modelOverridesSchema.default({}),
 
 	/** Quality discipline settings */
 	quality: qualitySchema.default({
@@ -94,6 +110,7 @@ export type MegazordConfig = z.infer<typeof configSchema>;
 export const presets: Record<string, Partial<MegazordConfig>> = {
 	strict: {
 		model_profile: "quality",
+		model_overrides: {},
 		quality: {
 			tdd: true,
 			review: "auto",
@@ -113,6 +130,7 @@ export const presets: Record<string, Partial<MegazordConfig>> = {
 	},
 	balanced: {
 		model_profile: "balanced",
+		model_overrides: {},
 		quality: {
 			tdd: false,
 			review: "auto",
@@ -132,6 +150,7 @@ export const presets: Record<string, Partial<MegazordConfig>> = {
 	},
 	minimal: {
 		model_profile: "budget",
+		model_overrides: {},
 		quality: {
 			tdd: false,
 			review: "off",
@@ -150,6 +169,54 @@ export const presets: Record<string, Partial<MegazordConfig>> = {
 		},
 	},
 };
+
+// ─── Model resolution ──────────────────────────────────────────────────────
+
+/** Agent roles that support model selection */
+export type AgentRole = "researcher" | "planner" | "executor" | "reviewer" | "verifier" | "mapper";
+
+/** Uniform profile-to-model mapping (all agents same model) */
+const UNIFORM_MODEL_MAP: Record<string, string> = {
+	quality: "opus",
+	balanced: "sonnet",
+	budget: "haiku",
+};
+
+/**
+ * Differentiated "balanced" profile: planner gets opus for higher-quality
+ * reasoning, all others get sonnet. Quality and budget profiles remain uniform.
+ */
+const BALANCED_PLANNER_MODEL = "opus";
+const BUDGET_PLANNER_MODEL = "sonnet";
+
+/**
+ * Resolve the model for a specific agent role based on profile and overrides.
+ *
+ * Precedence: model_overrides[role] > profile mapping.
+ * Override "inherit" means "use profile mapping" (same as no override).
+ */
+export function resolveAgentModel(
+	config: MegazordConfig,
+	agentRole: AgentRole,
+): string {
+	// 1. Check per-agent override (override wins, period)
+	const override = config.model_overrides?.[agentRole];
+	if (override && override !== "inherit") {
+		return override;
+	}
+
+	// 2. Differentiated profiles for specific roles
+	const profile = config.model_profile;
+	if (profile === "balanced" && agentRole === "planner") {
+		return BALANCED_PLANNER_MODEL;
+	}
+	if (profile === "budget" && agentRole === "planner") {
+		return BUDGET_PLANNER_MODEL;
+	}
+
+	// 3. Uniform mapping
+	return UNIFORM_MODEL_MAP[profile] ?? "opus";
+}
 
 // ─── Load / Save utilities ──────────────────────────────────────────────────
 
