@@ -14,7 +14,7 @@ Visual identity tokens for all Megazord output. Every skill references this file
 ║  ██║ ╚═╝ ██║███████╗╚██████╔╝██║  ██║███████╗╚██████╔╝██║  ██║██████╔╝  ║
 ║  ╚═╝     ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝   ║
 ║                                                                         ║
-║  ⚡ MEGAZORD v{VERSION}                                                  ║
+║  ⚡ MEGAZORD v{VERSION}                                                 ║
 ║  Project Management × Code Quality × Agent Teams                        ║
 ║                                                                         ║
 ╚═════════════════════════════════════════════════════════════════════════╝
