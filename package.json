@@ -1,9 +1,31 @@
 {
-  "name": "megazord",
-  "version": "0.1.0",
+  "name": "megazord-cli",
+  "version": "1.0.0",
   "type": "module",
   "description": "Claude Code framework unifying project management, code quality, and multi-agent coordination",
   "license": "MIT",
+  "author": {
+    "name": "Luca Derosas",
+    "url": "https://github.com/sh3rd3n"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sh3rd3n/megazord.git"
+  },
+  "homepage": "https://github.com/sh3rd3n/megazord",
+  "bugs": {
+    "url": "https://github.com/sh3rd3n/megazord/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "ai-agent",
+    "project-management",
+    "code-quality",
+    "multi-agent",
+    "workflow",
+    "cli"
+  ],
   "engines": {
     "node": ">=22"
   },
@@ -12,12 +34,13 @@
   },
   "files": [
     "bin",
-    "dist",
+    "scripts",
     "skills",
     "agents",
     "hooks",
     "commands",
-    ".claude-plugin"
+    ".claude-plugin",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsdown",

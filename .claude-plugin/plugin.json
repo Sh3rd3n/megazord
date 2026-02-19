@@ -1,18 +1,18 @@
 {
   "name": "mz",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Unified framework for project management, code quality, and multi-agent coordination",
   "author": {
-    "name": "Megazord"
+    "name": "Luca Derosas"
   },
-  "homepage": "https://github.com/megazord/megazord",
-  "repository": "https://github.com/megazord/megazord",
+  "homepage": "https://github.com/sh3rd3n/megazord",
+  "repository": "https://github.com/sh3rd3n/megazord",
   "license": "MIT",
   "keywords": [
     "project-management",
     "code-quality",
     "agent-teams",
-    "tdd",
+    "claude-code-plugin",
     "workflow"
   ]
 }
