@@ -27,9 +27,9 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 ### CI/CD Pipeline
 
 - [x] **CICD-01**: GitHub Actions CI workflow — lint + typecheck + test on every PR
-- [ ] **CICD-02**: GitHub Actions CD workflow — build + npm publish on tag/release
+- [x] **CICD-02**: GitHub Actions CD workflow — build + npm publish on tag/release
 - [x] **CICD-03**: CI uses `oven-sh/setup-bun@v2` for bun and `actions/setup-node@v4` for npm publish
-- [ ] **CICD-04**: npm publish with provenance (OIDC or granular token)
+- [x] **CICD-04**: npm publish with provenance (OIDC or granular token)
 
 ### npm Publication
 
@@ -84,9 +84,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DOCS-03 | Phase 14 | Complete |
 | DOCS-04 | Phase 12 | Complete |
 | CICD-01 | Phase 14 | Complete |
-| CICD-02 | Phase 14 | Pending |
+| CICD-02 | Phase 14 | Complete |
 | CICD-03 | Phase 14 | Complete |
-| CICD-04 | Phase 14 | Pending |
+| CICD-04 | Phase 14 | Complete |
 | NPM-01 | Phase 15 | Pending |
 | NPM-02 | Phase 15 | Pending |
 | NPM-03 | Phase 15 | Pending |
