@@ -107,15 +107,24 @@ Read the mapper agent definition ONCE and reuse for all spawns:
 Read {plugin_path}/agents/mz-mapper.md -> mapper_instructions
 ```
 
+### Resolve Model for Mapper Agents
+
+Before spawning, determine the model for mapper agents:
+
+1. Read `model_profile` and `model_overrides` from the loaded config.
+2. Determine the mapper model: check if `model_overrides.mapper` is set and not `"inherit"`. If so, use that value. Otherwise, use the profile mapping: quality->opus, balanced->sonnet, budget->haiku.
+3. Update `{plugin_path}/agents/mz-mapper.md` frontmatter `model` field to the resolved value. Use simple string replacement to rewrite the `model: {value}` line.
+
 For each selected focus area, spawn one Task tool agent. Spawn ALL agents in parallel (or just the focused one if a focus parameter was given).
 
 For each agent, the Task prompt must include:
-- The full agent definition from `mz-mapper.md` embedded inline in `<agent_role>` tags
 - The focus area in `<focus>` tags
 - The output directory in `<output_dir>` tags
 - Specific instructions for what documents to write
 
-**Important:** Use `subagent_type="general-purpose"` for all agents. See `@skills/map/mapper.md` for the exact prompt structure.
+**Important:** Use `subagent_type="mz-mapper"` for all agents. The agent definition is loaded from the registered agent file (frontmatter already updated with the resolved model). See `@skills/map/mapper.md` for the exact prompt structure.
+
+**Fallback:** If spawning with `subagent_type="mz-mapper"` fails, fall back to `subagent_type="general-purpose"` with the agent definition embedded inline in `<agent_role>` tags.
 
 Display progress for each active agent:
 ```
@@ -152,21 +161,22 @@ If any expected files are missing, display a warning but continue:
 
 **Only run synthesis when ALL 4 areas were mapped** (not on focused single-area runs).
 
-Spawn the synthesis agent:
+Spawn the synthesis agent (model is already set from the frontmatter update in Step 5):
 
 ```
 Task(
-  prompt="<agent_role>{mapper_instructions}</agent_role>
-  <focus>synthesis</focus>
+  prompt="<focus>synthesis</focus>
   <output_dir>.planning/codebase/</output_dir>
   <instructions>Read all 7 documents in .planning/codebase/ (STACK.md, INTEGRATIONS.md,
   ARCHITECTURE.md, STRUCTURE.md, CONVENTIONS.md, TESTING.md, CONCERNS.md).
   Produce a compact executive SUMMARY.md with cross-cutting insights.
   Write SUMMARY.md to the output directory. Return confirmation only.</instructions>",
-  subagent_type="general-purpose",
+  subagent_type="mz-mapper",
   description="Map codebase: synthesis"
 )
 ```
+
+**Fallback:** If spawning with `subagent_type="mz-mapper"` fails, fall back to `subagent_type="general-purpose"` with the agent definition embedded inline in `<agent_role>` tags.
 
 Display:
 ```
