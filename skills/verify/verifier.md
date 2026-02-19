@@ -10,7 +10,7 @@ The /mz:verify orchestrator reads the verifier agent definition and phase contex
 
 Before spawning a verifier subagent, the orchestrator must:
 
-1. **Read** `agents/mz-verifier.md` into memory
+1. **Read** `{plugin_path}/agents/mz-verifier.md` into memory (where `{plugin_path}` is resolved from `config.plugin_path`, falling back to `~/.claude/plugins/mz`)
 2. **Read** all PLAN.md files in the phase directory (extract frontmatter must_haves)
 3. **Read** all SUMMARY.md files in the phase directory (extract key accomplishments, files, decisions)
 4. **Read** `.planning/ROADMAP.md` for phase goal and success criteria
