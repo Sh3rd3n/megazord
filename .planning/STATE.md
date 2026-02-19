@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** One framework that handles the entire development lifecycle with agents that actually communicate and coordinate
-**Current focus:** Phase 9 in progress -- Config Consumption Wiring
+**Current focus:** Phase 9 complete -- Config Consumption Wiring
 
 ## Current Position
 
 Phase: 9 of 9 (Config Consumption Wiring)
-Plan: 2 of 3 in current phase
-Status: In Progress
-Last activity: 2026-02-19 -- Plan 09-02 complete (model selection and toggle gating in /mz:plan and /mz:map)
+Plan: 3 of 3 in current phase
+Status: Complete
+Last activity: 2026-02-19 -- Plan 09-03 complete (execution, status, debug, verify config wiring)
 
-Progress: [█████████████████████░] 96%
+Progress: [██████████████████████] 100%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 23
+- Total plans completed: 24
 - Average duration: 3min
-- Total execution time: 1.32 hours
+- Total execution time: 1.39 hours
 
 **By Phase:**
 
@@ -35,19 +35,19 @@ Progress: [█████████████████████░] 9
 | 07 | 2/2 | 6min | 3min |
 
 | 08 | 3/3 | 10min | 3.3min |
-| 09 | 2/3 | 6min | 3min |
+| 09 | 3/3 | 10min | 3.3min |
 
 **Recent Trend:**
-- Last 5 plans: 08-01 (3min), 08-02 (4min), 08-03 (3min), 09-01 (3min), 09-02 (3min)
+- Last 5 plans: 08-02 (4min), 08-03 (3min), 09-01 (3min), 09-02 (3min), 09-03 (4min)
 - Trend: Consistent
 
 *Updated after each plan completion*
+| Phase 09 P03 | 4min | 2 tasks | 6 files |
 | Phase 09 P02 | 3min | 2 tasks | 4 files |
 | Phase 09 P01 | 3min | 2 tasks | 8 files |
 | Phase 08 P01 | 3min | 2 tasks | 4 files |
 | Phase 07 P02 | 3min | 3 tasks | 3 files |
 | Phase 07 P01 | 3min | 2 tasks | 3 files |
-| Phase 08 P03 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -133,6 +133,8 @@ Recent decisions affecting current work:
 - Phase 9-01: Differentiated balanced profile: planner->opus, others->sonnet; budget profile: planner->sonnet, others->haiku
 - Phase 9-02: Named subagent types (mz-researcher, mz-planner, mz-mapper) with fallback to general-purpose + inline embedding
 - Phase 9-02: Task prompts carry only per-invocation context when using registered subagent names
+- Phase 9-03: Named subagent_type=mz-executor with fallback to general-purpose for compatibility
+- Phase 9-03: Config section in /mz:status appears in both compact and verbose modes per user request
 
 ### Pending Todos
 
@@ -146,7 +148,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 09-02-PLAN.md
-Resume file: .planning/phases/09-config-consumption-wiring/09-03-PLAN.md
+Stopped at: Completed 09-03-PLAN.md (Phase 9 complete, all phases delivered)
+Resume file: None (all phases complete)
 Stash ref: None
 Last error: None
