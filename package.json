@@ -1,6 +1,6 @@
 {
   "name": "megazord-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "description": "Claude Code framework unifying project management, code quality, and multi-agent coordination",
   "license": "MIT",
@@ -29,8 +29,13 @@
   "engines": {
     "node": ">=22"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "bin": {
-    "megazord": "bin/megazord.mjs"
+    "megazord": "bin/megazord.mjs",
+    "megazord-cli": "bin/megazord.mjs"
   },
   "files": [
     "bin",
