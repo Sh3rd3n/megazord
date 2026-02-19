@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import {
 	claudeDir,
 	gsdCommandsDir,
+	megazordDir,
 	settingsPath,
 	installedPluginsPath,
 } from "../../lib/paths.js";
@@ -43,8 +44,13 @@ export function detectPlugins(): PluginDetectionResult {
 		}
 	}
 
-	// Check installed_plugins.json for Megazord
-	if (existsSync(installedPluginsPath)) {
+	// Primary check: megazordDir exists
+	if (existsSync(megazordDir)) {
+		result.megazordInstalled = true;
+	}
+
+	// Secondary fallback: check installed_plugins.json for older installations
+	if (!result.megazordInstalled && existsSync(installedPluginsPath)) {
 		try {
 			const installed = JSON.parse(
 				readFileSync(installedPluginsPath, "utf-8"),

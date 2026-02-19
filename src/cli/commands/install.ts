@@ -1,108 +1,43 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { execSync } from "node:child_process";
-import { createInterface } from "node:readline";
 import {
-	pluginsCacheDir,
+	megazordDir,
+	megazordVersionPath,
 	knownMarketplacesPath,
 	installedPluginsPath,
 	settingsPath,
 } from "../../lib/paths.js";
-import { detectPlugins } from "../utils/detect-plugins.js";
-import { success, error, info, warn, bold, dim } from "../utils/colors.js";
-import { createSpinner, spinnerSuccess, spinnerFail } from "../utils/spinner.js";
 import { VERSION } from "../utils/version.js";
+
 const MARKETPLACE_NAME = "megazord-marketplace";
 const PLUGIN_NAME = "mz";
 const PLUGIN_KEY = `${PLUGIN_NAME}@${MARKETPLACE_NAME}`;
-
-/** Prompt user for a yes/no confirmation. Returns true if confirmed. */
-async function confirm(message: string): Promise<boolean> {
-	const rl = createInterface({ input: process.stdin, output: process.stdout });
-	return new Promise((resolve) => {
-		rl.question(`${message} (y/N) `, (answer) => {
-			rl.close();
-			resolve(answer.trim().toLowerCase() === "y" || answer.trim().toLowerCase() === "yes");
-		});
-	});
-}
-
-/** Prompt user with options. Returns the selected option string. */
-async function selectOption(message: string, options: string[]): Promise<string> {
-	const rl = createInterface({ input: process.stdin, output: process.stdout });
-	console.log(message);
-	for (let i = 0; i < options.length; i++) {
-		console.log(`  ${i + 1}. ${options[i]}`);
-	}
-	return new Promise((resolve) => {
-		rl.question("Select an option: ", (answer) => {
-			rl.close();
-			const idx = parseInt(answer.trim(), 10) - 1;
-			if (idx >= 0 && idx < options.length) {
-				resolve(options[idx]);
-			} else {
-				resolve(options[0]);
-			}
-		});
-	});
-}
 
 /** Get package root directory (one level up from bin/) */
 function getPackageRoot(): string {
 	return join(import.meta.dirname, "..");
 }
 
-/**
- * Create a local marketplace directory with proper Claude Code structure.
- * Returns the path to the marketplace directory.
- */
-function createLocalMarketplace(): string {
-	const packageRoot = getPackageRoot();
-	const marketplaceDir = join(packageRoot, ".megazord-marketplace");
-
-	// Create marketplace manifest
-	mkdirSync(join(marketplaceDir, ".claude-plugin"), { recursive: true });
-	writeFileSync(
-		join(marketplaceDir, ".claude-plugin", "marketplace.json"),
-		JSON.stringify(
-			{
-				name: MARKETPLACE_NAME,
-				owner: { name: "Megazord" },
-				plugins: [
-					{
-						name: PLUGIN_NAME,
-						source: `./${PLUGIN_NAME}`,
-						description:
-							"Unified framework for project management, code quality, and multi-agent coordination",
-					},
-				],
-			},
-			null,
-			2,
-		),
-	);
-
-	// Create plugin directory inside marketplace with actual plugin files
-	const pluginDir = join(marketplaceDir, PLUGIN_NAME);
-	mkdirSync(pluginDir, { recursive: true });
-
-	// Copy plugin structure into marketplace
-	const dirsToCopy = [".claude-plugin", "hooks", "skills", "commands"];
-	for (const dir of dirsToCopy) {
-		const src = join(packageRoot, dir);
-		if (existsSync(src)) {
-			copyDirSync(src, join(pluginDir, dir));
+/** Recursively copy a directory. */
+function copyDirSync(src: string, dest: string): void {
+	mkdirSync(dest, { recursive: true });
+	for (const entry of readdirSync(src)) {
+		const srcPath = join(src, entry);
+		const destPath = join(dest, entry);
+		if (statSync(srcPath).isDirectory()) {
+			copyDirSync(srcPath, destPath);
+		} else {
+			writeFileSync(destPath, readFileSync(srcPath));
 		}
 	}
-
-	return marketplaceDir;
 }
 
-/** Attempt to install via claude CLI. Returns true if successful. */
-function installViaClaudeCli(marketplacePath: string): boolean {
+/** Attempt to register via claude CLI. Returns true if successful. */
+function registerViaClaudeCli(): boolean {
 	try {
-		// Add marketplace
-		execSync(`claude plugin marketplace add "${marketplacePath}"`, {
+		// Add marketplace pointing to megazordDir
+		execSync(`claude plugin marketplace add "${megazordDir}"`, {
 			stdio: "pipe",
 			timeout: 30_000,
 		});
@@ -117,22 +52,8 @@ function installViaClaudeCli(marketplacePath: string): boolean {
 	}
 }
 
-/** Fallback: manually copy plugin files to cache and register everywhere. */
-function installFallback(marketplacePath: string): void {
-	const packageRoot = getPackageRoot();
-	const targetDir = join(pluginsCacheDir, MARKETPLACE_NAME, PLUGIN_NAME, VERSION);
-
-	mkdirSync(targetDir, { recursive: true });
-
-	// Copy all plugin directories
-	const dirsToCopy = [".claude-plugin", "hooks", "skills", "commands"];
-	for (const dir of dirsToCopy) {
-		const src = join(packageRoot, dir);
-		if (existsSync(src)) {
-			copyDirSync(src, join(targetDir, dir));
-		}
-	}
-
+/** Fallback: manually register megazordDir in Claude Code's JSON files. */
+function registerFallback(): void {
 	// Register marketplace in known_marketplaces.json
 	let marketplaces: Record<string, unknown> = {};
 	if (existsSync(knownMarketplacesPath)) {
@@ -143,10 +64,11 @@ function installFallback(marketplacePath: string): void {
 		}
 	}
 	marketplaces[MARKETPLACE_NAME] = {
-		source: { source: "directory", path: marketplacePath },
-		installLocation: marketplacePath,
+		source: { source: "directory", path: megazordDir },
+		installLocation: megazordDir,
 		lastUpdated: new Date().toISOString(),
 	};
+	mkdirSync(join(megazordDir, ".."), { recursive: true });
 	writeFileSync(knownMarketplacesPath, JSON.stringify(marketplaces, null, 2));
 
 	// Register in installed_plugins.json
@@ -164,7 +86,7 @@ function installFallback(marketplacePath: string): void {
 	plugins[PLUGIN_KEY] = [
 		{
 			scope: "user",
-			installPath: targetDir,
+			installPath: megazordDir,
 			version: VERSION,
 			installedAt: now,
 			lastUpdated: now,
@@ -188,22 +110,9 @@ function installFallback(marketplacePath: string): void {
 	writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
 }
 
-/** Recursively copy a directory. */
-function copyDirSync(src: string, dest: string): void {
-	mkdirSync(dest, { recursive: true });
-	for (const entry of readdirSync(src)) {
-		const srcPath = join(src, entry);
-		const destPath = join(dest, entry);
-		if (statSync(srcPath).isDirectory()) {
-			copyDirSync(srcPath, destPath);
-		} else {
-			writeFileSync(destPath, readFileSync(srcPath));
-		}
-	}
-}
-
-/** Verify that Megazord appears in installed_plugins.json. */
+/** Verify that Megazord is installed at megazordDir and registered. */
 function verifyInstallation(): boolean {
+	if (!existsSync(megazordDir)) return false;
 	if (!existsSync(installedPluginsPath)) return false;
 	try {
 		const installed = JSON.parse(readFileSync(installedPluginsPath, "utf-8"));
@@ -214,100 +123,60 @@ function verifyInstallation(): boolean {
 	}
 }
 
-/** Main install flow. */
+/** Main install flow. Silent, atomic, with rollback. */
 export async function install(): Promise<void> {
-	const skipPrompts = process.argv.includes("--yes") || !process.stdin.isTTY;
+	const packageRoot = getPackageRoot();
+	const tmpDir = `${megazordDir}.tmp.${Date.now()}`;
 
-	// Banner
-	console.log("");
-	console.log(bold(`  Megazord v${VERSION}`));
-	console.log(dim("  Unified framework for Claude Code"));
-	console.log("");
+	try {
+		// Copy all required directories to temp
+		mkdirSync(tmpDir, { recursive: true });
 
-	// Detect environment
-	const spinner = createSpinner("Detecting environment...");
-	spinner.start();
-	const detection = detectPlugins();
-	spinnerSuccess(spinner, "Environment detected");
+		const dirsToCopy = [".claude-plugin", "hooks", "skills", "commands", "agents", "scripts"];
+		for (const dir of dirsToCopy) {
+			const src = join(packageRoot, dir);
+			if (existsSync(src)) {
+				copyDirSync(src, join(tmpDir, dir));
+			}
+		}
 
-	// Check Claude Code
-	if (!detection.claudeCodeInstalled) {
-		console.log("");
-		console.log(error("  Claude Code not detected."));
-		console.log(dim("  Is Claude Code installed? Run `claude --version` to check."));
-		console.log("");
+		// Write .version file to temp
+		writeFileSync(join(tmpDir, ".version"), VERSION);
+
+		// Atomic swap: remove existing, rename temp to final
+		if (existsSync(megazordDir)) {
+			rmSync(megazordDir, { recursive: true, force: true });
+		}
+		renameSync(tmpDir, megazordDir);
+
+		// Register with Claude Code
+		const registered = registerViaClaudeCli();
+		if (!registered) {
+			registerFallback();
+		}
+
+		// Verify
+		if (!verifyInstallation()) {
+			console.log("Error: installation could not be verified");
+			process.exit(1);
+		}
+
+		console.log(`Megazord v${VERSION} installed at ${megazordDir}`);
+
+		// Seed update check (fire-and-forget)
+		import("../utils/update-check.js")
+			.then((m) => m.checkForUpdate())
+			.catch(() => {});
+	} catch (err) {
+		// Rollback: remove temp dir if it exists
+		try {
+			if (existsSync(tmpDir)) {
+				rmSync(tmpDir, { recursive: true, force: true });
+			}
+		} catch {
+			// Best-effort cleanup
+		}
+		console.log(`Error: ${err instanceof Error ? err.message : String(err)}`);
 		process.exit(1);
 	}
-
-	// Already installed?
-	if (detection.megazordInstalled && !skipPrompts) {
-		console.log(info("  Megazord is already installed."));
-		const choice = await selectOption("What would you like to do?", [
-			"Update",
-			"Reinstall",
-			"Uninstall",
-			"Cancel",
-		]);
-		if (choice === "Cancel") {
-			console.log(dim("  Cancelled."));
-			return;
-		}
-		if (choice === "Uninstall") {
-			const { uninstall } = await import("./uninstall.js");
-			await uninstall();
-			return;
-		}
-		// Update and Reinstall both proceed with installation
-	}
-
-	// Coexistence info
-	if (detection.gsdInstalled) {
-		console.log(
-			info("  GSD detected — Megazord coexists peacefully. Both /gsd: and /mz: commands will work."),
-		);
-	}
-	if (detection.superpowersInstalled) {
-		console.log(
-			info(
-				"  Superpowers detected — Megazord coexists peacefully. Both /superpowers: and /mz: commands will work.",
-			),
-		);
-	}
-
-	// Confirm
-	if (!skipPrompts) {
-		console.log("");
-		const proceed = await confirm("  Install Megazord?");
-		if (!proceed) {
-			console.log(dim("  Installation cancelled."));
-			return;
-		}
-	}
-
-	// Install
-	console.log("");
-	const installSpinner = createSpinner("Installing Megazord...");
-	installSpinner.start();
-
-	// Step 1: Create local marketplace with proper structure
-	const marketplacePath = createLocalMarketplace();
-
-	// Step 2: Try claude CLI, fall back to manual registration
-	const installed = installViaClaudeCli(marketplacePath);
-	if (!installed) {
-		installFallback(marketplacePath);
-	}
-
-	// Step 3: Verify
-	if (verifyInstallation()) {
-		spinnerSuccess(installSpinner, "Megazord installed!");
-	} else {
-		spinnerFail(installSpinner, "Installation could not be verified");
-		console.log(warn("  The plugin was installed but verification failed."));
-		console.log(dim("  Try running `/mz:help` in Claude Code to check if it works."));
-	}
-
-	console.log("");
-	console.log(success("  Megazord installed! Run /mz:help in Claude Code to get started."));
-	console.log("");
 }
