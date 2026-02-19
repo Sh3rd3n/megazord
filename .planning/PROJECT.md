@@ -28,7 +28,12 @@ One framework that handles the entire development lifecycle — from project ini
 
 ### Active
 
-(None yet — planning next milestone)
+<!-- v1.1 Distribution & Publication -->
+- [ ] GitHub repo creation and code push (sh3rd3n/megazord)
+- [ ] npm package publication (installable via `bunx megazord`)
+- [ ] Claude Code marketplace registration (plugin discovery)
+- [ ] README with quickstart, commands reference, usage examples
+- [ ] CI/CD via GitHub Actions (test on PR + publish on tag)
 
 ### Out of Scope
 
@@ -38,7 +43,8 @@ One framework that handles the entire development lifecycle — from project ini
 - Support for non-Claude AI providers — Claude Code native only
 - Backward compatibility with GSD/Superpowers configs — clean break, migration guide instead
 - Memory/RAG layer — CLAUDE.md + STATE.md + files on disk are sufficient
-- Plugin marketplace as primary distribution — npm primary, marketplace for discovery
+- TUI interface with agent team tabs — deferred to v1.2+
+- CORTEX thinking patterns (untools.co) and beads integration — deferred to v1.2+
 
 ## Context
 
@@ -78,5 +84,16 @@ Built in 3 days across 11 phases and 26 plans.
 | Advisory ownership enforcement | Shell hook reads .mz-agent-context.json, strict mode opt-in | ✓ Good — low friction default, strict available when needed |
 | Gap-closure phases (9-11) | Audit revealed stored-but-not-consumed config, distribution gaps | ✓ Good — all gaps closed before milestone |
 
+## Current Milestone: v1.1 Distribution & Publication
+
+**Goal:** Make Megazord installable and usable by anyone — GitHub repo, npm package, marketplace plugin, documentation, and CI/CD.
+
+**Target features:**
+- GitHub repository (sh3rd3n/megazord) with full code push
+- npm publication (`bunx megazord` works for anyone)
+- Claude Code marketplace registration for discovery
+- Solid README (quickstart, commands, examples)
+- GitHub Actions CI/CD (test on PR, publish on tag)
+
 ---
-*Last updated: 2026-02-19 after v1.0 milestone*
+*Last updated: 2026-02-19 after v1.1 milestone started*
