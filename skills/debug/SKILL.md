@@ -49,6 +49,33 @@ Display the detected type:
 > Issue type: {type}
 ```
 
+### Debug Mode Configuration
+
+Read `quality.debug` from `.planning/megazord.config.json` (if config exists). If config does not exist, default to "systematic".
+
+**If mode is "systematic" (default):**
+- Follow the full 4-phase approach (REPRODUCE -> ISOLATE -> ROOT CAUSE -> FIX)
+- Display all phase banners
+- No shortcuts -- every phase is executed
+
+**If mode is "quick":**
+- Allow shortcuts based on the issue type:
+  - If the stack trace directly points to a single file and line: skip ISOLATE phase (go from REPRODUCE to ROOT CAUSE)
+  - If the error is a build/compile error with a clear message: skip REPRODUCE phase (go directly to ISOLATE)
+  - If root cause is obvious from the error message: skip ROOT CAUSE phase (go directly to FIX)
+- Display abbreviated banners:
+  ```
+  > Quick Debug: {issue type}
+  ```
+- Only execute the phases that add value for this specific issue
+
+Display the active mode:
+```
+> Debug mode: {systematic | quick}
+```
+
+**Note:** `/mz:debug` always works when invoked manually, regardless of any config toggle. The `quality.debug` setting only controls the approach depth (systematic vs quick), not whether debugging is available.
+
 ## Step 3: REPRODUCE
 
 Display phase banner:

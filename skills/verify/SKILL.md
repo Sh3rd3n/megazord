@@ -8,6 +8,8 @@ disable-model-invocation: false
 
 Verify that a phase achieved its GOAL by performing goal-backward verification against ROADMAP.md success criteria and PLAN.md must_haves. Spawns a verifier subagent via the Task tool that checks truths, artifacts (3-level), key links, and requirement coverage against the actual codebase. Produces VERIFICATION.md with results.
 
+**Note:** This skill always works when invoked manually, regardless of the `workflow.verifier` config setting. The config toggle only controls whether `/mz:go` automatically suggests verification after execution.
+
 Reference `@skills/init/design-system.md` for visual output formatting.
 Reference `@skills/verify/verifier.md` for verification protocol and spawning patterns.
 
