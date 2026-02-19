@@ -46,11 +46,11 @@
   3. Running `node bin/megazord.mjs --version` returns the version from package.json (not a hardcoded string)
   4. LICENSE file exists at repo root and matches the license field in package.json
   5. CHANGELOG.md exists with a v1.0.0 entry documenting initial release
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 12-01: TBD
-- [ ] 12-02: TBD
+- [ ] 12-01-PLAN.md — Package metadata, files array fix, LICENSE, CHANGELOG, .gitignore
+- [ ] 12-02-PLAN.md — Version deduplication, language audit, GitHub repo creation
 
 ### Phase 13: Documentation
 **Goal**: A new user landing on the GitHub repo or npm page can understand what Megazord is, install it, and start using it within 5 minutes
