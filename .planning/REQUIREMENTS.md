@@ -64,7 +64,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **CONF-01**: `/mz:init` collects workflow preferences: mode (YOLO/interactive), depth, parallelization, git tracking
 - [ ] **CONF-02**: Workflow agents configurable: research before planning, plan verification, post-phase verification
-- [ ] **CONF-03**: AI model selection for planning agents: quality (Opus), balanced (Sonnet), budget (Haiku)
+- [x] **CONF-03**: AI model selection for planning agents: quality (Opus), balanced (Sonnet), budget (Haiku)
 - [ ] **CONF-04**: All settings persistable and modifiable after init
 
 ## v2 Requirements
@@ -141,7 +141,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | AGNT-08 | Phase 6 | Complete |
 | CONF-01 | Phase 2 | Pending |
 | CONF-02 | Phase 9 | Pending |
-| CONF-03 | Phase 9 | Pending |
+| CONF-03 | Phase 9 | Complete |
 | CONF-04 | Phase 2 | Pending |
 
 **Coverage:**

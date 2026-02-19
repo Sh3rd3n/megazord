@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-02-17)
 
 **Core value:** One framework that handles the entire development lifecycle with agents that actually communicate and coordinate
-**Current focus:** Phase 8 complete -- Brownfield Support and Project Lifecycle
+**Current focus:** Phase 9 in progress -- Config Consumption Wiring
 
 ## Current Position
 
-Phase: 8 of 8 (Brownfield Support and Project Lifecycle) -- Complete
-Plan: 3 of 3 in current phase
-Status: Complete
-Last activity: 2026-02-18 -- Plan 08-03 complete (skill integration: brownfield, lifecycle, milestone audit)
+Phase: 9 of 9 (Config Consumption Wiring)
+Plan: 1 of 3 in current phase
+Status: In Progress
+Last activity: 2026-02-19 -- Plan 09-01 complete (model resolution, agent frontmatter, dead code cleanup)
 
-Progress: [████████████████████] 100%
+Progress: [████████████████████░░] 93%
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
+- Total plans completed: 22
 - Average duration: 3min
-- Total execution time: 1.27 hours
+- Total execution time: 1.32 hours
 
 **By Phase:**
 
@@ -35,12 +35,14 @@ Progress: [████████████████████] 100%
 | 07 | 2/2 | 6min | 3min |
 
 | 08 | 3/3 | 10min | 3.3min |
+| 09 | 1/3 | 3min | 3min |
 
 **Recent Trend:**
-- Last 5 plans: 07-01 (3min), 07-02 (3min), 08-01 (3min), 08-02 (4min), 08-03 (3min)
+- Last 5 plans: 07-02 (3min), 08-01 (3min), 08-02 (4min), 08-03 (3min), 09-01 (3min)
 - Trend: Consistent
 
 *Updated after each plan completion*
+| Phase 09 P01 | 3min | 2 tasks | 8 files |
 | Phase 08 P01 | 3min | 2 tasks | 4 files |
 | Phase 07 P02 | 3min | 3 tasks | 3 files |
 | Phase 07 P01 | 3min | 2 tasks | 3 files |
@@ -126,6 +128,8 @@ Recent decisions affecting current work:
 - [Phase 08]: Phase 8-03: Brownfield detection is a soft warning with user choice (continue or run /mz:map first)
 - [Phase 08]: Phase 8-03: Verification gate is advisory only -- user always has final authority to proceed
 - [Phase 08]: Phase 8-03: Milestone audit writes MILESTONE-AUDIT.md to .planning/ root (spans all phases)
+- Phase 9-01: z.object with optional fields for modelOverridesSchema (z.record with z.enum key requires all keys, incompatible with partial overrides)
+- Phase 9-01: Differentiated balanced profile: planner->opus, others->sonnet; budget profile: planner->sonnet, others->haiku
 
 ### Pending Todos
 
@@ -139,7 +143,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Phase 9 context gathered
-Resume file: .planning/phases/09-config-consumption-wiring/09-CONTEXT.md
+Stopped at: Completed 09-01-PLAN.md
+Resume file: .planning/phases/09-config-consumption-wiring/09-02-PLAN.md
 Stash ref: None
 Last error: None
