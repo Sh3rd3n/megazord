@@ -172,6 +172,11 @@ Plans:
   1. `commands/` directory is listed in `package.json` `files` array and included in npm distribution
   2. `commands/debug.md` and `commands/discuss.md` autocomplete proxies exist and follow the established pattern
   3. REQUIREMENTS.md traceability table reflects actual status (20 stale Pending markers updated to Complete)
+**Plans**: 2 plans
+
+Plans:
+- [ ] 10-01-PLAN.md -- Distribution fixes (proxy files, package.json) and E2E tarball verification
+- [ ] 10-02-PLAN.md -- Requirements traceability audit with individual codebase-verified evidence
 
 ### Phase 11: Milestone Lifecycle Completion
 **Goal**: Users can complete the full milestone lifecycle through skills — from audit through archive — without falling back to CLI commands
@@ -198,7 +203,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 7. Quality and Debugging Skills | 0/2 | Complete    | 2026-02-18 |
 | 8. Brownfield Support and Project Lifecycle | 1/3 | Complete    | 2026-02-18 |
 | 9. Config Consumption Wiring | 2/3 | Complete    | 2026-02-19 |
-| 10. Distribution and Autocomplete Fixes | 0/0 | Pending | — |
+| 10. Distribution and Autocomplete Fixes | 0/2 | Pending | — |
 | 11. Milestone Lifecycle Completion | 0/0 | Pending | — |
 
 ---
