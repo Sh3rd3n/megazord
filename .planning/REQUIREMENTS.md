@@ -34,8 +34,8 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 ### npm Publication
 
 - [ ] **NPM-01**: Package `megazord-cli` published on npmjs.com
-- [ ] **NPM-02**: `bunx megazord-cli` installs and works on clean machine
-- [ ] **NPM-03**: `publishConfig` configured in package.json
+- [x] **NPM-02**: `bunx megazord-cli` installs and works on clean machine
+- [x] **NPM-03**: `publishConfig` configured in package.json
 
 ### Marketplace
 
@@ -88,8 +88,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CICD-03 | Phase 14 | Complete |
 | CICD-04 | Phase 14 | Complete |
 | NPM-01 | Phase 15 | Pending |
-| NPM-02 | Phase 15 | Pending |
-| NPM-03 | Phase 15 | Pending |
+| NPM-02 | Phase 15 | Complete |
+| NPM-03 | Phase 15 | Complete |
 | MKT-01 | Phase 16 | Pending |
 | MKT-02 | Phase 16 | Pending |
 | MKT-03 | Phase 16 | Pending |

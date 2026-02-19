@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** One framework that handles the entire development lifecycle with agents that actually communicate and coordinate
-**Current focus:** Phase 14 — CI/CD Pipeline
+**Current focus:** Phase 15 — npm Publication
 
 ## Current Position
 
-Phase: 14 of 16 (CI/CD Pipeline)
-Plan: 2 of 2 (complete)
-Status: Phase 14 complete
-Last activity: 2026-02-19 — Phase 14 plan 02 executed
+Phase: 15 of 16 (npm Publication)
+Plan: 1 of 3 (complete)
+Status: Executing phase 15
+Last activity: 2026-02-19 — Phase 15 plan 01 executed
 
-Progress: [################################....] 88% (26/26 v1.0 plans complete, 5/8 v1.1 plans)
+Progress: [################################....] 90% (26/26 v1.0 plans complete, 6/8 v1.1 plans)
 
 ## Performance Metrics
 
@@ -23,12 +23,13 @@ Progress: [################################....] 88% (26/26 v1.0 plans complete,
 - Total execution time: ~3 days (2026-02-17 to 2026-02-19)
 
 **v1.1:**
-- Plans completed: 5
+- Plans completed: 6
 - 12-01: 1min 29s (2 tasks, 5 files)
 - 12-02: 1min 57s (2 tasks, 4 files)
 - 13-01: 3min 11s (2 tasks, 2 files)
 - 14-01: 1min 41s (1 task, 2 files)
 - 14-02: 1min 33s (2 tasks, 1 file)
+- 15-01: 1min 5s (2 tasks, 3 files)
 
 ## Accumulated Context
 
@@ -37,6 +38,8 @@ Progress: [################################....] 88% (26/26 v1.0 plans complete,
 See PROJECT.md Key Decisions table for full log with outcomes.
 
 Recent decisions affecting current work:
+- Kept original megazord bin entry alongside megazord-cli for global install users
+- Placed megazord path constants after claudeDir and before pluginsDir in paths.ts
 - Package name: `megazord-cli` (unscoped, `megazord` is taken on npm by a squatter)
 - npm publish must use `npm publish` (not bun) for OIDC/provenance support — CI-only exception
 - Marketplace requires separate repo `sh3rd3n/megazord-marketplace` (plugin root constraint)
@@ -77,7 +80,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 14-02-PLAN.md
-Resume file: .planning/phases/14-ci-cd-pipeline/14-02-SUMMARY.md
+Stopped at: Completed 15-01-PLAN.md
+Resume file: .planning/phases/15-npm-publication/15-01-SUMMARY.md
 Stash ref: None
 Last error: None
