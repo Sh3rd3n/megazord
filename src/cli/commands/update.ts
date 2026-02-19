@@ -3,8 +3,7 @@ import { join } from "node:path";
 import { pluginsCacheDir } from "../../lib/paths.js";
 import { success, error, info, dim } from "../utils/colors.js";
 import { createSpinner, spinnerSuccess, spinnerFail } from "../utils/spinner.js";
-
-const VERSION = "0.1.0";
+import { VERSION } from "../utils/version.js";
 const MARKETPLACE_NAME = "megazord-marketplace";
 const PLUGIN_NAME = "mz";
 
