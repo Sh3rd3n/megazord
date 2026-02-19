@@ -9,10 +9,10 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 
 ### Repository Foundation
 
-- [ ] **REPO-01**: GitHub repo `sh3rd3n/megazord` created with full code push
+- [x] **REPO-01**: GitHub repo `sh3rd3n/megazord` created with full code push
 - [x] **REPO-02**: Package name changed to `megazord-cli` in package.json and all references
 - [x] **REPO-03**: `scripts/` added to `files` array in package.json
-- [ ] **REPO-04**: Hardcoded versions in `src/cli/commands/install.ts` and `update.ts` replaced with dynamic read from package.json
+- [x] **REPO-04**: Hardcoded versions in `src/cli/commands/install.ts` and `update.ts` replaced with dynamic read from package.json
 - [x] **REPO-05**: Versions synchronized between package.json and .claude-plugin/plugin.json
 - [x] **REPO-06**: MIT LICENSE file added to project root
 - [x] **REPO-07**: `.npmignore` or `files` array configured to exclude `.planning/`, `.git/`, dev files from published package
@@ -72,10 +72,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPO-01 | Phase 12 | Pending |
+| REPO-01 | Phase 12 | Complete |
 | REPO-02 | Phase 12 | Complete |
 | REPO-03 | Phase 12 | Complete |
-| REPO-04 | Phase 12 | Pending |
+| REPO-04 | Phase 12 | Complete |
 | REPO-05 | Phase 12 | Complete |
 | REPO-06 | Phase 12 | Complete |
 | REPO-07 | Phase 12 | Complete |
