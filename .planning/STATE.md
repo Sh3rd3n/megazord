@@ -66,7 +66,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed 13-01-PLAN.md
-Resume file: .planning/phases/13-documentation/13-01-SUMMARY.md
+Stopped at: Phase 14 context gathered
+Resume file: .planning/phases/14-ci-cd-pipeline/14-CONTEXT.md
 Stash ref: None
 Last error: None
