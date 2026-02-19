@@ -54,7 +54,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Roadmap created for v1.1 milestone
-Resume file: None
+Stopped at: Phase 12 context gathered
+Resume file: .planning/phases/12-package-foundation/12-CONTEXT.md
 Stash ref: None
 Last error: None
