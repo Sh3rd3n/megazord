@@ -11,8 +11,7 @@ import {
 import { detectPlugins } from "../utils/detect-plugins.js";
 import { success, error, info, warn, bold, dim } from "../utils/colors.js";
 import { createSpinner, spinnerSuccess, spinnerFail } from "../utils/spinner.js";
-
-const VERSION = "0.1.0";
+import { VERSION } from "../utils/version.js";
 const MARKETPLACE_NAME = "megazord-marketplace";
 const PLUGIN_NAME = "mz";
 const PLUGIN_KEY = `${PLUGIN_NAME}@${MARKETPLACE_NAME}`;
