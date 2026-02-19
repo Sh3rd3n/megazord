@@ -15,19 +15,19 @@ Reference `@skills/init/design-system.md` for all visual output formatting.
 Output the full init banner from the design system:
 
 ```
-╔═══════════════════════════════════════════════════════╗
-║                                                       ║
-║   ███╗   ███╗███████╗ ██████╗  █████╗ ███████╗       ║
-║   ████╗ ████║██╔════╝██╔════╝ ██╔══██╗██╔══██╗       ║
-║   ██╔████╔██║█████╗  ██║  ███╗███████║██████╔╝       ║
-║   ██║╚██╔╝██║██╔══╝  ██║   ██║██╔══██║██╔══██╗       ║
-║   ██║ ╚═╝ ██║███████╗╚██████╔╝██║  ██║██║  ██║       ║
-║   ╚═╝     ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝       ║
-║                                                       ║
-║   ⚡ MEGAZORD v0.1.0                                  ║
-║   Project Management × Code Quality × Agent Teams     ║
-║                                                       ║
-╚═══════════════════════════════════════════════════════╝
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║  ███╗   ███╗███████╗ ██████╗  █████╗ ███████╗ ██████╗ ██████╗ ██████╗   ║
+║  ████╗ ████║██╔════╝██╔════╝ ██╔══██╗╚════██║██╔═══██╗██╔══██╗██╔══██╗  ║
+║  ██╔████╔██║█████╗  ██║  ███╗███████║  ███╔╝ ██║   ██║██████╔╝██║  ██║  ║
+║  ██║╚██╔╝██║██╔══╝  ██║   ██║██╔══██║ ███╔╝  ██║   ██║██╔══██╗██║  ██║  ║
+║  ██║ ╚═╝ ██║███████╗╚██████╔╝██║  ██║███████╗╚██████╔╝██║  ██║██████╔╝  ║
+║  ╚═╝     ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝   ║
+║                                                                         ║
+║  ⚡ MEGAZORD v0.1.0                                                      ║
+║  Project Management × Code Quality × Agent Teams                        ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
 ```
 
 Replace `v0.1.0` with the actual version from the project's `package.json` if available.
@@ -215,10 +215,20 @@ Ensure the `.planning/` directory exists (create if needed).
 
 Write `.planning/megazord.config.json` with all collected settings. Use the config schema from `src/lib/config.ts` as the canonical structure. Format with 2-space indentation.
 
+**Auto-detect the Megazord plugin directory before writing:**
+1. Check: does `~/.claude/plugins/mz/bin/megazord.mjs` exist? (run `ls ~/.claude/plugins/mz/bin/megazord.mjs 2>/dev/null`)
+   - If found: set `plugin_path` to the expanded absolute path of `~/.claude/plugins/mz` (e.g., `/Users/username/.claude/plugins/mz`)
+2. If not found (e.g., plugin loaded via `--plugin-dir`): Ask the user for the plugin directory path using AskUserQuestion:
+   - header: "Plugin" (6 chars)
+   - question: "Where is the Megazord plugin directory? (e.g., /path/to/Megazord)"
+   - options: freeform text response
+3. Include `plugin_path` in the config JSON.
+
 ```json
 {
   "version": 1,
   "project_name": "{collected project name}",
+  "plugin_path": "{detected or user-provided plugin path}",
   "mode": "{yolo|interactive}",
   "depth": "{comprehensive|standard|quick}",
   "parallelization": true,
