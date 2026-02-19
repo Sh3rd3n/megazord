@@ -10,19 +10,19 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 ### Repository Foundation
 
 - [ ] **REPO-01**: GitHub repo `sh3rd3n/megazord` created with full code push
-- [ ] **REPO-02**: Package name changed to `megazord-cli` in package.json and all references
-- [ ] **REPO-03**: `scripts/` added to `files` array in package.json
+- [x] **REPO-02**: Package name changed to `megazord-cli` in package.json and all references
+- [x] **REPO-03**: `scripts/` added to `files` array in package.json
 - [ ] **REPO-04**: Hardcoded versions in `src/cli/commands/install.ts` and `update.ts` replaced with dynamic read from package.json
-- [ ] **REPO-05**: Versions synchronized between package.json and .claude-plugin/plugin.json
-- [ ] **REPO-06**: MIT LICENSE file added to project root
-- [ ] **REPO-07**: `.npmignore` or `files` array configured to exclude `.planning/`, `.git/`, dev files from published package
+- [x] **REPO-05**: Versions synchronized between package.json and .claude-plugin/plugin.json
+- [x] **REPO-06**: MIT LICENSE file added to project root
+- [x] **REPO-07**: `.npmignore` or `files` array configured to exclude `.planning/`, `.git/`, dev files from published package
 
 ### Documentation
 
 - [ ] **DOCS-01**: README.md with hero paragraph, quickstart guide, and full command list with descriptions
 - [ ] **DOCS-02**: README includes usage examples for key commands
 - [ ] **DOCS-03**: README includes badges (npm version, CI status, license)
-- [ ] **DOCS-04**: CHANGELOG.md initialized with v1.0 and v1.1 entries
+- [x] **DOCS-04**: CHANGELOG.md initialized with v1.0 and v1.1 entries
 
 ### CI/CD Pipeline
 
@@ -73,16 +73,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | REPO-01 | Phase 12 | Pending |
-| REPO-02 | Phase 12 | Pending |
-| REPO-03 | Phase 12 | Pending |
+| REPO-02 | Phase 12 | Complete |
+| REPO-03 | Phase 12 | Complete |
 | REPO-04 | Phase 12 | Pending |
-| REPO-05 | Phase 12 | Pending |
-| REPO-06 | Phase 12 | Pending |
-| REPO-07 | Phase 12 | Pending |
+| REPO-05 | Phase 12 | Complete |
+| REPO-06 | Phase 12 | Complete |
+| REPO-07 | Phase 12 | Complete |
 | DOCS-01 | Phase 13 | Pending |
 | DOCS-02 | Phase 13 | Pending |
 | DOCS-03 | Phase 14 | Pending |
-| DOCS-04 | Phase 12 | Pending |
+| DOCS-04 | Phase 12 | Complete |
 | CICD-01 | Phase 14 | Pending |
 | CICD-02 | Phase 14 | Pending |
 | CICD-03 | Phase 14 | Pending |

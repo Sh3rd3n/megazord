@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 12 of 16 (Package Foundation)
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-02-19 — Roadmap created for v1.1 (phases 12-16)
+Plan: 1 of 2 complete
+Status: Executing
+Last activity: 2026-02-19 — Completed 12-01-PLAN.md (Package Metadata)
 
-Progress: [##########################..........] 73% (26/26 v1.0 plans complete, 0/? v1.1 plans)
+Progress: [##########################..........] 75% (26/26 v1.0 plans complete, 1/8 v1.1 plans)
 
 ## Performance Metrics
 
@@ -22,7 +22,9 @@ Progress: [##########################..........] 73% (26/26 v1.0 plans complete,
 - Total plans completed: 26
 - Total execution time: ~3 days (2026-02-17 to 2026-02-19)
 
-**v1.1:** No plans executed yet.
+**v1.1:**
+- Plans completed: 1
+- 12-01: 1min 29s (2 tasks, 5 files)
 
 ## Accumulated Context
 
@@ -34,7 +36,10 @@ Recent decisions affecting current work:
 - Package name: `megazord-cli` (unscoped, `megazord` is taken on npm by a squatter)
 - npm publish must use `npm publish` (not bun) for OIDC/provenance support — CI-only exception
 - Marketplace requires separate repo `sh3rd3n/megazord-marketplace` (plugin root constraint)
-- `scripts/` missing from `files` array is a showstopper — fix in Phase 12
+- `scripts/` missing from `files` array is a showstopper — FIXED in 12-01
+- npm package name is `megazord-cli` (unscoped), bin command stays `megazord`
+- files array includes scripts/ and CHANGELOG.md, excludes dist/
+- CHANGELOG.md uses Keep a Changelog 1.1.0 format with comparison links
 
 ### Pending Todos
 
@@ -54,7 +59,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Phase 12 context gathered
-Resume file: .planning/phases/12-package-foundation/12-CONTEXT.md
+Stopped at: Completed 12-01-PLAN.md
+Resume file: .planning/phases/12-package-foundation/12-01-SUMMARY.md
 Stash ref: None
 Last error: None
