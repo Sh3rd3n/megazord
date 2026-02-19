@@ -36,6 +36,7 @@ Display the stage banner:
 | `/mz:debug` | Systematic four-phase debugging | Available |
 | `/mz:discuss` | Socratic brainstorming before implementation | Available |
 | `/mz:map` | Analyze existing codebase for brownfield support | Available |
+| `/mz:lifecycle` | Complete milestone lifecycle (audit, archive, next version) | Available |
 
 ## Usage
 
@@ -75,6 +76,9 @@ Run any skill by typing its name as a slash command:
 /mz:discuss 7        Brainstorm for phase 7 context
 /mz:debug {issue}    Debug an issue systematically
 /mz:debug "tests failing in auth module"  Debug with description
+/mz:lifecycle          Complete current milestone lifecycle
+/mz:lifecycle v1.0     Archive milestone v1.0 specifically
+/mz:lifecycle --skip-audit  Skip audit and proceed to archive
 ```
 
 ## About Megazord
@@ -82,4 +86,4 @@ Run any skill by typing its name as a slash command:
 Megazord unifies project management, code quality discipline, and multi-agent coordination into one Claude Code framework.
 
 **Version:** 0.1.0
-**Phase:** 8 of 8 (Brownfield Support and Project Lifecycle)
+**Phase:** 11 of 11 (Milestone Lifecycle Completion)
