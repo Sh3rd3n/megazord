@@ -186,6 +186,10 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. A skill-level path exists for milestone creation and archive (not CLI-only)
   2. After `/mz:verify --milestone` audit passes, the user can archive the milestone and prepare for the next version through a guided skill flow
+**Plans**: 1 plan
+
+Plans:
+- [ ] 11-01-PLAN.md -- /mz:lifecycle skill, autocomplete proxy, help update
 
 ## Progress
 
@@ -204,7 +208,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 8. Brownfield Support and Project Lifecycle | 1/3 | Complete    | 2026-02-18 |
 | 9. Config Consumption Wiring | 2/3 | Complete    | 2026-02-19 |
 | 10. Distribution and Autocomplete Fixes | 2/2 | Complete    | 2026-02-19 |
-| 11. Milestone Lifecycle Completion | 0/0 | Pending | — |
+| 11. Milestone Lifecycle Completion | 0/1 | Pending | — |
 
 ---
 *Roadmap created: 2026-02-17*
