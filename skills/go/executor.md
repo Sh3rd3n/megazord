@@ -6,15 +6,20 @@ Reference file for the /mz:go skill. Covers spawning protocol, prompt structure,
 
 The /mz:go orchestrator reads agent definitions and plan content, then embeds everything inline in a Task tool prompt. This is required because @file references do NOT work across Task boundaries.
 
+### Model Selection
+
+The orchestrator resolves the executor model via config profile/overrides and updates the agent frontmatter before spawning. Model selection is transparent to the executor agent -- it simply runs on whatever model the orchestrator configured.
+
 ### Pre-spawn Checklist
 
 Before spawning an executor subagent, the orchestrator must:
 
-1. **Read** `{plugin_path}/agents/mz-executor.md` into memory (where `{plugin_path}` is resolved from `config.plugin_path`, falling back to `~/.claude/plugins/mz`)
-2. **Read** the target PLAN.md content (full file including frontmatter)
-3. **Read** `megazord.config.json` content
-4. If review is enabled: **Read** `{plugin_path}/agents/mz-reviewer.md` into memory
-5. **Compose** the Task prompt with all content embedded inline
+1. **Resolve** agent models via `resolveAgentModel()` using config `model_profile` and `model_overrides`, and update agent `.md` frontmatter `model` fields
+2. **Read** `{plugin_path}/agents/mz-executor.md` into memory (where `{plugin_path}` is resolved from `config.plugin_path`, falling back to `~/.claude/plugins/mz`)
+3. **Read** the target PLAN.md content (full file including frontmatter)
+4. **Read** `megazord.config.json` content
+5. If review is enabled: **Read** `{plugin_path}/agents/mz-reviewer.md` into memory
+6. **Compose** the Task prompt with all content embedded inline
 
 ### Prompt Structure
 

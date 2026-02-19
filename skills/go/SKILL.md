@@ -211,6 +211,18 @@ For each plan in the wave:
 
 Display: `  * Plan {NN}: {objective from plan file}...`
 
+#### Resolve Models for Agents
+
+Before spawning, determine models for this wave's agents:
+
+1. Read `model_profile` and `model_overrides` from the loaded config.
+2. Resolve executor model: check `model_overrides.executor`, fall back to profile mapping (quality->opus, balanced->sonnet, budget->haiku).
+3. Update `{plugin_path}/agents/mz-executor.md` frontmatter `model` field to the resolved value.
+4. If review is enabled, resolve reviewer model: check `model_overrides.reviewer`, fall back to profile mapping.
+5. Update `{plugin_path}/agents/mz-reviewer.md` frontmatter `model` field to the resolved value.
+
+Note: Model resolution is done ONCE per wave (before the first plan spawn), not per-plan.
+
 #### Spawn Executor
 
 1. Read the full PLAN.md content using the Read tool.
@@ -257,8 +269,9 @@ Display: `  * Plan {NN}: {objective from plan file}...`
 Note: The `<reviewer_agent>` section is only included when `review_enabled` is `true`. When review is disabled, omit this section entirely to save context budget.
 
 6. Spawn the executor via the Task tool:
-   - `subagent_type`: `"general-purpose"`
+   - `subagent_type`: `"mz-executor"`
    - `description`: `"Execute Plan {phase}-{plan}: {brief objective}"`
+   - If spawning with `subagent_type='mz-executor'` fails, fall back to `subagent_type='general-purpose'` with the agent definition embedded inline in `<agent_role>` tags.
 
 7. Wait for completion.
 
@@ -384,12 +397,19 @@ TaskCreate({
 })
 ```
 
-#### 6. Spawn Teammates
+#### 6. Resolve Models for Teammates
+
+Before spawning, determine models for this wave's agents:
+
+1. Resolve executor model and update `{plugin_path}/agents/mz-executor.md` frontmatter `model` field based on config profile/overrides.
+2. If review is enabled, resolve reviewer model and update `{plugin_path}/agents/mz-reviewer.md` frontmatter `model` field.
+
+#### 7. Spawn Teammates
 
 For each plan, spawn an executor teammate. If review is enabled, also spawn a reviewer teammate.
 
 1. Read agent definitions (`{plugin_path}/agents/mz-executor.md`, `{plugin_path}/agents/mz-reviewer.md`) and embed inline.
-2. Spawn executor teammate via Task tool with `team_name` parameter:
+2. Spawn executor teammate via Task tool with `subagent_type="mz-executor"` and `team_name` parameter. If named subagent spawning does not work for teammates, use `"general-purpose"` with inline embedding as fallback.
 
 ```
 Task({
@@ -424,7 +444,7 @@ Task({
 })
 ```
 
-3. If review is enabled, spawn reviewer teammate:
+3. If review is enabled, spawn reviewer teammate with `subagent_type="mz-reviewer"`. If named subagent spawning does not work for teammates, use `"general-purpose"` with inline embedding as fallback:
 
 ```
 Task({
@@ -443,7 +463,7 @@ Task({
 
 **IMPORTANT:** Spawn ALL teammates before entering coordination mode. Do NOT use API-level `permissionMode: "delegate"` -- this causes a known bug where teammates lose file system tools. Enforce delegate behavior through instructions only.
 
-#### 7. Coordinate (Delegate Mode)
+#### 8. Coordinate (Delegate Mode)
 
 After spawning, the lead enters coordination-only mode:
 - **You are the team LEAD. You NEVER implement directly.**
@@ -455,7 +475,7 @@ After spawning, the lead enters coordination-only mode:
 - If an executor reports failure, save error output.
 - Wait until all tasks in the wave are completed or failed.
 
-#### 8. Merge Worktrees
+#### 9. Merge Worktrees
 
 After all tasks complete, merge worktrees sequentially in plan order:
 
@@ -466,7 +486,7 @@ node {plugin_path}/bin/megazord.mjs tools worktree merge --team {team_name} --ag
 
 If merge fails (conflicts): stop the wave, leave worktree for inspection, log the conflict.
 
-#### 9. Shutdown Teammates
+#### 10. Shutdown Teammates
 
 For each teammate:
 ```
@@ -474,7 +494,7 @@ SendMessage({ type: "shutdown_request", recipient: "{name}", content: "Wave comp
 ```
 Wait for responses (timeout 60s, proceed anyway if no response).
 
-#### 10. Cleanup
+#### 11. Cleanup
 
 ```bash
 node {plugin_path}/bin/megazord.mjs tools worktree prune --team {team_name}
@@ -482,13 +502,13 @@ node {plugin_path}/bin/megazord.mjs tools worktree prune --team {team_name}
 
 Then `TeamDelete()` to remove team resources.
 
-#### 11. Update State
+#### 12. Update State
 
 Same as subagent path: advance plan counter, record metrics, add decisions, update session for each completed plan in the wave.
 
-#### 12. Silent Fallback
+#### 13. Silent Fallback
 
-If ANY of steps 1-6 fail (TeamCreate fails, worktree creation fails, API error), catch the error and fall back to subagent execution (Path A) for this wave:
+If ANY of steps 1-7 fail (TeamCreate fails, worktree creation fails, API error), catch the error and fall back to subagent execution (Path A) for this wave:
 
 ```
 [TEAMS FALLBACK] {reason}. Using subagent mode for wave {N}.
@@ -536,9 +556,9 @@ Display summary using the design system action box:
 +===============================================+
 ```
 
-Display the Next Up block:
+Display the Next Up block. Determine verifier suggestion based on config:
 
-- If all plans complete:
+- If all plans complete AND `config.workflow.verifier` is true:
 ```
 ===============================================
 > Next Up
@@ -546,6 +566,17 @@ Display the Next Up block:
 `/mz:verify`
 ===============================================
 ```
+
+- If all plans complete AND `config.workflow.verifier` is false:
+```
+===============================================
+> Next Up
+**Phase {N} execution complete.** Verifier is disabled in config.
+Run `/mz:plan` to advance to next phase, or `/mz:verify` to verify manually.
+===============================================
+```
+
+**IMPORTANT:** The `/mz:verify` skill itself is NEVER gated. It always works when manually invoked. Only the automated suggestion in /mz:go changes based on config.
 
 - If some plans remain (failure case):
 ```
