@@ -19,7 +19,8 @@ Before spawning an executor subagent, the orchestrator must:
 3. **Read** the target PLAN.md content (full file including frontmatter)
 4. **Read** `megazord.config.json` content
 5. If review is enabled: **Read** `{plugin_path}/agents/mz-reviewer.md` into memory
-6. **Compose** the Task prompt with all content embedded inline
+6. If CORTEX is enabled: **Read** `{plugin_path}/skills/cortex/SKILL.md` into memory
+7. **Compose** the Task prompt with all content embedded inline
 
 ### Prompt Structure
 
@@ -58,6 +59,10 @@ The executor receives a prompt with these sections:
 - TDD enabled: {true|false}
 - CORTEX enabled: {true|false}
 </execution_rules>
+
+<cortex_protocol>
+{Content of skills/cortex/SKILL.md -- only included if cortex_enabled is true}
+</cortex_protocol>
 ```
 
 ## Agent Teams Spawning Protocol
@@ -118,6 +123,10 @@ Same sections as subagent mode, plus additional fields in `<execution_rules>`:
 - TDD enabled: {true|false}
 - CORTEX enabled: {true|false}
 </execution_rules>
+
+<cortex_protocol>
+{Content of skills/cortex/SKILL.md -- only included if cortex_enabled is true}
+</cortex_protocol>
 ```
 
 The teammate-specific fields (`execution_mode`, `worktree_path`, `owned_files`, `team_lead`, `reviewer_name`, `task_id`) trigger the executor's teammate mode behavior: working within the worktree, respecting file ownership, communicating via SendMessage instead of return values, and claiming tasks via TaskUpdate.
@@ -289,6 +298,8 @@ When TDD is active, the one-commit-per-task rule is overridden: each task produc
 ### CORTEX Flag Forwarding
 
 The `cortex_enabled` flag is forwarded from `config.quality.cortex` and controls the executor's CORTEX Classification section. When `true`, every task gets a one-line classification (Clear/Complicated/Complex/Chaotic) before execution, with challenge blocks on Complicated+ tasks. When `false` or absent, the CORTEX Classification is inactive and the executor proceeds without classification.
+
+When `cortex_enabled` is `true`, the orchestrator also embeds the CORTEX skill content (`skills/cortex/SKILL.md`) as a `<cortex_protocol>` block in the executor prompt. The executor uses both the flag (from `<execution_rules>`) and the protocol content (from `<cortex_protocol>`) to apply CORTEX classification and thinking frameworks. The inline CORTEX section in the executor agent definition (`agents/mz-executor.md`) serves as the baseline; the `<cortex_protocol>` provides the authoritative reference.
 
 ### Config Source
 
