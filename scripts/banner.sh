@@ -2,7 +2,7 @@
 # Megazord banner with Power Rangers colors
 # Usage: scripts/banner.sh [version]
 
-VERSION="${1:-1.1.1}"
+VERSION="${1:-1.1.2}"
 
 # Power Rangers palette (truecolor)
 R='\033[38;2;230;57;70m'    # Red Ranger   (M, O)
