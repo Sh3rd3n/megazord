@@ -61,6 +61,10 @@ Display activation notices (same pattern as the review disabled notice):
 - If TDD is enabled: `> TDD mode active: RED-GREEN-REFACTOR enforced per task`
 - If CORTEX is enabled: `> CORTEX classification active: tasks classified before execution`
 
+If CORTEX is enabled (`cortex_enabled = true`):
+- Read `{plugin_path}/skills/cortex/SKILL.md` content using the Read tool.
+- This content will be embedded in the executor prompt as a `<cortex_protocol>` block.
+
 Parse the user's message (text after `/mz:go`) for arguments:
 - `--tasks N,M` -- execute only specific plan numbers (e.g., `--tasks 1,3`)
 - `--from N` -- start from plan N, skip earlier plans (e.g., `--from 2`)
@@ -229,7 +233,7 @@ Note: Model resolution is done ONCE per wave (before the first plan spawn), not 
 2. Read `{plugin_path}/agents/mz-executor.md` content using the Read tool.
 3. Read `.planning/megazord.config.json` content using the Read tool.
 4. If `review_enabled` is `true`: Read `{plugin_path}/agents/mz-reviewer.md` content using the Read tool.
-5. Compose the Task prompt with all content inline (see `@skills/go/executor.md` for prompt structure):
+5. Compose the Task prompt with all content inline, including the CORTEX protocol block if `cortex_enabled` is true (see `@skills/go/executor.md` for prompt structure):
 
 ```
 <agent_role>
@@ -264,9 +268,13 @@ Note: Model resolution is done ONCE per wave (before the first plan spawn), not 
 - TDD enabled: {true|false}
 - CORTEX enabled: {true|false}
 </execution_rules>
+
+<cortex_protocol>
+{Content of skills/cortex/SKILL.md -- only included if cortex_enabled is true}
+</cortex_protocol>
 ```
 
-Note: The `<reviewer_agent>` section is only included when `review_enabled` is `true`. When review is disabled, omit this section entirely to save context budget.
+Note: The `<reviewer_agent>` section is only included when `review_enabled` is `true`. When review is disabled, omit this section entirely to save context budget. The `<cortex_protocol>` section is only included when `cortex_enabled` is `true`.
 
 6. Spawn the executor via the Task tool:
    - `subagent_type`: `"mz-executor"`
@@ -438,7 +446,11 @@ Task({
 - Review mode: {auto|manual}
 - TDD enabled: {true|false}
 - CORTEX enabled: {true|false}
-</execution_rules>",
+</execution_rules>
+
+<cortex_protocol>
+{Content of skills/cortex/SKILL.md -- only included if cortex_enabled is true}
+</cortex_protocol>",
   team_name: "{team_name}",
   name: "exec-{plan_id}"
 })
@@ -616,6 +628,7 @@ Run `/mz:plan` to advance to next phase, or `/mz:verify` to verify manually.
 - The `{plugin_path}` for CLI commands and agent files is resolved from `config.plugin_path`, falling back to `~/.claude/plugins/mz`.
 - Only the orchestrator (this skill) updates STATE.md and ROADMAP.md. Executors never touch state files.
 - ALWAYS use bun/bunx for JavaScript/TypeScript operations (never npm/npx).
+- When CORTEX is enabled, the orchestrator reads `{plugin_path}/skills/cortex/SKILL.md` and embeds it as `<cortex_protocol>` in the executor prompt. This keeps the authoritative CORTEX content in one file while ensuring the executor receives it inline (required by the Task boundary constraint).
 
 ### Usage Examples
 

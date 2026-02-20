@@ -1,5 +1,5 @@
-import { join } from "node:path";
 import { execSync } from "node:child_process";
+import { join } from "node:path";
 import fse from "fs-extra";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -52,17 +52,12 @@ function padPhase(n: number): string {
 /**
  * Find the phase directory for a given phase number.
  */
-function findPhaseDir(
-	planningDir: string,
-	phaseNumber: number,
-): string | null {
+function findPhaseDir(planningDir: string, phaseNumber: number): string | null {
 	const phasesDir = join(planningDir, "phases");
 	if (!fse.pathExistsSync(phasesDir)) return null;
 
 	const prefix = padPhase(phaseNumber);
-	const dirs = fse
-		.readdirSync(phasesDir)
-		.filter((d: string) => d.startsWith(`${prefix}-`));
+	const dirs = fse.readdirSync(phasesDir).filter((d: string) => d.startsWith(`${prefix}-`));
 
 	return dirs.length > 0 ? join(phasesDir, dirs[0]) : null;
 }
@@ -127,10 +122,7 @@ export function createMilestone(
  * optionally copying phase directories, creating a MILESTONES.md log entry,
  * and creating a git tag.
  */
-export function archiveMilestone(
-	planningDir: string,
-	version: string,
-): ArchiveResult {
+export function archiveMilestone(planningDir: string, version: string): ArchiveResult {
 	const milestonesDir = join(planningDir, MILESTONES_DIR);
 	fse.mkdirSync(milestonesDir, { recursive: true });
 
@@ -182,10 +174,9 @@ export function archiveMilestone(
 	// Create git tag
 	try {
 		const tagMessage = `Milestone ${version} archived on ${dateStr}`;
-		execSync(
-			`git tag -a "milestone/${version}" -m "${tagMessage.replace(/"/g, '\\"')}"`,
-			{ encoding: "utf-8" },
-		);
+		execSync(`git tag -a "milestone/${version}" -m "${tagMessage.replace(/"/g, '\\"')}"`, {
+			encoding: "utf-8",
+		});
 	} catch (_err) {
 		// Tag creation is best-effort; may fail if tag already exists
 	}
@@ -203,10 +194,7 @@ export function archiveMilestone(
  * Check verification status for all phases in a milestone.
  * For each phase: check VERIFICATION.md exists and status is passed.
  */
-export function checkMilestoneAudit(
-	planningDir: string,
-	phases: number[],
-): AuditCheckResult {
+export function checkMilestoneAudit(planningDir: string, phases: number[]): AuditCheckResult {
 	const details: AuditDetail[] = [];
 	const failedPhases: number[] = [];
 	const missingVerification: number[] = [];
@@ -227,9 +215,7 @@ export function checkMilestoneAudit(
 
 		// Look for VERIFICATION.md
 		const files = fse.readdirSync(phaseDir);
-		const verificationFile = files.find((f: string) =>
-			f.match(/VERIFICATION\.md$/),
-		);
+		const verificationFile = files.find((f: string) => f.match(/VERIFICATION\.md$/));
 
 		if (!verificationFile) {
 			details.push({
@@ -263,8 +249,7 @@ export function checkMilestoneAudit(
 		}
 	}
 
-	const allPassed =
-		failedPhases.length === 0 && missingVerification.length === 0;
+	const allPassed = failedPhases.length === 0 && missingVerification.length === 0;
 
 	return {
 		all_passed: allPassed,

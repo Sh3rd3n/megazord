@@ -9,33 +9,33 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 
 ### Repository Foundation
 
-- [ ] **REPO-01**: GitHub repo `sh3rd3n/megazord` created with full code push
+- [x] **REPO-01**: GitHub repo `sh3rd3n/megazord` created with full code push
 - [x] **REPO-02**: Package name changed to `megazord-cli` in package.json and all references
 - [x] **REPO-03**: `scripts/` added to `files` array in package.json
-- [ ] **REPO-04**: Hardcoded versions in `src/cli/commands/install.ts` and `update.ts` replaced with dynamic read from package.json
+- [x] **REPO-04**: Hardcoded versions in `src/cli/commands/install.ts` and `update.ts` replaced with dynamic read from package.json
 - [x] **REPO-05**: Versions synchronized between package.json and .claude-plugin/plugin.json
 - [x] **REPO-06**: MIT LICENSE file added to project root
 - [x] **REPO-07**: `.npmignore` or `files` array configured to exclude `.planning/`, `.git/`, dev files from published package
 
 ### Documentation
 
-- [ ] **DOCS-01**: README.md with hero paragraph, quickstart guide, and full command list with descriptions
-- [ ] **DOCS-02**: README includes usage examples for key commands
-- [ ] **DOCS-03**: README includes badges (npm version, CI status, license)
+- [x] **DOCS-01**: README.md with hero paragraph, quickstart guide, and full command list with descriptions
+- [x] **DOCS-02**: README includes usage examples for key commands
+- [x] **DOCS-03**: README includes badges (npm version, CI status, license)
 - [x] **DOCS-04**: CHANGELOG.md initialized with v1.0 and v1.1 entries
 
 ### CI/CD Pipeline
 
-- [ ] **CICD-01**: GitHub Actions CI workflow — lint + typecheck + test on every PR
-- [ ] **CICD-02**: GitHub Actions CD workflow — build + npm publish on tag/release
-- [ ] **CICD-03**: CI uses `oven-sh/setup-bun@v2` for bun and `actions/setup-node@v4` for npm publish
-- [ ] **CICD-04**: npm publish with provenance (OIDC or granular token)
+- [x] **CICD-01**: GitHub Actions CI workflow — lint + typecheck + test on every PR
+- [x] **CICD-02**: GitHub Actions CD workflow — build + npm publish on tag/release
+- [x] **CICD-03**: CI uses `oven-sh/setup-bun@v2` for bun and `actions/setup-node@v4` for npm publish
+- [x] **CICD-04**: npm publish with provenance (OIDC or granular token)
 
 ### npm Publication
 
 - [ ] **NPM-01**: Package `megazord-cli` published on npmjs.com
-- [ ] **NPM-02**: `bunx megazord-cli` installs and works on clean machine
-- [ ] **NPM-03**: `publishConfig` configured in package.json
+- [x] **NPM-02**: `bunx megazord-cli` installs and works on clean machine
+- [x] **NPM-03**: `publishConfig` configured in package.json
 
 ### Marketplace
 
@@ -51,10 +51,17 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 - **TUI-02**: Tabs that open when agent teams spawn
 - **TUI-03**: Visual agent coordination display
 
-### CORTEX Enhancements (deferred to v1.2+)
+### CORTEX Thinking Frameworks (Phase 14.1)
 
-- **CRTX-01**: Thinking patterns from untools.co integrated into CORTEX
-- **CRTX-02**: Beads pattern (steveyegge/beads) integrated into CORTEX
+- [x] **CORTEX-01**: Enhanced challenge block format — Inversion (pre-mortem), Ladder of Inference (assumption chain), Second-Order Thinking (consequence trace) for Complicated+ tasks
+- [x] **CORTEX-02**: Complex domain structured brainstorm — First Principles decomposition + Abstraction Laddering (why/how reframing) replacing ad-hoc mini-brainstorm
+- [x] **CORTEX-03**: Iceberg Model systems analysis — triggered when task touches area flagged in previous task's SUMMARY as modified/rejected
+- [x] **CORTEX-04**: Debug root-cause analysis — Issue Tree (MECE decomposition) + Ishikawa cause categories (Code, Data, Environment, Dependencies, Timing, State)
+- [x] **CORTEX-05**: Concrete classification signal heuristics — LOC ranges, module counts, API surface metrics replacing vague descriptions
+
+### Beads Pattern (deferred to v1.2+)
+
+- **CRTX-BEADS-01**: Beads pattern (steveyegge/beads) integrated into CORTEX
 
 ## Out of Scope
 
@@ -72,31 +79,36 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPO-01 | Phase 12 | Pending |
+| REPO-01 | Phase 12 | Complete |
 | REPO-02 | Phase 12 | Complete |
 | REPO-03 | Phase 12 | Complete |
-| REPO-04 | Phase 12 | Pending |
+| REPO-04 | Phase 12 | Complete |
 | REPO-05 | Phase 12 | Complete |
 | REPO-06 | Phase 12 | Complete |
 | REPO-07 | Phase 12 | Complete |
-| DOCS-01 | Phase 13 | Pending |
-| DOCS-02 | Phase 13 | Pending |
-| DOCS-03 | Phase 14 | Pending |
+| DOCS-01 | Phase 13 | Complete |
+| DOCS-02 | Phase 13 | Complete |
+| DOCS-03 | Phase 14 | Complete |
 | DOCS-04 | Phase 12 | Complete |
-| CICD-01 | Phase 14 | Pending |
-| CICD-02 | Phase 14 | Pending |
-| CICD-03 | Phase 14 | Pending |
-| CICD-04 | Phase 14 | Pending |
+| CICD-01 | Phase 14 | Complete |
+| CICD-02 | Phase 14 | Complete |
+| CICD-03 | Phase 14 | Complete |
+| CICD-04 | Phase 14 | Complete |
 | NPM-01 | Phase 15 | Pending |
-| NPM-02 | Phase 15 | Pending |
-| NPM-03 | Phase 15 | Pending |
+| NPM-02 | Phase 15 | Complete |
+| NPM-03 | Phase 15 | Complete |
+| CORTEX-01 | Phase 14.1 | Complete |
+| CORTEX-02 | Phase 14.1 | Complete |
+| CORTEX-03 | Phase 14.1 | Complete |
+| CORTEX-04 | Phase 14.1 | Complete |
+| CORTEX-05 | Phase 14.1 | Complete |
 | MKT-01 | Phase 16 | Pending |
 | MKT-02 | Phase 16 | Pending |
 | MKT-03 | Phase 16 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 21 total
-- Mapped to phases: 21
+- v1.1 requirements: 26 total
+- Mapped to phases: 26
 - Unmapped: 0
 
 ---

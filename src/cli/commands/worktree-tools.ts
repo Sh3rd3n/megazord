@@ -1,10 +1,10 @@
 import type { Command } from "commander";
 import {
 	createWorktree,
-	removeWorktree,
-	mergeWorktree,
 	listTeamWorktrees,
+	mergeWorktree,
 	pruneTeamWorktrees,
+	removeWorktree,
 } from "../../lib/worktree.js";
 
 /**
@@ -23,28 +23,16 @@ export function registerWorktreeCommands(parent: Command): void {
 		.requiredOption("--agent <agent>", "Agent identifier")
 		.option("--base-ref <ref>", "Base git ref", "HEAD")
 		.option("--base-dir <dir>", "Custom worktree base directory")
-		.action(
-			(opts: {
-				team: string;
-				agent: string;
-				baseRef: string;
-				baseDir?: string;
-			}) => {
-				try {
-					const result = createWorktree(
-						opts.team,
-						opts.agent,
-						opts.baseRef,
-						opts.baseDir,
-					);
-					console.log(JSON.stringify(result, null, 2));
-				} catch (err) {
-					const msg = err instanceof Error ? err.message : String(err);
-					console.log(JSON.stringify({ error: msg }, null, 2));
-					process.exit(1);
-				}
-			},
-		);
+		.action((opts: { team: string; agent: string; baseRef: string; baseDir?: string }) => {
+			try {
+				const result = createWorktree(opts.team, opts.agent, opts.baseRef, opts.baseDir);
+				console.log(JSON.stringify(result, null, 2));
+			} catch (err) {
+				const msg = err instanceof Error ? err.message : String(err);
+				console.log(JSON.stringify({ error: msg }, null, 2));
+				process.exit(1);
+			}
+		});
 
 	worktree
 		.command("list")
@@ -67,26 +55,16 @@ export function registerWorktreeCommands(parent: Command): void {
 		.requiredOption("--team <team>", "Team name")
 		.requiredOption("--agent <agent>", "Agent identifier")
 		.option("--strategy <strategy>", "Merge strategy: merge or rebase", "merge")
-		.action(
-			(opts: {
-				team: string;
-				agent: string;
-				strategy: string;
-			}) => {
-				try {
-					const result = mergeWorktree(
-						opts.team,
-						opts.agent,
-						opts.strategy as "merge" | "rebase",
-					);
-					console.log(JSON.stringify(result, null, 2));
-				} catch (err) {
-					const msg = err instanceof Error ? err.message : String(err);
-					console.log(JSON.stringify({ error: msg }, null, 2));
-					process.exit(1);
-				}
-			},
-		);
+		.action((opts: { team: string; agent: string; strategy: string }) => {
+			try {
+				const result = mergeWorktree(opts.team, opts.agent, opts.strategy as "merge" | "rebase");
+				console.log(JSON.stringify(result, null, 2));
+			} catch (err) {
+				const msg = err instanceof Error ? err.message : String(err);
+				console.log(JSON.stringify({ error: msg }, null, 2));
+				process.exit(1);
+			}
+		});
 
 	worktree
 		.command("remove")
@@ -94,22 +72,16 @@ export function registerWorktreeCommands(parent: Command): void {
 		.requiredOption("--team <team>", "Team name")
 		.requiredOption("--agent <agent>", "Agent identifier")
 		.option("--base-dir <dir>", "Custom worktree base directory")
-		.action(
-			(opts: {
-				team: string;
-				agent: string;
-				baseDir?: string;
-			}) => {
-				try {
-					removeWorktree(opts.team, opts.agent, opts.baseDir);
-					console.log(JSON.stringify({ removed: true }, null, 2));
-				} catch (err) {
-					const msg = err instanceof Error ? err.message : String(err);
-					console.log(JSON.stringify({ error: msg }, null, 2));
-					process.exit(1);
-				}
-			},
-		);
+		.action((opts: { team: string; agent: string; baseDir?: string }) => {
+			try {
+				removeWorktree(opts.team, opts.agent, opts.baseDir);
+				console.log(JSON.stringify({ removed: true }, null, 2));
+			} catch (err) {
+				const msg = err instanceof Error ? err.message : String(err);
+				console.log(JSON.stringify({ error: msg }, null, 2));
+				process.exit(1);
+			}
+		});
 
 	worktree
 		.command("prune")

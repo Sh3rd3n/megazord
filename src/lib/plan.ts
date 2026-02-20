@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import matter from "gray-matter";
 import fse from "fs-extra";
+import matter from "gray-matter";
 import { z } from "zod";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
@@ -8,9 +8,7 @@ import { z } from "zod";
 /** Zod schema for PLAN.md frontmatter validation */
 export const PlanMetadataSchema = z.object({
 	phase: z.string(),
-	plan: z
-		.union([z.string(), z.number()])
-		.transform((v) => String(v).padStart(2, "0")),
+	plan: z.union([z.string(), z.number()]).transform((v) => String(v).padStart(2, "0")),
 	type: z.string().default("execute"),
 	wave: z.number().default(1),
 	depends_on: z.array(z.string()).default([]),
@@ -41,7 +39,7 @@ export interface PlanWave {
 // ─── Plan filename pattern ──────────────────────────────────────────────────
 
 const PLAN_FILENAME_RE = /^\d+-\d+-PLAN\.md$/;
-const SUMMARY_FILENAME_RE = /^\d+-\d+-SUMMARY\.md$/;
+const _SUMMARY_FILENAME_RE = /^\d+-\d+-SUMMARY\.md$/;
 
 // ─── Functions ──────────────────────────────────────────────────────────────
 
@@ -56,9 +54,7 @@ export function parsePlan(planPath: string): PlanFile {
 
 	const result = PlanMetadataSchema.safeParse(parsed.data);
 	if (!result.success) {
-		throw new Error(
-			`Invalid frontmatter in ${planPath}: ${result.error.message}`,
-		);
+		throw new Error(`Invalid frontmatter in ${planPath}: ${result.error.message}`);
 	}
 
 	return {
@@ -97,7 +93,7 @@ export function computeWaves(plans: PlanFile[]): PlanWave[] {
 		if (!waveMap.has(w)) {
 			waveMap.set(w, []);
 		}
-		waveMap.get(w)!.push(plan);
+		waveMap.get(w)?.push(plan);
 	}
 
 	return Array.from(waveMap.entries())
@@ -110,10 +106,7 @@ export function computeWaves(plans: PlanFile[]): PlanWave[] {
  * Extracts the phase number prefix from `meta.phase` (e.g., "04" from
  * "04-subagent-execution-and-atomic-commits").
  */
-export function isPlanComplete(
-	phaseDir: string,
-	meta: PlanMetadata,
-): boolean {
+export function isPlanComplete(phaseDir: string, meta: PlanMetadata): boolean {
 	const padded = meta.phase.split("-")[0];
 	const summaryFilename = `${padded}-${meta.plan}-SUMMARY.md`;
 	return fse.pathExistsSync(join(phaseDir, summaryFilename));
@@ -132,9 +125,7 @@ export function getIncompletePlans(phaseDir: string): PlanFile[] {
  * Builds a map of file paths to owner plan IDs (e.g., "04-01"),
  * and returns only entries with 2+ owners.
  */
-export function detectWaveConflicts(
-	plans: PlanFile[],
-): Map<string, string[]> {
+export function detectWaveConflicts(plans: PlanFile[]): Map<string, string[]> {
 	const fileOwners = new Map<string, string[]>();
 
 	for (const plan of plans) {
@@ -145,7 +136,7 @@ export function detectWaveConflicts(
 			if (!fileOwners.has(file)) {
 				fileOwners.set(file, []);
 			}
-			fileOwners.get(file)!.push(ownerId);
+			fileOwners.get(file)?.push(ownerId);
 		}
 	}
 

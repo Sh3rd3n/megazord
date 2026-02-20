@@ -28,9 +28,10 @@
 
 **Milestone Goal:** Make Megazord installable and usable by anyone — GitHub repo, npm package, marketplace plugin, documentation, and CI/CD.
 
-- [ ] **Phase 12: Package Foundation** - Fix package.json gaps, add LICENSE, create GitHub repo, resolve package name
-- [ ] **Phase 13: Documentation** - README with quickstart, command reference, and usage examples
-- [ ] **Phase 14: CI/CD Pipeline** - GitHub Actions for quality gates and automated npm publish
+- [x] **Phase 12: Package Foundation** - Fix package.json gaps, add LICENSE, create GitHub repo, resolve package name (completed 2026-02-19)
+- [x] **Phase 13: Documentation** - README with quickstart, command reference, and usage examples (completed 2026-02-19)
+- [x] **Phase 14: CI/CD Pipeline** - GitHub Actions for quality gates and automated npm publish (completed 2026-02-19)
+- [x] **Phase 14.1: CORTEX Thinking Frameworks** - Enhance CORTEX from basic Cynefin to adaptive reasoning engine with structured thinking protocols (completed 2026-02-20)
 - [ ] **Phase 15: npm Publication** - Publish megazord-cli to npm with provenance attestation
 - [ ] **Phase 16: Marketplace** - Separate marketplace repo and official Anthropic directory submission
 
@@ -46,7 +47,7 @@
   3. Running `node bin/megazord.mjs --version` returns the version from package.json (not a hardcoded string)
   4. LICENSE file exists at repo root and matches the license field in package.json
   5. CHANGELOG.md exists with a v1.0.0 entry documenting initial release
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [ ] 12-01-PLAN.md — Package metadata, files array fix, LICENSE, CHANGELOG, .gitignore
@@ -61,10 +62,10 @@ Plans:
   2. README.md contains a quickstart section with copy-pasteable install and first-use commands
   3. README.md contains a full command reference listing all 15 `/mz:` commands with one-line descriptions
   4. README.md contains at least 3 usage examples showing real workflows (init, plan+go, verify)
-**Plans**: TBD
+**Plans:** 1/1 plans complete
 
 Plans:
-- [ ] 13-01: TBD
+- [ ] 13-01-PLAN.md — README with hero image, badges, quickstart, command reference, and workflow examples
 
 ### Phase 14: CI/CD Pipeline
 **Goal**: Every PR is automatically quality-checked and every version tag triggers a verified npm publish
@@ -75,11 +76,27 @@ Plans:
   2. Pushing a version tag (e.g., `v1.1.0`) triggers a GitHub Actions workflow that builds and publishes to npm with provenance
   3. The publish workflow uses `oven-sh/setup-bun@v2` for build/test and `actions/setup-node@v4` + `npm publish` for the publish step
   4. README.md displays working badges for npm version, CI status, and license
-**Plans**: TBD
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 14-01: TBD
-- [ ] 14-02: TBD
+- [ ] 14-01-PLAN.md — CI workflow (typecheck, lint, test on PR) + smoke test
+- [ ] 14-02-PLAN.md — Release workflow (npm publish with OIDC provenance on tag) + repo public + branch protection
+
+### Phase 14.1: CORTEX Thinking Frameworks (INSERTED)
+**Goal**: Enhance CORTEX from basic Cynefin classification to a full adaptive reasoning engine with structured thinking protocols from untools.co
+**Depends on**: Phase 14 (CI/CD complete — enhance before public release)
+**Requirements**: CORTEX-01, CORTEX-02, CORTEX-03, CORTEX-04, CORTEX-05
+**Success Criteria** (what must be TRUE):
+  1. Complicated+ tasks produce enhanced challenge blocks with pre-mortem (Inversion), assumption chain (Ladder of Inference), and consequence trace (Second-Order Thinking)
+  2. Complex tasks use First Principles + Abstraction Laddering structured brainstorm (not ad-hoc mini-brainstorm)
+  3. Recurring-area tasks trigger Iceberg Model systems analysis
+  4. Debug mode uses Issue Tree + Ishikawa cause-category decomposition
+  5. Classification signals use concrete heuristics (LOC, module count, API surface) not vague descriptions
+**Plans:** 2/2 plans complete
+
+Plans:
+- [x] 14.1-01-PLAN.md — CORTEX skill creation + executor enhancement (classification heuristics, challenge block, complex analysis, iceberg model)
+- [x] 14.1-02-PLAN.md — Debug skill CORTEX-aware depth control + go orchestrator CORTEX embedding
 
 ### Phase 15: npm Publication
 **Goal**: Anyone can install Megazord from npm and it works on a clean machine with no prior setup
@@ -89,10 +106,12 @@ Plans:
   1. `npm view megazord-cli` returns package metadata from the npm registry
   2. `bunx megazord-cli` on a clean machine installs successfully and the CLI responds
   3. After `bunx megazord-cli install`, all plugin files (skills, agents, hooks, commands) are in `~/.claude/`
-**Plans**: TBD
+**Plans:** 2/3 plans executed
 
 Plans:
-- [ ] 15-01: TBD
+- [ ] 15-01-PLAN.md — Package.json publishConfig, dual bin entry, version bump to 1.1.0, paths.ts megazordDir
+- [ ] 15-02-PLAN.md — Refactor install/update/uninstall for ~/.claude/megazord/ silent mode with rollback
+- [ ] 15-03-PLAN.md — CHANGELOG finalization, first manual npm publish, Trusted Publishing setup
 
 ### Phase 16: Marketplace
 **Goal**: Megazord is discoverable and installable through the Claude Code native plugin system
@@ -126,10 +145,11 @@ Phases 12 through 16 execute sequentially. Phase 14 depends on Phase 12 (not 13)
 | 9. Config Consumption Wiring | v1.0 | 3/3 | Complete | 2026-02-19 |
 | 10. Distribution and Autocomplete Fixes | v1.0 | 2/2 | Complete | 2026-02-19 |
 | 11. Milestone Lifecycle Completion | v1.0 | 1/1 | Complete | 2026-02-19 |
-| 12. Package Foundation | 1/2 | In Progress|  | - |
-| 13. Documentation | v1.1 | 0/? | Not started | - |
-| 14. CI/CD Pipeline | v1.1 | 0/? | Not started | - |
-| 15. npm Publication | v1.1 | 0/? | Not started | - |
+| 12. Package Foundation | 2/2 | Complete    | 2026-02-19 | - |
+| 13. Documentation | 1/1 | Complete    | 2026-02-19 | - |
+| 14. CI/CD Pipeline | 2/2 | Complete    | 2026-02-19 | - |
+| 14.1. CORTEX Thinking Frameworks | 2/2 | Complete    | 2026-02-20 | - |
+| 15. npm Publication | 2/3 | In Progress|  | - |
 | 16. Marketplace | v1.1 | 0/? | Not started | - |
 
 ---

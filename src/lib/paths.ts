@@ -1,8 +1,17 @@
-import { join } from "node:path";
 import { homedir } from "node:os";
+import { join } from "node:path";
 
 /** Root Claude directory: ~/.claude/ */
 export const claudeDir = join(homedir(), ".claude");
+
+/** Megazord installation directory: ~/.claude/megazord/ */
+export const megazordDir = join(claudeDir, "megazord");
+
+/** Megazord version file: ~/.claude/megazord/.version */
+export const megazordVersionPath = join(megazordDir, ".version");
+
+/** Megazord update check file: ~/.claude/megazord/.update-check */
+export const megazordUpdateCheckPath = join(megazordDir, ".update-check");
 
 /** Plugins directory: ~/.claude/plugins/ */
 export const pluginsDir = join(claudeDir, "plugins");

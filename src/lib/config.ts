@@ -36,14 +36,16 @@ export const agentTeamsSchema = z.object({
 const modelEnum = z.enum(["opus", "sonnet", "haiku", "inherit"]);
 
 /** Per-agent model overrides — optional, override wins over profile */
-export const modelOverridesSchema = z.object({
-	researcher: modelEnum.optional(),
-	planner: modelEnum.optional(),
-	executor: modelEnum.optional(),
-	reviewer: modelEnum.optional(),
-	verifier: modelEnum.optional(),
-	mapper: modelEnum.optional(),
-}).optional();
+export const modelOverridesSchema = z
+	.object({
+		researcher: modelEnum.optional(),
+		planner: modelEnum.optional(),
+		executor: modelEnum.optional(),
+		reviewer: modelEnum.optional(),
+		verifier: modelEnum.optional(),
+		mapper: modelEnum.optional(),
+	})
+	.optional();
 
 // ─── Full config schema ─────────────────────────────────────────────────────
 
@@ -195,10 +197,7 @@ const BUDGET_PLANNER_MODEL = "sonnet";
  * Precedence: model_overrides[role] > profile mapping.
  * Override "inherit" means "use profile mapping" (same as no override).
  */
-export function resolveAgentModel(
-	config: MegazordConfig,
-	agentRole: AgentRole,
-): string {
+export function resolveAgentModel(config: MegazordConfig, agentRole: AgentRole): string {
 	// 1. Check per-agent override (override wins, period)
 	const override = config.model_overrides?.[agentRole];
 	if (override && override !== "inherit") {
