@@ -31,6 +31,7 @@
 - [x] **Phase 12: Package Foundation** - Fix package.json gaps, add LICENSE, create GitHub repo, resolve package name (completed 2026-02-19)
 - [x] **Phase 13: Documentation** - README with quickstart, command reference, and usage examples (completed 2026-02-19)
 - [x] **Phase 14: CI/CD Pipeline** - GitHub Actions for quality gates and automated npm publish (completed 2026-02-19)
+- [ ] **Phase 14.1: CORTEX Thinking Frameworks** - Enhance CORTEX from basic Cynefin to adaptive reasoning engine with structured thinking protocols
 - [ ] **Phase 15: npm Publication** - Publish megazord-cli to npm with provenance attestation
 - [ ] **Phase 16: Marketplace** - Separate marketplace repo and official Anthropic directory submission
 
@@ -80,6 +81,22 @@ Plans:
 Plans:
 - [ ] 14-01-PLAN.md — CI workflow (typecheck, lint, test on PR) + smoke test
 - [ ] 14-02-PLAN.md — Release workflow (npm publish with OIDC provenance on tag) + repo public + branch protection
+
+### Phase 14.1: CORTEX Thinking Frameworks (INSERTED)
+**Goal**: Enhance CORTEX from basic Cynefin classification to a full adaptive reasoning engine with structured thinking protocols from untools.co
+**Depends on**: Phase 14 (CI/CD complete — enhance before public release)
+**Requirements**: CORTEX-01, CORTEX-02, CORTEX-03, CORTEX-04, CORTEX-05
+**Success Criteria** (what must be TRUE):
+  1. Complicated+ tasks produce enhanced challenge blocks with pre-mortem (Inversion), assumption chain (Ladder of Inference), and consequence trace (Second-Order Thinking)
+  2. Complex tasks use First Principles + Abstraction Laddering structured brainstorm (not ad-hoc mini-brainstorm)
+  3. Recurring-area tasks trigger Iceberg Model systems analysis
+  4. Debug mode uses Issue Tree + Ishikawa cause-category decomposition
+  5. Classification signals use concrete heuristics (LOC, module count, API surface) not vague descriptions
+**Plans:** 2 plans
+
+Plans:
+- [ ] 14.1-01-PLAN.md — CORTEX skill creation + executor enhancement (classification heuristics, challenge block, complex analysis, iceberg model)
+- [ ] 14.1-02-PLAN.md — Debug skill CORTEX-aware depth control + go orchestrator CORTEX embedding
 
 ### Phase 15: npm Publication
 **Goal**: Anyone can install Megazord from npm and it works on a clean machine with no prior setup
@@ -131,6 +148,7 @@ Phases 12 through 16 execute sequentially. Phase 14 depends on Phase 12 (not 13)
 | 12. Package Foundation | 2/2 | Complete    | 2026-02-19 | - |
 | 13. Documentation | 1/1 | Complete    | 2026-02-19 | - |
 | 14. CI/CD Pipeline | 2/2 | Complete    | 2026-02-19 | - |
+| 14.1. CORTEX Thinking Frameworks | 0/2 | Planned | - | - |
 | 15. npm Publication | 2/3 | In Progress|  | - |
 | 16. Marketplace | v1.1 | 0/? | Not started | - |
 
