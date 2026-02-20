@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 290" width="820" height="290">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f13"/>
+      <stop offset="100%" stop-color="#1a1a24"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9CA3AF"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="820" height="290" rx="16" fill="url(#bg)"/>
+  <rect width="820" height="290" rx="16" fill="none" stroke="#2a2a3a" stroke-width="1"/>
+
+  <!-- Title: CORTEX — each letter a solid Ranger color -->
+  <text x="410" y="48" text-anchor="middle" font-family="'Courier New', 'Monaco', 'Menlo', monospace" font-size="38" font-weight="700" filter="url(#glow)" letter-spacing="10"><tspan fill="#E63946">C</tspan><tspan fill="#457B9D">O</tspan><tspan fill="#F4A300">R</tspan><tspan fill="#2DC653">T</tspan><tspan fill="#E891B2">E</tspan><tspan fill="#E63946">X</tspan></text>
+
+  <!-- Subtitle -->
+  <text x="410" y="72" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#A1A1AA" letter-spacing="3">ADAPTIVE REASONING ENGINE</text>
+
+  <!-- ═══ Domain Boxes ═══ -->
+
+  <!-- Clear -->
+  <rect x="40" y="100" width="160" height="75" rx="8" fill="#1e1e2e" stroke="#2DC653" stroke-width="1.5"/>
+  <text x="120" y="130" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#4ADE80">Clear</text>
+  <text x="120" y="152" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#E5E7EB">Execute directly</text>
+
+  <!-- Arrow 1: straight -->
+  <line x1="200" y1="137" x2="227" y2="137" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Complicated -->
+  <rect x="230" y="100" width="160" height="75" rx="8" fill="#1e1e2e" stroke="#457B9D" stroke-width="1.5"/>
+  <text x="310" y="130" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#7DB8D4">Complicated</text>
+  <text x="310" y="152" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#E5E7EB">Analyze, then execute</text>
+
+  <!-- Arrow 2: curved -->
+  <path d="M 390,137 C 398,124 412,150 420,137" stroke="#9CA3AF" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Complex -->
+  <rect x="420" y="100" width="160" height="75" rx="8" fill="#1e1e2e" stroke="#F4A300" stroke-width="1.5"/>
+  <text x="500" y="130" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#FBC02D">Complex</text>
+  <text x="500" y="152" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#E5E7EB">Decompose, then execute</text>
+
+  <!-- Arrow 3: jagged -->
+  <path d="M 580,137 L 586,128 L 592,146 L 598,128 L 604,146 L 610,137" stroke="#9CA3AF" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Chaotic -->
+  <rect x="610" y="100" width="160" height="75" rx="8" fill="#1e1e2e" stroke="#E63946" stroke-width="1.5"/>
+  <text x="690" y="130" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#FF6B6B">Chaotic</text>
+  <text x="690" y="152" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#E5E7EB">Stop. Escalate.</text>
+
+  <!-- ═══ Framework Pills ═══ -->
+
+  <!-- Under Clear -->
+  <text x="120" y="205" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" fill="#9CA3AF" font-style="italic">Zero overhead</text>
+
+  <!-- Under Complicated -->
+  <rect x="265" y="190" width="90" height="20" rx="10" fill="#457B9D" fill-opacity="0.25" stroke="#457B9D" stroke-width="0.5" stroke-opacity="0.6"/>
+  <text x="310" y="204" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" fill="#E5E7EB">Inversion</text>
+
+  <rect x="255" y="214" width="110" height="20" rx="10" fill="#457B9D" fill-opacity="0.25" stroke="#457B9D" stroke-width="0.5" stroke-opacity="0.6"/>
+  <text x="310" y="228" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" fill="#E5E7EB">Assumptions</text>
+
+  <rect x="251" y="238" width="118" height="20" rx="10" fill="#457B9D" fill-opacity="0.25" stroke="#457B9D" stroke-width="0.5" stroke-opacity="0.6"/>
+  <text x="310" y="252" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" fill="#E5E7EB">Consequences</text>
+
+  <!-- Under Complex -->
+  <rect x="445" y="190" width="110" height="20" rx="10" fill="#F4A300" fill-opacity="0.25" stroke="#F4A300" stroke-width="0.5" stroke-opacity="0.6"/>
+  <text x="500" y="204" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" fill="#E5E7EB">First Principles</text>
+
+  <rect x="450" y="214" width="100" height="20" rx="10" fill="#F4A300" fill-opacity="0.25" stroke="#F4A300" stroke-width="0.5" stroke-opacity="0.6"/>
+  <text x="500" y="228" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" fill="#E5E7EB">Abstraction</text>
+
+  <rect x="443" y="238" width="114" height="20" rx="10" fill="#F4A300" fill-opacity="0.25" stroke="#F4A300" stroke-width="0.5" stroke-opacity="0.6"/>
+  <text x="500" y="252" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" fill="#E5E7EB">Iceberg Model</text>
+
+  <!-- Under Chaotic -->
+  <text x="690" y="205" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" fill="#9CA3AF" font-style="italic">Human decision required</text>
+</svg>
