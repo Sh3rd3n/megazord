@@ -155,21 +155,83 @@ Display phase banner:
 
 **Goal:** Understand not just WHERE it fails, but WHY it fails. Causation, not correlation.
 
-1. Trace execution through the failing component
-2. Add logging or read code to understand the data flow at the failure point
-3. Identify the EXACT condition causing failure:
+### CORTEX-Aware Depth Control
+
+Apply Issue Tree + Ishikawa MECE decomposition when the issue is NOT trivially obvious. Use this decision logic:
+
+**Full decomposition (apply Issue Tree + Ishikawa):**
+- Stack trace spans multiple files or modules
+- Error message is ambiguous or misleading
+- Multiple possible root causes exist
+- The issue involves timing, state, or environment factors
+- Previous fix attempts have failed
+
+**Skip formal decomposition:**
+- Stack trace directly points to a single-line fix with an obvious cause (e.g., "Cannot read property 'x' of undefined at line 42" with a clear null check missing)
+- Build error with a self-explanatory message (e.g., "Module not found: './missing-file'")
+- Type error with an obvious type mismatch
+
+When skipping, display: `> Issue Tree: Skipped (root cause obvious from {error type/stack trace})`
+
+When applying, display: `> Issue Tree: Applying MECE decomposition with Ishikawa categories`
+
+### Issue Tree Decomposition
+
+> This is the CORTEX-04 implementation: structured root-cause analysis using Issue Tree (MECE decomposition) and Ishikawa cause categories adapted for software.
+
+Before investigating, structure the problem as an Issue Tree — a MECE (Mutually Exclusive, Collectively Exhaustive) breakdown of possible causes:
+
+```
+<issue-tree>
+PROBLEM: [root problem statement]
+├── {category 1}: [hypothesis]
+│   ├── {sub-cause}: [evidence for/against]
+│   └── {sub-cause}: [evidence for/against]
+├── {category 2}: [hypothesis]
+│   └── {sub-cause}: [evidence for/against]
+└── {category 3}: [hypothesis]
+    └── {sub-cause}: [evidence for/against]
+LIKELY-ROOT: [{category}/{sub-cause}] — {evidence}
+</issue-tree>
+```
+
+### Ishikawa Cause Categories
+
+Use these software-adapted cause categories to structure the Issue Tree branches:
+
+| Category | What to check |
+|----------|--------------|
+| **Code** | Logic errors, type mismatches, edge cases, off-by-one, null handling |
+| **Data** | Schema mismatch, null/undefined values, encoding issues, malformed input |
+| **Environment** | Node/runtime versions, OS differences, config mismatches, env vars |
+| **Dependencies** | Version conflicts, breaking changes, missing packages, peer deps |
+| **Timing** | Race conditions, async ordering, timeouts, event loop blocking |
+| **State** | Stale cache, leaked state, initialization order, shared mutable state |
+
+Not every category applies to every bug. Select 2-4 categories most relevant to the issue type detected in Step 2.
+
+**CORTEX boundary:** When `/mz:debug` is invoked manually, the debug skill owns the analysis — CORTEX classification from the executor is NOT applied separately. The debug skill's own systematic methodology (REPRODUCE -> ISOLATE -> ROOT CAUSE -> FIX) governs. When debugging happens during execution (executor encounters a bug and applies auto-fix deviation rules), the executor's CORTEX classification governs instead.
+
+### Investigation
+
+1. Work through the Issue Tree systematically — check each branch against evidence
+2. Trace execution through the failing component
+3. Add logging or read code to understand the data flow at the failure point
+4. Identify the EXACT condition causing failure:
    - What input triggers it?
    - What state must exist for it to fail?
    - What assumption is violated?
-4. Explain causation chain: "This fails because {A} leads to {B} which causes {C}"
-5. Distinguish correlation from causation: verify the root cause by predicting what behavior changes if the root cause is addressed
-6. **Exit criteria:** Root cause identified and explained
+5. Explain causation chain: "This fails because {A} leads to {B} which causes {C}"
+6. Distinguish correlation from causation: verify the root cause by predicting what behavior changes if the root cause is addressed
+7. Update the Issue Tree with findings — mark branches as confirmed or eliminated
+8. **Exit criteria:** Root cause identified and explained, Issue Tree resolved
 
 Display the root cause:
 
 ```
 > Root cause: {explanation}
 > Evidence: {what proves this is the cause, not just a correlation}
+> Category: {Ishikawa category}
 ```
 
 **Direct tone:** "This fails because X" -- never "This might be related to X" or "This could possibly be caused by X." If the root cause is uncertain, say so explicitly: "Root cause is uncertain. Two candidates: {A} or {B}. Next step: {how to distinguish}."
