@@ -188,22 +188,26 @@ Walk away, come back to completed work with clean git history.
 
 **How wave execution works:**
 
+```mermaid
+graph LR
+  subgraph Wave 1 - parallel
+    T1["Task 01<br/>User Model"]
+    T2["Task 02<br/>Product Model"]
+  end
+  subgraph Wave 2 - parallel
+    T3["Task 03<br/>Orders API"]
+    T4["Task 04<br/>Cart API"]
+  end
+  subgraph Wave 3
+    T5["Task 05<br/>Checkout UI"]
+  end
+  T1 --> T3
+  T2 --> T4
+  T3 --> T5
+  T4 --> T5
 ```
-  WAVE 1 (parallel)          WAVE 2 (parallel)         WAVE 3
-  +----------+ +----------+  +----------+ +----------+  +----------+
-  | Task 01  | | Task 02  |  | Task 03  | | Task 04  |  | Task 05  |
-  |          | |          |  |          | |          |  |          |
-  | User     | | Product  |  | Orders   | | Cart     |  | Checkout |
-  | Model    | | Model    |  | API      | | API      |  | UI       |
-  +----------+ +----------+  +----------+ +----------+  +----------+
-       |            |     \        ^            ^     \        ^
-       |            |      ------->|            |      ------->|
-       +------------+              +------------+
-       depends on                  depends on
 
-  Independent tasks run in parallel within each wave.
-  Waves run sequentially -- Wave 2 waits for Wave 1 to finish.
-```
+Independent tasks run in parallel within each wave. Waves run sequentially -- Wave 2 waits for Wave 1 to finish.
 
 **Creates:** `SUMMARY.md`, `VERIFICATION.md`
 
