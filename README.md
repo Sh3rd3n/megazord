@@ -189,24 +189,20 @@ Walk away, come back to completed work with clean git history.
 **How wave execution works:**
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│  PHASE EXECUTION                                                    │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  WAVE 1 (parallel)          WAVE 2 (parallel)          WAVE 3      │
-│  ┌─────────┐ ┌─────────┐   ┌─────────┐ ┌─────────┐   ┌─────────┐ │
-│  │ Task 01 │ │ Task 02 │ → │ Task 03 │ │ Task 04 │ → │ Task 05 │ │
-│  │         │ │         │   │         │ │         │   │         │ │
-│  │ User    │ │ Product │   │ Orders  │ │ Cart    │   │ Checkout│ │
-│  │ Model   │ │ Model   │   │ API     │ │ API     │   │ UI      │ │
-│  └─────────┘ └─────────┘   └─────────┘ └─────────┘   └─────────┘ │
-│       │           │              ↑           ↑              ↑      │
-│       └───────────┴──────────────┴───────────┘              │      │
-│              Dependencies: Task 03 needs Task 01            │      │
-│                           Task 04 needs Task 02             │      │
-│                           Task 05 needs Tasks 03 + 04       │      │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
+  WAVE 1 (parallel)          WAVE 2 (parallel)         WAVE 3
+  +----------+ +----------+  +----------+ +----------+  +----------+
+  | Task 01  | | Task 02  |  | Task 03  | | Task 04  |  | Task 05  |
+  |          | |          |  |          | |          |  |          |
+  | User     | | Product  |  | Orders   | | Cart     |  | Checkout |
+  | Model    | | Model    |  | API      | | API      |  | UI       |
+  +----------+ +----------+  +----------+ +----------+  +----------+
+       |            |     \        ^            ^     \        ^
+       |            |      ------->|            |      ------->|
+       +------------+              +------------+
+       depends on                  depends on
+
+  Independent tasks run in parallel within each wave.
+  Waves run sequentially -- Wave 2 waits for Wave 1 to finish.
 ```
 
 **Creates:** `SUMMARY.md`, `VERIFICATION.md`
