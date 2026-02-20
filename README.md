@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <em>One framework for the entire development lifecycle -- with agents that actually talk to each other.</em>
+  <strong>Project management, code quality, and multi-agent coordination in a single Claude Code plugin.</strong>
 </p>
 
 <p align="center">
@@ -15,203 +15,412 @@
   <img src="https://img.shields.io/badge/Commands-15-orange?style=flat&colorA=18181B" alt="Commands: 15">
 </p>
 
----
-
-Megazord is a Claude Code plugin that turns your development workflow into something that feels coordinated instead of chaotic. It brings project management, code quality, and multi-agent coordination into a single framework -- so you go from idea to shipped code without juggling a dozen tools and hoping nothing falls through the cracks.
-
-What makes it different? Megazord is the first framework built on Claude Code's native Agent Teams. That means your agents don't just get spawned and forgotten -- they actually communicate, hand off context, and build on each other's work. Planning, execution, review, and verification all happen through 15 slash commands that cover the full development lifecycle.
-
-Whether you're starting a greenfield project or bringing structure to an existing codebase, Megazord gives you a clear path from "what should I build?" to "it's built and verified."
-
-## Prerequisites
-
-Before you get started, make sure you have these installed:
-
-- **[Claude Code](https://claude.ai/code)** >= 2.x -- the AI coding assistant that Megazord runs inside. This is home base.
-- **[Node.js](https://nodejs.org/)** >= 22 -- the runtime that powers the CLI and installer.
-- **[bun](https://bun.sh/)** -- a fast JavaScript package manager. Any recent version works.
-
-## Quickstart
-
-Getting up and running takes about two minutes.
-
-**1. Install Megazord**
+<p align="center">
 
 ```bash
 bunx megazord-cli
 ```
 
-This registers Megazord as a Claude Code plugin. You'll see something like:
+</p>
 
+<p align="center">
+  <a href="#why-megazord">Why Megazord</a> &middot;
+  <a href="#how-it-works">How It Works</a> &middot;
+  <a href="#commands">Commands</a> &middot;
+  <a href="#why-it-works">Why It Works</a> &middot;
+  <a href="#configuration">Configuration</a>
+</p>
+
+---
+
+## Why Megazord
+
+Other Claude Code frameworks fall into two camps. **Workflow tools** (like Superpowers) give you code quality discipline -- TDD, brainstorming, code review -- but don't help you manage a project across phases and milestones. **Project management tools** (like GSD) give you roadmaps, planning, and context engineering -- but leave code quality to chance.
+
+Megazord combines both. One plugin that covers the full development lifecycle: from "what should I build?" all the way to "it's built, reviewed, verified, and shipped."
+
+And unlike other frameworks where agents are spawned, do their job, and disappear -- Megazord is built on Claude Code's **native Agent Teams**. Your agents actually communicate with each other, coordinate through a shared task list, and hand off context in real time. No file-based workarounds. No fire-and-forget subagents. Real multi-agent coordination.
+
+---
+
+## Who This Is For
+
+Developers who use Claude Code and want their AI-assisted workflow to feel like a coordinated team instead of a solo assistant. Whether you're building a new project from scratch or adding features to an existing codebase, Megazord gives you structure without bureaucracy.
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- **[Claude Code](https://claude.ai/code)** >= 2.x
+- **[Node.js](https://nodejs.org/)** >= 22
+- **[bun](https://bun.sh/)** (any recent version)
+
+### Install
+
+```bash
+bunx megazord-cli
 ```
-Megazord v1.0.0
-Detected Claude Code at ~/.claude
-Installing plugin... done.
-Plugin registered. Restart Claude Code to activate.
-```
 
-**2. Open Claude Code** in your project directory.
-
-**3. Initialize your project**
-
-```
-/mz:init
-```
-
-Megazord sets up your planning structure and picks sensible defaults:
-
-```
-MEGAZORD v1.0.0
-Preset: Balanced
-Created .planning/megazord.config.json
-Created .planning/ROADMAP.md
-Created .planning/PROJECT.md
-
-Ready! Run /mz:plan to start planning your first phase.
-```
-
-**4. See what's available**
-
-```
-/mz:help
-```
-
-This shows all 15 commands grouped by workflow stage -- setup, planning, execution, quality, and utilities. Each one comes with a description and usage example.
-
-From here, you're ready to plan your first phase with `/mz:plan` and start building.
+This registers Megazord as a Claude Code plugin. Restart Claude Code to activate.
 
 <details>
-<summary><strong>Command Reference</strong> -- all 15 <code>/mz:</code> commands</summary>
+<summary><strong>Other install commands</strong></summary>
 
-### Setup
+```bash
+# Update to latest version
+bunx megazord-cli update
 
-#### `/mz:init`
-
-Initialize a new Megazord project with configuration and planning structure. This is always your first step -- it creates the `.planning/` directory, sets your quality preset, and gives you a starting point for everything else.
-
-**Usage:** `/mz:init`
-**When to use:** You just created a new project (or cloned one) and want to bring Megazord into it.
-
-#### `/mz:settings`
-
-View and modify your Megazord project configuration. Quality presets, model selection, workflow toggles -- everything lives here.
-
-**Usage:** `/mz:settings` or `/mz:settings quality.preset strict`
-**When to use:** You want to switch from Balanced to Strict mode, toggle TDD on or off, or just see what's currently configured.
-
-#### `/mz:help`
-
-Show all available Megazord commands with descriptions and usage examples. Think of it as this reference table, but inside Claude Code.
-
-**Usage:** `/mz:help`
-**When to use:** You can't remember the command name for what you want to do, or you want to see what's available.
-
-### Planning
-
-#### `/mz:plan`
-
-Plan a phase into executable tasks with dependencies and waves. Megazord researches the technical landscape first, then decomposes your phase into concrete tasks that agents can pick up and run.
-
-**Usage:** `/mz:plan` or `/mz:plan 3`
-**When to use:** You've defined what a phase should accomplish and you're ready to break it down into work.
-
-#### `/mz:discuss`
-
-Socratic brainstorming to explore approaches before you commit to a direction. Megazord asks probing questions, surfaces tradeoffs, and helps you think through decisions -- without writing any code.
-
-**Usage:** `/mz:discuss "Should we use JWT or session-based auth?"`
-**When to use:** You're facing an architectural decision and want to think it through before planning.
-
-#### `/mz:map`
-
-Analyze an existing codebase for brownfield project support. Megazord scans your project structure, dependencies, patterns, and conventions so it understands what you're working with before planning changes.
-
-**Usage:** `/mz:map`
-**When to use:** You're adding Megazord to a project that already has code. Run this before `/mz:plan` so planning accounts for what exists.
-
-### Execution
-
-#### `/mz:go`
-
-Execute the current phase plan with subagent delegation. This is where work actually happens -- Megazord spawns specialized agents that pick up tasks, execute them in dependency order, and commit atomically.
-
-**Usage:** `/mz:go`
-**When to use:** You have a plan ready (from `/mz:plan`) and you want to start building.
-
-#### `/mz:quick`
-
-Run a quick task without full project ceremony. No planning phase, no formal verification -- just describe what you need and Megazord handles it. Perfect for small, self-contained changes.
-
-**Usage:** `/mz:quick "Add dark mode toggle to settings page"`
-**When to use:** The task is small enough that full planning would be overkill. Think bug fixes, UI tweaks, adding a utility function.
-
-### Quality
-
-#### `/mz:review`
-
-Two-stage code review covering both spec compliance and code quality. First it checks whether you built what was planned, then it reviews the code itself for issues, patterns, and improvement opportunities.
-
-**Usage:** `/mz:review`
-**When to use:** After `/mz:go` finishes, before you consider the phase done. Catches things verification alone might miss.
-
-#### `/mz:verify`
-
-Verify that phase deliverables actually match your acceptance criteria. This isn't "did tasks complete" -- it's "did we build what we said we'd build." Goal-backward verification that checks outcomes, not just outputs.
-
-**Usage:** `/mz:verify`
-**When to use:** After execution completes. Run this to make sure your phase delivered what it promised.
-
-#### `/mz:debug`
-
-Systematic four-phase debugging: reproduce, isolate, root-cause, fix. Instead of guessing at the problem, Megazord walks through it methodically and builds a clear chain from symptom to solution.
-
-**Usage:** `/mz:debug "Users see stale cart totals after adding items"`
-**When to use:** You've hit a bug that isn't obvious. Especially useful for issues that span multiple files or involve async behavior.
-
-### Utilities
-
-#### `/mz:status`
-
-Show project progress, current phase, and what to do next. A quick snapshot of where you are in the overall project lifecycle.
-
-**Usage:** `/mz:status`
-**When to use:** You just opened Claude Code and want to know where you left off, or you want to check overall progress.
-
-#### `/mz:pause`
-
-Save session context for handoff to a future session. Captures what you were working on, what's done, and what's next -- so the next Claude Code session can pick up seamlessly.
-
-**Usage:** `/mz:pause`
-**When to use:** You're done for the day (or stepping away) and want to make sure nothing gets lost between sessions.
-
-#### `/mz:resume`
-
-Restore context from a previous session and continue work. Reads the pause snapshot and reconstructs your working context so you can keep going without re-explaining everything.
-
-**Usage:** `/mz:resume`
-**When to use:** You're starting a new Claude Code session and want to pick up where you left off.
-
-#### `/mz:lifecycle`
-
-Complete milestone lifecycle: audit deliverables, archive the milestone, and set up the next version. This is how you close out a major release and transition to the next one.
-
-**Usage:** `/mz:lifecycle`
-**When to use:** All phases in the current milestone are done and you're ready to wrap up and start the next version.
+# Uninstall
+bunx megazord-cli uninstall
+```
 
 </details>
 
+### Your first project
+
+**1. Initialize**
+
+```
+/mz:init
+```
+
+Megazord asks about your project, picks a quality preset, and creates the planning structure.
+
+**2. Plan your first phase**
+
+```
+/mz:plan 1
+```
+
+Researches the technical landscape, then decomposes the phase into tasks with dependencies and execution waves.
+
+**3. Build it**
+
+```
+/mz:go
+```
+
+Spawns specialized agents that execute tasks in dependency order, commit atomically, and coordinate through Agent Teams.
+
+**4. Verify it works**
+
+```
+/mz:verify
+```
+
+Checks that what was built actually matches your acceptance criteria -- not just "did tasks complete" but "did we build what we said we'd build."
+
+---
+
+## How It Works
+
+### 1. Initialize Project
+
+```
+/mz:init
+```
+
+One command, one flow. The system:
+
+1. **Questions** -- asks until it understands your project completely (goals, constraints, tech stack, edge cases)
+2. **Preset selection** -- Strict, Balanced, or Minimal quality gates
+3. **Deep context** -- captures your vision, requirements, and non-goals
+4. **Planning structure** -- creates PROJECT.md, STATE.md, ROADMAP.md, and config
+
+You approve the setup. Now you're ready to build.
+
+**Creates:** `.planning/megazord.config.json`, `PROJECT.md`, `STATE.md`, `ROADMAP.md`
+
+> **Already have code?** Run `/mz:map` first. It spawns parallel agents to analyze your stack, architecture, conventions, and concerns. Then `/mz:init` and `/mz:plan` know your codebase -- planning automatically loads your existing patterns.
+
+---
+
+### 2. Discuss Phase (optional)
+
+```
+/mz:discuss "Should we use JWT or session-based auth?"
+```
+
+**This is where you shape the implementation.**
+
+Your roadmap has a sentence or two per phase. That's not enough context to build something the way *you* imagine it. This step captures your preferences before anything gets researched or planned.
+
+Megazord identifies gray areas, asks Socratic questions, explores 5+ approaches, and records your decisions. The output feeds directly into research and planning.
+
+**Creates:** `CONTEXT.md`
+
+---
+
+### 3. Plan Phase
+
+```
+/mz:plan 1
+```
+
+The system:
+
+1. **Researches** -- investigates how to implement this phase, guided by your decisions
+2. **Plans** -- creates task breakdown with dependencies and execution waves
+3. **Verifies** -- checks plans against requirements, loops until they pass
+
+Each plan is structured so agents can execute independently with clear boundaries.
+
+**Creates:** `RESEARCH.md`, `PLAN.md`
+
+---
+
+### 4. Execute Phase
+
+```
+/mz:go
+```
+
+The system:
+
+1. **Runs tasks in waves** -- parallel where independent, sequential when dependent
+2. **Spawns specialized agents** -- each task gets an executor with fresh context
+3. **Commits per task** -- every completed task gets its own atomic commit
+4. **Coordinates via Agent Teams** -- agents communicate, hand off context, and build on each other's work
+
+Walk away, come back to completed work with clean git history.
+
+**How wave execution works:**
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  PHASE EXECUTION                                                    │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  WAVE 1 (parallel)          WAVE 2 (parallel)          WAVE 3      │
+│  ┌─────────┐ ┌─────────┐   ┌─────────┐ ┌─────────┐   ┌─────────┐ │
+│  │ Task 01 │ │ Task 02 │ → │ Task 03 │ │ Task 04 │ → │ Task 05 │ │
+│  │         │ │         │   │         │ │         │   │         │ │
+│  │ User    │ │ Product │   │ Orders  │ │ Cart    │   │ Checkout│ │
+│  │ Model   │ │ Model   │   │ API     │ │ API     │   │ UI      │ │
+│  └─────────┘ └─────────┘   └─────────┘ └─────────┘   └─────────┘ │
+│       │           │              ↑           ↑              ↑      │
+│       └───────────┴──────────────┴───────────┘              │      │
+│              Dependencies: Task 03 needs Task 01            │      │
+│                           Task 04 needs Task 02             │      │
+│                           Task 05 needs Tasks 03 + 04       │      │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Creates:** `SUMMARY.md`, `VERIFICATION.md`
+
+---
+
+### 5. Verify and Review
+
+```
+/mz:verify
+/mz:review
+```
+
+**Verify** checks that deliverables match your acceptance criteria. Goal-backward: "did we build what we promised?"
+
+**Review** runs a two-stage code review: spec compliance first, then code quality. Findings are severity-graded -- critical issues block progress.
+
+---
+
+### 6. Repeat, Complete, Next Milestone
+
+```
+/mz:plan 2 → /mz:go → /mz:verify → ...
+/mz:lifecycle
+```
+
+Loop **discuss/plan/execute/verify** until milestone complete. Then `/mz:lifecycle` audits deliverables, archives the milestone, tags the release, and prepares the next version.
+
+---
+
+### Quick Mode
+
+```
+/mz:quick "Add dark mode toggle to settings page"
+```
+
+For tasks that don't need full planning. Same quality guarantees (atomic commits, state tracking), faster path. No research, no plan checker, no verifier -- just get it done.
+
+---
+
+## Commands
+
+### Core Workflow
+
+| Command | What it does |
+|---------|-------------|
+| `/mz:init` | Initialize project: questions, preset selection, planning structure |
+| `/mz:discuss` | Socratic brainstorming to explore approaches before planning |
+| `/mz:plan [N]` | Research + plan + verify for a phase |
+| `/mz:go` | Execute phase plan with Agent Teams coordination |
+| `/mz:verify` | Goal-backward verification against acceptance criteria |
+| `/mz:review` | Two-stage code review (spec compliance + code quality) |
+| `/mz:lifecycle` | Audit milestone, archive, tag release, start next version |
+
+### Navigation
+
+| Command | What it does |
+|---------|-------------|
+| `/mz:status` | Where am I? What's next? |
+| `/mz:help` | Show all commands with usage examples |
+
+### Brownfield
+
+| Command | What it does |
+|---------|-------------|
+| `/mz:map` | Analyze existing codebase (tech, architecture, conventions, concerns) |
+
+### Session Management
+
+| Command | What it does |
+|---------|-------------|
+| `/mz:pause` | Save session context for handoff to future session |
+| `/mz:resume` | Restore context and continue from where you left off |
+
+### Utilities
+
+| Command | What it does |
+|---------|-------------|
+| `/mz:settings` | View and modify project configuration |
+| `/mz:quick` | Execute ad-hoc task with quality guarantees, skip full ceremony |
+| `/mz:debug` | Systematic four-phase debugging (reproduce, isolate, root-cause, fix) |
+
+---
+
+## Why It Works
+
+### Native Agent Teams
+
+Most Claude Code frameworks spawn subagents with the Task tool -- fire and forget. The orchestrator sends work out, collects results, moves on. Agents never talk to each other.
+
+Megazord uses Claude Code's built-in Agent Teams: `TeamCreate`, `SendMessage`, `TaskList`, `TaskUpdate`. Agents coordinate through a shared task list, send messages to each other in real time, and hand off context without losing anything. The orchestrator stays lightweight while agents do the heavy lifting.
+
+| | Agent Teams (Megazord) | Task tool (others) |
+|---|---|---|
+| Communication | Bidirectional via SendMessage | None |
+| Coordination | Shared TaskList/TaskUpdate | Orchestrator manages manually |
+| Agent awareness | Agents see each other's work | Agents work in isolation |
+| Context preservation | Shared state across agents | Each agent starts fresh |
+
+### 6 Specialized Agents
+
+Every agent has one job and does it well:
+
+| Agent | Role |
+|-------|------|
+| **Executor** | Implements tasks, writes code, commits atomically |
+| **Planner** | Creates task breakdown with dependencies and waves |
+| **Researcher** | Investigates technical landscape before planning |
+| **Reviewer** | Two-stage code review (spec compliance + quality) |
+| **Verifier** | Goal-backward verification against acceptance criteria |
+| **Mapper** | Analyzes existing codebases (brownfield support) |
+
+### Context Engineering
+
+Quality degrades as context windows fill up. Megazord keeps things clean:
+
+| File | Purpose |
+|------|---------|
+| `PROJECT.md` | Project vision, always loaded |
+| `ROADMAP.md` | Where you're going, what's done |
+| `STATE.md` | Decisions, blockers, position -- memory across sessions |
+| `PLAN.md` | Task breakdown with dependencies and verification steps |
+| `RESEARCH.md` | Technical landscape for each phase |
+| `CONTEXT.md` | Your implementation decisions from brainstorming |
+| `SUMMARY.md` | What happened, what changed -- committed to history |
+
+Each file is sized to stay in the optimal context range. Fresh agents get exactly the context they need, nothing more.
+
+### Atomic Git Commits
+
+Each task gets its own commit immediately after completion:
+
+```
+abc123f feat(03-01): create user model and migrations
+def456g feat(03-01): add authentication endpoints
+hij789k feat(03-02): implement password hashing
+lmn012o feat(03-02): create registration flow
+```
+
+Git bisect finds the exact failing task. Each task is independently revertable. Clean history for both humans and AI in future sessions.
+
+### File Ownership Enforcement
+
+When multiple agents work in parallel, file conflicts are inevitable -- unless you prevent them. Megazord uses a `PreToolUse` hook that validates file ownership before any `Edit` or `Write` operation. Two agents can never modify the same file simultaneously.
+
+---
+
+## Configuration
+
+Megazord stores project settings in `.planning/megazord.config.json`. Configure during `/mz:init` or update with `/mz:settings`.
+
+### Quality Presets
+
+| Preset | TDD | Review | Brainstorming | Debug | Research | Plan Check | Verifier |
+|--------|-----|--------|---------------|-------|----------|------------|----------|
+| **Strict** | On | Auto | On | Systematic | On | On | On |
+| **Balanced** (default) | Off | Auto | On | Systematic | On | On | On |
+| **Minimal** | Off | Off | Off | Quick | Off | Off | Off |
+
+**Strict** gives you maximum quality gates -- TDD enforced, brainstorming before every plan, systematic debugging. Best for production code where correctness matters.
+
+**Balanced** keeps the important gates (research, verification, review) without the overhead of TDD on every task. Good default for most projects.
+
+**Minimal** strips everything optional. Plan and execute, nothing else. Good for prototyping and throwaway code.
+
+### Model Profiles
+
+Control which Claude model each agent uses. Balance quality against token spend.
+
+| Profile | Planning | Execution | Verification |
+|---------|----------|-----------|--------------|
+| **Quality** | Opus | Opus | Sonnet |
+| **Balanced** (default) | Opus | Sonnet | Sonnet |
+| **Budget** | Sonnet | Sonnet | Haiku |
+
+Switch profiles:
+
+```
+/mz:settings model_profile quality
+```
+
+### Workflow Toggles
+
+These control optional agents that improve quality but add tokens and time.
+
+| Setting | Default | What it does |
+|---------|---------|-------------|
+| `workflow.research` | `true` | Research domain before planning each phase |
+| `workflow.plan_check` | `true` | Verify plans achieve phase goals before execution |
+| `workflow.verifier` | `true` | Confirm deliverables after execution |
+
+### Execution Settings
+
+| Setting | Default | What it does |
+|---------|---------|-------------|
+| `mode` | `interactive` | `interactive` confirms at each step, `yolo` auto-approves |
+| `depth` | `standard` | `comprehensive`, `standard`, or `quick` planning thoroughness |
+| `parallelization` | `true` | Run independent tasks simultaneously |
+| `commit_docs` | `true` | Track `.planning/` in git |
+
+---
+
+## Workflow Examples
+
 <details>
-<summary><strong>Workflow Examples</strong> -- see Megazord in action</summary>
+<summary><strong>Greenfield: Build a new project from scratch</strong></summary>
 
-### Greenfield: Build a new project from scratch
-
-> You're starting fresh -- a task management API called "todo-api." Megazord handles the full lifecycle from planning through verification.
+> You're starting fresh -- a task management API. Megazord handles the full lifecycle.
 
 ```
 /mz:init
 ```
 ```
-MEGAZORD v1.0.0
+MEGAZORD v1.1.0
 Preset: Balanced
 Created .planning/megazord.config.json
 Created .planning/ROADMAP.md
@@ -224,7 +433,7 @@ Ready! Run /mz:plan to start planning.
 ```
 MEGAZORD > PLANNING
 Researching phase 1...
-Created 1-01-PLAN.md (8 tasks, 2 waves)
+Created PLAN.md (8 tasks, 2 waves)
 ```
 
 ```
@@ -250,9 +459,12 @@ Checking 4 success criteria...
 Verification: PASSED (4/4 criteria met)
 ```
 
-### Brownfield: Add Megazord to an existing project
+</details>
 
-> You have an existing SaaS codebase ("my-saas") and want to bring structure to your next round of feature work. Start with `/mz:map` so Megazord understands what's already there.
+<details>
+<summary><strong>Brownfield: Add features to an existing codebase</strong></summary>
+
+> You have a SaaS codebase and want to add structured feature work. Start with `/mz:map`.
 
 ```
 /mz:map
@@ -262,7 +474,7 @@ MEGAZORD > MAPPING
 Scanning project structure...
 Found: Next.js 15, Prisma, 47 routes, 12 models
 Patterns: App Router, server actions, Stripe integration
-Map saved to .planning/codebase-map.md
+Map saved to .planning/codebase/
 ```
 
 ```
@@ -271,7 +483,7 @@ Map saved to .planning/codebase-map.md
 ```
 MEGAZORD > PLANNING
 Using codebase map for context...
-Created 1-01-PLAN.md (5 tasks, 2 waves)
+Created PLAN.md (5 tasks, 2 waves)
 Plans account for existing patterns and conventions.
 ```
 
@@ -286,9 +498,12 @@ Task 1.2: Extend Prisma schema [DONE]
 All tasks complete.
 ```
 
-### Quick Task: Skip the ceremony
+</details>
 
-> You need to add a dark mode toggle to "my-app" -- it's small enough that full planning would be overkill.
+<details>
+<summary><strong>Quick task: Skip the ceremony</strong></summary>
+
+> Small change, full planning would be overkill.
 
 ```
 /mz:quick "Add dark mode toggle to settings page"
@@ -302,9 +517,12 @@ Adding dark mode CSS variables to globals.css
 Done. 3 files modified, 1 created.
 ```
 
-### Debug: Track down a tricky bug
+</details>
 
-> Users of "checkout-service" are seeing stale cart totals after adding items. Instead of guessing, let Megazord work through it systematically.
+<details>
+<summary><strong>Debug: Track down a tricky bug</strong></summary>
+
+> Stale cart totals after adding items. Let Megazord work through it systematically.
 
 ```
 /mz:debug "Users see stale cart totals after adding items"
@@ -324,24 +542,113 @@ Fix applied and verified. 1 file modified.
 
 </details>
 
-## See It in Action
+<details>
+<summary><strong>Session continuity: Pick up where you left off</strong></summary>
 
-<!-- TODO: Add demo GIF showing Megazord workflow in Claude Code -->
-<!-- Record with: screen capture of Claude Code session running /mz:init -> /mz:plan -> /mz:go -->
+> End of day. You're mid-phase and don't want to lose context.
 
-> Demo coming soon -- in the meantime, install and try it yourself! The quickstart above takes under 2 minutes.
+```
+/mz:pause
+```
+```
+MEGAZORD > PAUSE
+Captured: Phase 3, 4/7 tasks complete
+Next: Task 3.5 (Add email notification service)
+Stashed 2 modified files
+Context saved to STATE.md
+```
 
-## How It Works
+Next session:
 
-Megazord isn't just a collection of prompts. It's a structured framework with real coordination between specialized agents:
+```
+/mz:resume
+```
+```
+MEGAZORD > RESUME
+Restored: Phase 3, task 3.5 pending
+Unstashed 2 files
+Context loaded. Ready to continue.
+```
 
-- **15 slash commands** covering the full lifecycle -- from project setup through milestone completion
-- **6 specialized agent types** (executor, planner, researcher, reviewer, verifier, mapper) that each handle one job well
-- **Native Agent Teams** -- agents coordinate through Claude Code's built-in multi-agent system, not ad-hoc spawning
-- **3 quality presets** (strict, balanced, minimal) so you choose the right level of ceremony for your project
-- **Separate phases for planning, execution, and verification** -- with clear handoffs between each step, so nothing gets lost
+</details>
 
-Every command, every agent, every workflow feeds into the same planning structure. Your project state is always consistent, always recoverable, and always moving forward.
+---
+
+## What's Inside
+
+### Project Structure
+
+```
+~/.claude/megazord/                  # Plugin installation
+├── .claude-plugin/plugin.json       # Plugin manifest
+├── skills/                          # 15 slash commands
+│   ├── init/SKILL.md
+│   ├── plan/SKILL.md
+│   ├── go/SKILL.md
+│   ├── verify/SKILL.md
+│   └── ...
+├── agents/                          # 6 specialized agents
+│   ├── mz-executor.md
+│   ├── mz-planner.md
+│   ├── mz-researcher.md
+│   ├── mz-reviewer.md
+│   ├── mz-verifier.md
+│   └── mz-mapper.md
+├── hooks/hooks.json                 # File ownership enforcement
+└── scripts/enforce-ownership.sh     # PreToolUse safety hook
+```
+
+### Your Project (after `/mz:init`)
+
+```
+your-project/
+├── .planning/
+│   ├── megazord.config.json         # Project configuration
+│   ├── PROJECT.md                   # Vision, goals, requirements
+│   ├── STATE.md                     # Current position, decisions
+│   ├── ROADMAP.md                   # Phase breakdown, success criteria
+│   ├── phases/                      # Per-phase planning artifacts
+│   │   └── 01-setup/
+│   │       ├── CONTEXT.md           # Brainstorm decisions
+│   │       ├── RESEARCH.md          # Technical research
+│   │       ├── PLAN.md              # Task breakdown + waves
+│   │       ├── SUMMARY.md           # Execution results
+│   │       └── VERIFICATION.md      # Verification report
+│   └── codebase/                    # Brownfield analysis (from /mz:map)
+│       ├── STACK.md
+│       ├── ARCHITECTURE.md
+│       ├── CONVENTIONS.md
+│       └── SUMMARY.md
+└── your code...
+```
+
+---
+
+## Troubleshooting
+
+**Commands not found after install?**
+- Restart Claude Code to reload slash commands
+- Run `bunx megazord-cli` again to reinstall
+
+**Commands not working as expected?**
+- Run `/mz:help` to verify installation
+- Check `/mz:status` for project state
+
+**Updating to the latest version?**
+
+```bash
+bunx megazord-cli update
+```
+
+**Uninstalling?**
+
+```bash
+bunx megazord-cli uninstall
+```
+
+This removes the plugin while preserving your project's `.planning/` directory.
+
+---
 
 ## License
 
