@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** One framework that handles the entire development lifecycle with agents that actually communicate and coordinate
-**Current focus:** Phase 15 — npm Publication
+**Current focus:** Phase 14.1 — CORTEX Thinking Frameworks
 
 ## Current Position
 
-Phase: 15 of 16 (npm Publication)
-Plan: 2 of 3 (complete)
-Status: Executing phase 15
-Last activity: 2026-02-19 — Phase 15 plan 02 executed
+Phase: 14.1 of 16 (CORTEX Thinking Frameworks)
+Plan: 2 of 2 (complete)
+Status: Phase 14.1 complete
+Last activity: 2026-02-20 — Phase 14.1 plan 01 executed
 
-Progress: [#################################...] 93% (26/26 v1.0 plans complete, 7/8 v1.1 plans)
+Progress: [####################################.] 97% (26/26 v1.0 plans complete, 10/10 v1.1 plans)
 
 ## Performance Metrics
 
@@ -23,12 +23,14 @@ Progress: [#################################...] 93% (26/26 v1.0 plans complete,
 - Total execution time: ~3 days (2026-02-17 to 2026-02-19)
 
 **v1.1:**
-- Plans completed: 7
+- Plans completed: 10
 - 12-01: 1min 29s (2 tasks, 5 files)
 - 12-02: 1min 57s (2 tasks, 4 files)
 - 13-01: 3min 11s (2 tasks, 2 files)
 - 14-01: 1min 41s (1 task, 2 files)
 - 14-02: 1min 33s (2 tasks, 1 file)
+- 14.1-01: pending
+- 14.1-02: 2min 17s (2 tasks, 3 files)
 - 15-01: 1min 5s (2 tasks, 3 files)
 - 15-02: 3min 15s (3 tasks, 6 files)
 
@@ -64,6 +66,9 @@ Recent decisions affecting current work:
 - Repository made public (required for npm provenance attestation)
 - Branch protection via rulesets API (modern, API-first approach)
 - workflow_dispatch included on release workflow for manual re-trigger capability
+- Issue Tree + Ishikawa activation is conditional: full decomposition for non-trivial bugs, skip for obvious fixes
+- CORTEX boundary: manual /mz:debug = debug skill owns, execution context = executor CORTEX owns
+- Go orchestrator reads skills/cortex/SKILL.md and embeds as <cortex_protocol> block when cortex_enabled is true
 
 ### Roadmap Evolution
 
@@ -87,8 +92,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: Completed 15-02-PLAN.md
-Resume file: .planning/phases/15-npm-publication/15-02-SUMMARY.md
+Last session: 2026-02-20
+Stopped at: Completed 14.1-02-PLAN.md
+Resume file: .planning/phases/14.1-cortex-thinking-frameworks/14.1-02-SUMMARY.md
 Stash ref: None
 Last error: None

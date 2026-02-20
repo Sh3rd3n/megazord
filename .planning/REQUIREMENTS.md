@@ -51,10 +51,17 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 - **TUI-02**: Tabs that open when agent teams spawn
 - **TUI-03**: Visual agent coordination display
 
-### CORTEX Enhancements (deferred to v1.2+)
+### CORTEX Thinking Frameworks (Phase 14.1)
 
-- **CRTX-01**: Thinking patterns from untools.co integrated into CORTEX
-- **CRTX-02**: Beads pattern (steveyegge/beads) integrated into CORTEX
+- [ ] **CORTEX-01**: Enhanced challenge block format — Inversion (pre-mortem), Ladder of Inference (assumption chain), Second-Order Thinking (consequence trace) for Complicated+ tasks
+- [ ] **CORTEX-02**: Complex domain structured brainstorm — First Principles decomposition + Abstraction Laddering (why/how reframing) replacing ad-hoc mini-brainstorm
+- [ ] **CORTEX-03**: Iceberg Model systems analysis — triggered when task touches area flagged in previous task's SUMMARY as modified/rejected
+- [x] **CORTEX-04**: Debug root-cause analysis — Issue Tree (MECE decomposition) + Ishikawa cause categories (Code, Data, Environment, Dependencies, Timing, State)
+- [ ] **CORTEX-05**: Concrete classification signal heuristics — LOC ranges, module counts, API surface metrics replacing vague descriptions
+
+### Beads Pattern (deferred to v1.2+)
+
+- **CRTX-BEADS-01**: Beads pattern (steveyegge/beads) integrated into CORTEX
 
 ## Out of Scope
 
@@ -90,13 +97,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NPM-01 | Phase 15 | Pending |
 | NPM-02 | Phase 15 | Complete |
 | NPM-03 | Phase 15 | Complete |
+| CORTEX-01 | Phase 14.1 | Pending |
+| CORTEX-02 | Phase 14.1 | Pending |
+| CORTEX-03 | Phase 14.1 | Pending |
+| CORTEX-04 | Phase 14.1 | Complete |
+| CORTEX-05 | Phase 14.1 | Pending |
 | MKT-01 | Phase 16 | Pending |
 | MKT-02 | Phase 16 | Pending |
 | MKT-03 | Phase 16 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 21 total
-- Mapped to phases: 21
+- v1.1 requirements: 26 total
+- Mapped to phases: 26
 - Unmapped: 0
 
 ---
