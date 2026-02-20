@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0] - 2026-02-19
+## [1.1.0] - 2026-02-20
 
 ### Added
 
@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/mz:update` slash command for in-session updates via `bunx megazord-cli@latest update`.
 - GitHub Actions CI workflow (lint, typecheck, test) triggered on push and PR to master.
 - Automated release workflow with OIDC provenance and Trusted Publishing via `release.yml`.
+- CORTEX adaptive thinking with 8-signal Cynefin classification matrix and structured framework templates (Inversion, Ladder of Inference, Second-Order, First Principles, Abstraction Laddering, Iceberg Model).
+- CORTEX-aware debug depth control with conditional Issue Tree and Ishikawa decomposition for non-trivial bugs.
+- Go orchestrator CORTEX embedding protocol for automatic skill delivery to executor agents.
 - README with hero banner, quickstart guide, command reference, and architecture overview.
 - CHANGELOG following Keep a Changelog 1.1.0 format.
 
