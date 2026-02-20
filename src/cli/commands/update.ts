@@ -8,7 +8,7 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { basename, join } from "node:path";
-import { megazordDir, megazordVersionPath, safeJoin } from "../../lib/paths.js";
+import { megazordDir, megazordPluginDir, megazordVersionPath, safeJoin } from "../../lib/paths.js";
 import { VERSION } from "../utils/version.js";
 
 /** Recursively copy a directory. */
@@ -37,12 +37,15 @@ export async function update(): Promise<void> {
 	}
 
 	try {
-		// Copy all required directories (overwrite existing)
+		// Ensure mz/ subdirectory exists
+		mkdirSync(megazordPluginDir, { recursive: true });
+
+		// Copy all required directories into mz/ (overwrite existing)
 		const dirsToCopy = [".claude-plugin", "hooks", "skills", "commands", "agents", "scripts"];
 		for (const dir of dirsToCopy) {
 			const src = join(packageRoot, dir);
 			if (existsSync(src)) {
-				const dest = join(megazordDir, dir);
+				const dest = join(megazordPluginDir, dir);
 				// Remove existing dir to ensure clean copy
 				if (existsSync(dest)) {
 					rmSync(dest, { recursive: true, force: true });

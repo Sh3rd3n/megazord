@@ -14,6 +14,7 @@ import {
 	installedPluginsPath,
 	knownMarketplacesPath,
 	megazordDir,
+	megazordPluginDir,
 	safeJoin,
 	settingsPath,
 } from "../../lib/paths.js";
@@ -96,7 +97,7 @@ function registerFallback(): void {
 	plugins[PLUGIN_KEY] = [
 		{
 			scope: "user",
-			installPath: megazordDir,
+			installPath: megazordPluginDir,
 			version: VERSION,
 			installedAt: now,
 			lastUpdated: now,
@@ -139,19 +140,43 @@ export async function install(): Promise<void> {
 	const tmpDir = `${megazordDir}.tmp.${Date.now()}`;
 
 	try {
-		// Copy all required directories to temp
-		mkdirSync(tmpDir, { recursive: true });
+		// Copy all required directories to temp/mz/
+		const tmpPluginDir = join(tmpDir, "mz");
+		mkdirSync(tmpPluginDir, { recursive: true });
 
 		const dirsToCopy = [".claude-plugin", "hooks", "skills", "commands", "agents", "scripts"];
 		for (const dir of dirsToCopy) {
 			const src = join(packageRoot, dir);
 			if (existsSync(src)) {
-				copyDirSync(src, join(tmpDir, dir));
+				copyDirSync(src, join(tmpPluginDir, dir));
 			}
 		}
 
-		// Write .version file to temp
-		writeFileSync(join(tmpDir, ".version"), VERSION);
+		// Write .version file into mz/
+		writeFileSync(join(tmpPluginDir, ".version"), VERSION);
+
+		// Generate marketplace.json at .claude-plugin/marketplace.json
+		const marketplaceDir = join(tmpDir, ".claude-plugin");
+		mkdirSync(marketplaceDir, { recursive: true });
+		writeFileSync(
+			join(marketplaceDir, "marketplace.json"),
+			JSON.stringify(
+				{
+					name: MARKETPLACE_NAME,
+					owner: { name: "Megazord" },
+					plugins: [
+						{
+							name: PLUGIN_NAME,
+							source: `./${PLUGIN_NAME}`,
+							description:
+								"Unified framework for project management, code quality, and multi-agent coordination",
+						},
+					],
+				},
+				null,
+				2,
+			),
+		);
 
 		// Atomic swap: remove existing, rename temp to final
 		if (existsSync(megazordDir)) {
