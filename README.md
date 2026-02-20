@@ -22,6 +22,7 @@
 <p align="center">
   <a href="#why-megazord">Why Megazord</a> &middot;
   <a href="#how-it-works">How It Works</a> &middot;
+  <a href="#cortex">CORTEX</a> &middot;
   <a href="#commands">Commands</a> &middot;
   <a href="#why-it-works">Why It Works</a> &middot;
   <a href="#configuration">Configuration</a>
@@ -252,6 +253,74 @@ For tasks that don't need full planning. Same quality guarantees (atomic commits
 
 ---
 
+## CORTEX
+
+> *The adaptive reasoning engine that makes agents think before they act.*
+
+Most AI coding tools treat every task the same. A variable rename gets the same cognitive process as a distributed authentication system. That's wasteful at the bottom and dangerous at the top.
+
+CORTEX classifies every task through **Cynefin complexity domains** -- Clear, Complicated, Complex, Chaotic -- and scales analysis to match actual risk. Clear tasks execute instantly with zero overhead. Complicated tasks get structured challenge analysis. Complex tasks trigger full decomposition before a single line of code is written. Chaotic situations stop execution entirely and escalate to the human.
+
+<p align="center">
+  <img src="assets/cortex-diagram.svg" alt="CORTEX Cynefin Domain Flow" width="820">
+</p>
+
+### Thinking Frameworks
+
+| Domain | Framework | What It Prevents |
+|--------|-----------|-----------------|
+| Complicated+ | Inversion (Pre-mortem) | Building something that fails in predictable ways |
+| Complicated+ | Ladder of Inference | Acting on unverified assumptions |
+| Complicated+ | Consequence Tracing | Missing second and third-order effects |
+| Complex | First-Principles Decomposition | Borrowing solutions that don't fit |
+| Complex | Abstraction Laddering | Solving the wrong problem |
+| Complex | Iceberg Model | Treating symptoms instead of structural causes |
+| Recurring | Issue Tree | Debugging without structure |
+
+<details>
+<summary><strong>Inversion (Pre-mortem)</strong></summary>
+
+Before writing code, assume the implementation has already failed. Generate three specific failure scenarios:
+
+1. *"This fails when..."* -- not vague risks, but concrete failure paths
+2. Trace each scenario to its root cause
+3. Decide: proceed, modify approach, or reject entirely
+
+This catches architectural mistakes at the whiteboard, not in production.
+
+</details>
+
+<details>
+<summary><strong>First-Principles Decomposition</strong></summary>
+
+For Complex tasks, CORTEX prevents agents from pattern-matching to familiar solutions that don't fit. Instead:
+
+1. Strip the problem to its irreducible constraints
+2. Identify the fundamental truths that must hold
+3. Build up from those truths -- not down from existing patterns
+
+This is the difference between "how did someone else solve this?" and "what does *this problem* actually require?"
+
+</details>
+
+<details>
+<summary><strong>Iceberg Model</strong></summary>
+
+When agents encounter recurring issues, CORTEX forces analysis below the surface:
+
+- **Events:** What happened? *(visible)*
+- **Patterns:** What keeps happening? *(trend)*
+- **Structures:** What system produces this pattern? *(cause)*
+- **Mental models:** What assumptions sustain the structure? *(root)*
+
+Fixing events is a band-aid. Fixing mental models prevents entire categories of bugs.
+
+</details>
+
+This isn't bolted on as a post-hoc review -- it's wired into the executor's decision loop. Every non-trivial choice goes through CORTEX before code is written.
+
+---
+
 ## Commands
 
 ### Core Workflow
@@ -313,18 +382,7 @@ Megazord uses Claude Code's built-in Agent Teams: `TeamCreate`, `SendMessage`, `
 
 ### CORTEX Adaptive Reasoning
 
-CORTEX is Megazord's reasoning engine — the intelligence layer that makes agents think before they act. While other frameworks fire-and-forget tasks to LLMs, CORTEX forces structured analysis proportional to problem complexity:
-
-- **Domain classification** maps every task to a complexity domain (Clear → Chaotic), scaling cognitive overhead to match actual risk
-- **Pre-mortem analysis** identifies failure modes before code is written, not after
-- **Assumption auditing** traces the chain from raw data through interpretation to assumption, flagging unverified leaps
-- **Consequence tracing** follows decisions through second and third-order effects
-- **First-principles decomposition** breaks Complex problems to irreducible truths before generating solutions
-- **Problem reframing** explores whether the stated problem is the real problem via abstraction laddering
-- **Systems analysis** uses the Iceberg Model to look past surface symptoms to structural causes
-- **Structured root-cause analysis** brings Issue Tree decomposition and cause-category mapping to debugging
-
-This isn't bolted on — it's wired into the executor's decision loop. Every non-trivial choice goes through CORTEX before a single line of code is written.
+For how agents reason through complexity, see [CORTEX](#cortex).
 
 ### 6 Specialized Agents
 
