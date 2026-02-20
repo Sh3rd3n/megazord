@@ -59,7 +59,7 @@ export function createWorktree(
 	const branch = `mz/${team}/${agent}`;
 
 	try {
-		fse.ensureDirSync(join(base, team));
+		fse.ensureDirSync(safeJoin(base, team));
 		execSync(`git worktree add "${wtPath}" -b "${branch}" ${baseRef}`, EXEC_OPTS);
 	} catch (err) {
 		const msg = err instanceof Error ? err.message : String(err);
@@ -166,8 +166,9 @@ export function listTeamWorktrees(team: string): WorktreeInfo[] {
  * Remove all worktrees for a team, clean up directories, and prune stale entries.
  */
 export function pruneTeamWorktrees(team: string, baseDir?: string): void {
+	validateName(team, "team");
 	const base = getWorktreeBase(baseDir);
-	const teamDir = join(base, team);
+	const teamDir = safeJoin(base, team);
 
 	// Remove each agent worktree
 	if (fse.pathExistsSync(teamDir)) {
