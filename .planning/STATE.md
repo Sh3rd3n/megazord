@@ -65,6 +65,10 @@ Recent decisions affecting current work:
 - Branch protection via rulesets API (modern, API-first approach)
 - workflow_dispatch included on release workflow for manual re-trigger capability
 
+### Roadmap Evolution
+
+- Phase 14.1 inserted after Phase 14: CORTEX Thinking Frameworks (URGENT) — enhance CORTEX with structured thinking protocols before npm publication
+
 ### Pending Todos
 
 None.
@@ -78,7 +82,7 @@ None.
 ### Future Ideas (post v1.1)
 
 - TUI interface with tabs for agent teams
-- CORTEX: thinking patterns from untools.co + beads (steveyegge/beads)
+- Beads pattern (steveyegge/beads) for CORTEX enhancement
 - Explore overstory and mulch for inspiration
 
 ## Session Continuity
