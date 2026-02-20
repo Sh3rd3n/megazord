@@ -10,11 +10,11 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/sh3rd3n/megazord.git"
+		"url": "https://github.com/Sh3rd3n/megazord.git"
 	},
-	"homepage": "https://github.com/sh3rd3n/megazord",
+	"homepage": "https://github.com/Sh3rd3n/megazord",
 	"bugs": {
-		"url": "https://github.com/sh3rd3n/megazord/issues"
+		"url": "https://github.com/Sh3rd3n/megazord/issues"
 	},
 	"keywords": [
 		"claude-code",
