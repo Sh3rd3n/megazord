@@ -319,50 +319,154 @@ Claude uses discretion on severity assessment:
 - **MINOR (1-5 lines of implementation before test):** Revert the implementation lines, write the test first, then re-implement. Log as a deviation.
 - **STRUCTURAL (entire function/module without tests):** STOP. Display warning: `TDD VIOLATION: {N} lines written before tests. Options: (a) revert and restart with TDD, (b) accept and write tests after (degraded TDD), (c) exempt this task.` Escalate to user.
 
+<!-- Authoritative source: skills/cortex/SKILL.md -- keep in sync -->
 ## CORTEX Classification
 
 ### Activation
 
 When `cortex_enabled` is `true` in `<execution_rules>`, classify each task before execution.
 
-### Classification
+### Classification Heuristic Matrix
 
-Before every task, assess the domain using these signals:
+Before every task, assess the domain using these concrete heuristics. Each signal is evaluated independently.
 
-| Domain | Signals |
-|--------|---------|
-| Clear | Obvious solution, best practice exists, low risk |
-| Complicated | Multiple valid approaches, needs analysis, medium risk |
-| Complex | High uncertainty, emergent design, large scope, many unknowns |
-| Chaotic | Nothing works, external failures, crisis state |
+| Signal | Clear | Complicated | Complex | Chaotic |
+|--------|-------|-------------|---------|---------|
+| **LOC estimate** | <50 | 50-300 | >300 or new architecture | N/A (broken state) |
+| **Files affected** | 1-2 | 3-5 | 6+ or new module structure | N/A |
+| **New APIs/interfaces** | 0 | 1-2 internal | External API or new public interface | N/A |
+| **Module scope** | Same module | 2-3 modules | 4+ modules or cross-system | N/A |
+| **Pattern familiarity** | Well-known, done before | 2+ valid patterns to choose from | No clear pattern, novel territory | N/A |
+| **Existing test coverage** | Tests exist, minor modification | Tests need modification | No existing test patterns | Tests failing on unrelated code |
+| **Side effects** | None | Localized, predictable | Distributed, hard to trace | Cascading failures |
+| **External dependencies** | None new | Internal packages | External services, 3rd-party APIs | External service down/corrupt |
 
-Output exactly one line: `CORTEX: {level} -- {brief signal}`
+#### Classification Algorithm
+
+1. Evaluate each signal independently
+2. Task domain = HIGHEST domain any signal triggers
+3. Chaotic ONLY triggered by crisis signals (build broken, tests failing on unrelated code, external service down, data corruption, security incident) -- never by quantitative thresholds alone
+4. When signals conflict, explain the override: `CORTEX: Complicated -- 30 LOC but new external API integration elevates from Clear`
+
+### Classification Output Format
+
+- **Clear:** `CORTEX -> Clear -- {2+ concrete signals}` (NO visible output beyond this internal classification -- user sees nothing)
+- **Complicated:** `CORTEX -> Complicated | {signals} | Applying: {framework list}`
+- **Complex:** `CORTEX -> Complex | {signals} | Applying: {framework list}`
+- **Chaotic:** `CORTEX: Chaotic -- {description}. Requesting user input.` (STOP execution)
+
+For Complicated+ tasks, the classification line is the `<summary>` of a collapsible `<details>` block.
 
 ### Post-Classification Protocol
 
-- **Clear:** Execute directly. No challenge block.
-- **Complicated:** Output challenge block, then execute (or modify/reject per verdict).
-- **Complex:** Output challenge block + mini-brainstorm (2-3 alternatives, brief inline), select approach, proceed autonomously.
-- **Chaotic:** STOP. Display: `CORTEX: Chaotic -- {description}. Requesting user input.` Wait for user.
+- **Clear:** Execute directly. No framework output. No CORTEX output visible to user.
+- **Complicated:** Output challenge block inside `<details>`, then execute.
+- **Complex:** Output challenge block + complex analysis block inside `<details>`, select approach, proceed.
+- **Chaotic:** STOP and request user input.
 
-### Challenge Block Format
+### Challenge Block Format (Complicated+ Tasks)
 
-```
-<challenge>
-FAIL: [3 specific failure modes]
-ASSUME: [assumptions -- mark verified/unverified]
-COUNTER: [strongest argument against this approach]
+For every Complicated or Complex task, produce this block:
+
+```xml
+<details>
+<summary>CORTEX -> {domain} | {signals} | Applying: {framework list}</summary>
+
+<challenge domain="{complicated|complex}">
+INVERSION (Pre-mortem):
+  1. "This fails when {specific scenario 1}"
+  2. "This fails when {specific scenario 2}"
+  3. "This fails when {specific scenario 3}"
+
+ASSUMPTIONS (Ladder of Inference):
+  For each key assumption:
+  - Data: {observable fact}
+  - Interpretation: {what we read into the data}
+  - Assumption: {inference we're making}
+  - Status: {verified (checked in code/docs) | unverified (guessed)}
+
+SECOND-ORDER (Consequence trace):
+  If we do X:
+  -> First-order: {immediate effect}
+  -> Second-order: {what follows from that}
+  -> Third-order: {what follows from that} (if relevant)
+
+COUNTER: {strongest argument against this approach}
 VERDICT: proceed | modify | reject
 </challenge>
+
+</details>
 ```
 
 Rules:
-- FAIL: exactly 3 items, specific not vague
-- ASSUME: distinguish verified (checked) from unverified (guessed)
-- COUNTER: genuine attack, not a softball
-- VERDICT: honest assessment
-- If modify: state changes, then implement modified version
-- If reject: explain why, propose alternative, wait for plan
+- **INVERSION:** Exactly 3 pre-mortem failure scenarios, specific not vague. "This fails when..." not "This might fail"
+- **ASSUMPTIONS:** Trace chain from data through interpretation to assumption. Mark verified/unverified. Catches assumption jumps where conclusions skip evidence rungs.
+- **SECOND-ORDER:** Follow consequence chain at least 2 steps. "If we do X, then Y happens, and then Z follows." Surfaces cascading effects invisible at first glance.
+- **COUNTER:** Genuine attack, not a softball
+- **VERDICT:** Honest assessment. If modify: state changes. If reject: explain, propose alternative.
+
+### Complex Analysis Block (Complex Tasks Only)
+
+When a task is classified as Complex, produce this block AFTER the challenge block and BEFORE execution:
+
+```xml
+<details>
+<summary>CORTEX Complex Analysis</summary>
+
+<complex-analysis>
+FIRST-PRINCIPLES:
+  Irreducible truths about this problem:
+  1. {fundamental truth}
+  2. {fundamental truth}
+  3. {fundamental truth}
+
+  Decomposition method: {Five Whys | Socratic Questioning}
+  {Show the chain of questions that reached these fundamentals}
+
+ABSTRACTION-LADDERING:
+  WHY (move up): {What's the real problem behind the stated problem?}
+  REFRAMED: {The problem restated at a higher abstraction level}
+  HOW (move down): {What specific approaches address the reframed problem?}
+
+ALTERNATIVES:
+  1. {approach} -- tradeoffs: {pro/con}
+  2. {approach} -- tradeoffs: {pro/con}
+  3. {approach} -- tradeoffs: {pro/con}
+
+SELECTED: {N} -- {rationale with evidence}
+</complex-analysis>
+
+</details>
+```
+
+This replaces the previous ad-hoc "mini-brainstorm" with a structured protocol that:
+1. Decomposes via First Principles before generating options
+2. Reframes via Abstraction Laddering (why/how) to avoid solving the wrong problem
+3. Generates alternatives with explicit tradeoffs
+4. Documents selection rationale with evidence
+
+### Iceberg Model (Recurring Issues)
+
+**Trigger condition:** Task touches a module/area that was flagged as problematic in a prior SUMMARY.md (mentioned in "Deviations from Plan", "Issues Encountered", or "Deferred Issues" sections -- NOT merely listed as modified). This distinguishes recurring problems from normal development iteration.
+
+When triggered, produce Iceberg Analysis BEFORE the challenge block:
+
+```xml
+<details>
+<summary>CORTEX Iceberg Analysis: {area}</summary>
+
+<iceberg area="{module/area name}">
+EVENT: {What happened -- the surface symptom}
+PATTERN: {Has this happened before? Evidence from SUMMARY.md, git history, or prior tasks}
+STRUCTURE: {What system dynamics cause this pattern? Dependencies, coupling, tech debt, missing abstractions}
+MENTAL-MODEL: {What assumption about this area keeps producing the pattern?}
+LEVERAGE: {Where to intervene for a lasting fix, not just symptom treatment}
+</iceberg>
+
+</details>
+```
+
+Skip Iceberg Analysis on fresh tasks with no prior history in the affected area. This prevents overhead when there's no recurring pattern to analyze.
 
 ## Pushback Mandate
 
