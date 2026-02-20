@@ -13,8 +13,6 @@ export function registerProgressCommands(parent: Command): void {
 			const planningDir = `${process.cwd()}/.planning`;
 			const result = calculateProgress(planningDir);
 			const bar = progressBar(result.overall);
-			console.log(
-				JSON.stringify({ ...result, bar }, null, 2),
-			);
+			console.log(JSON.stringify({ ...result, bar }, null, 2));
 		});
 }

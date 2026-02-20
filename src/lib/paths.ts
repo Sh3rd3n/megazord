@@ -1,5 +1,5 @@
-import { join } from "node:path";
 import { homedir } from "node:os";
+import { join } from "node:path";
 
 /** Root Claude directory: ~/.claude/ */
 export const claudeDir = join(homedir(), ".claude");

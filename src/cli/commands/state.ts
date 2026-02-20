@@ -1,14 +1,14 @@
 import type { Command } from "commander";
 import {
+	addDecision,
+	advancePlan,
 	readPosition,
 	readSessionContinuity,
-	updatePosition,
-	updateSessionContinuity,
+	recordMetric,
 	stashPause,
 	stashResume,
-	advancePlan,
-	recordMetric,
-	addDecision,
+	updatePosition,
+	updateSessionContinuity,
 } from "../../lib/state.js";
 
 /**
@@ -17,9 +17,7 @@ import {
  */
 export function registerStateCommands(parent: Command): void {
 	// ─── State subcommand group ─────────────────────────────────────────────
-	const state = parent
-		.command("state")
-		.description("State management operations for STATE.md");
+	const state = parent.command("state").description("State management operations for STATE.md");
 
 	state
 		.command("read-position")
@@ -54,29 +52,16 @@ export function registerStateCommands(parent: Command): void {
 		.option("--plan <number>", "Plan number")
 		.option("--status <string>", "Status text")
 		.option("--progress <number>", "Progress percentage")
-		.action(
-			(opts: {
-				phase?: string;
-				plan?: string;
-				status?: string;
-				progress?: string;
-			}) => {
-				const planningDir = `${process.cwd()}/.planning`;
-				const updates: Record<string, unknown> = {};
-				if (opts.phase !== undefined)
-					updates.phase = Number.parseInt(opts.phase, 10);
-				if (opts.plan !== undefined)
-					updates.plan = Number.parseInt(opts.plan, 10);
-				if (opts.status !== undefined) updates.status = opts.status;
-				if (opts.progress !== undefined)
-					updates.progressPercent = Number.parseInt(
-						opts.progress,
-						10,
-					);
-				updatePosition(planningDir, updates);
-				console.log(JSON.stringify({ success: true, updates }, null, 2));
-			},
-		);
+		.action((opts: { phase?: string; plan?: string; status?: string; progress?: string }) => {
+			const planningDir = `${process.cwd()}/.planning`;
+			const updates: Record<string, unknown> = {};
+			if (opts.phase !== undefined) updates.phase = Number.parseInt(opts.phase, 10);
+			if (opts.plan !== undefined) updates.plan = Number.parseInt(opts.plan, 10);
+			if (opts.status !== undefined) updates.status = opts.status;
+			if (opts.progress !== undefined) updates.progressPercent = Number.parseInt(opts.progress, 10);
+			updatePosition(planningDir, updates);
+			console.log(JSON.stringify({ success: true, updates }, null, 2));
+		});
 
 	state
 		.command("update-session")
@@ -94,13 +79,10 @@ export function registerStateCommands(parent: Command): void {
 			}) => {
 				const planningDir = `${process.cwd()}/.planning`;
 				const updates: Record<string, unknown> = {};
-				if (opts.stoppedAt !== undefined)
-					updates.stoppedAt = opts.stoppedAt;
-				if (opts.resumeFile !== undefined)
-					updates.resumeFile = opts.resumeFile;
+				if (opts.stoppedAt !== undefined) updates.stoppedAt = opts.stoppedAt;
+				if (opts.resumeFile !== undefined) updates.resumeFile = opts.resumeFile;
 				if (opts.stashRef !== undefined) updates.stashRef = opts.stashRef;
-				if (opts.lastError !== undefined)
-					updates.lastError = opts.lastError;
+				if (opts.lastError !== undefined) updates.lastError = opts.lastError;
 				updateSessionContinuity(planningDir, updates);
 				console.log(JSON.stringify({ success: true, updates }, null, 2));
 			},
@@ -127,13 +109,7 @@ export function registerStateCommands(parent: Command): void {
 		.requiredOption("--tasks <number>", "Number of tasks completed")
 		.requiredOption("--files <number>", "Number of files modified")
 		.action(
-			(opts: {
-				phase: string;
-				plan: string;
-				duration: string;
-				tasks: string;
-				files: string;
-			}) => {
+			(opts: { phase: string; plan: string; duration: string; tasks: string; files: string }) => {
 				const planningDir = `${process.cwd()}/.planning`;
 				recordMetric(
 					planningDir,
@@ -159,17 +135,12 @@ export function registerStateCommands(parent: Command): void {
 		});
 
 	// ─── Stash subcommand group ─────────────────────────────────────────────
-	const stash = parent
-		.command("stash")
-		.description("Git stash operations for pause/resume");
+	const stash = parent.command("stash").description("Git stash operations for pause/resume");
 
 	stash
 		.command("pause")
 		.description("Stash modified files with a Megazord-tagged message")
-		.requiredOption(
-			"--description <string>",
-			"Description of current work",
-		)
+		.requiredOption("--description <string>", "Description of current work")
 		.action((opts: { description: string }) => {
 			const result = stashPause(opts.description);
 			console.log(JSON.stringify(result, null, 2));

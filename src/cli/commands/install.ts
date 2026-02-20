@@ -1,11 +1,20 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
 import { execSync } from "node:child_process";
 import {
+	existsSync,
+	mkdirSync,
+	readdirSync,
+	readFileSync,
+	renameSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from "node:fs";
+import { join } from "node:path";
+import {
+	installedPluginsPath,
+	knownMarketplacesPath,
 	megazordDir,
 	megazordVersionPath,
-	knownMarketplacesPath,
-	installedPluginsPath,
 	settingsPath,
 } from "../../lib/paths.js";
 import { VERSION } from "../utils/version.js";
@@ -164,9 +173,7 @@ export async function install(): Promise<void> {
 		console.log(`Megazord v${VERSION} installed at ${megazordDir}`);
 
 		// Seed update check (fire-and-forget)
-		import("../utils/update-check.js")
-			.then((m) => m.checkForUpdate())
-			.catch(() => {});
+		import("../utils/update-check.js").then((m) => m.checkForUpdate()).catch(() => {});
 	} catch (err) {
 		// Rollback: remove temp dir if it exists
 		try {

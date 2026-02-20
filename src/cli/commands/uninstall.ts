@@ -1,6 +1,6 @@
-import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { megazordDir, installedPluginsPath, settingsPath } from "../../lib/paths.js";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { installedPluginsPath, megazordDir, settingsPath } from "../../lib/paths.js";
 
 const PLUGIN_KEY = "mz@megazord-marketplace";
 

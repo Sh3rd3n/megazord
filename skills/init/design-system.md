@@ -4,21 +4,20 @@ Visual identity tokens for all Megazord output. Every skill references this file
 
 ## Init Banner
 
+Display via the banner script (Power Rangers colored, auto-adapts to terminal width):
+
+```bash
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/banner.sh" "{VERSION}"
 ```
-╔═════════════════════════════════════════════════════════════════════════╗
-║                                                                         ║
-║  ███╗   ███╗███████╗ ██████╗  █████╗ ███████╗ ██████╗ ██████╗ ██████╗   ║
-║  ████╗ ████║██╔════╝██╔════╝ ██╔══██╗╚════██║██╔═══██╗██╔══██╗██╔══██╗  ║
-║  ██╔████╔██║█████╗  ██║  ███╗███████║  ███╔╝ ██║   ██║██████╔╝██║  ██║  ║
-║  ██║╚██╔╝██║██╔══╝  ██║   ██║██╔══██║ ███╔╝  ██║   ██║██╔══██╗██║  ██║  ║
-║  ██║ ╚═╝ ██║███████╗╚██████╔╝██║  ██║███████╗╚██████╔╝██║  ██║██████╔╝  ║
-║  ╚═╝     ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝   ║
-║                                                                         ║
-║  ⚡ MEGAZORD v{VERSION}                                                 ║
-║  Project Management × Code Quality × Agent Teams                        ║
-║                                                                         ║
-╚═════════════════════════════════════════════════════════════════════════╝
-```
+
+Full ASCII art with each letter in its Ranger color, no frame. Version and tagline on the right side to save vertical space (6 lines total).
+
+**Power Rangers palette:**
+- Red `#E63946` — M, O
+- Blue `#457B9D` — E, R
+- Yellow `#F4A300` — G, D
+- Pink `#E891B2` — A
+- Green `#2DC653` — Z
 
 Use only at `/mz:init` startup. Replace `{VERSION}` with current version from package.json.
 
