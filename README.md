@@ -380,6 +380,12 @@ Megazord uses Claude Code's built-in Agent Teams: `TeamCreate`, `SendMessage`, `
 | Agent awareness | Agents see each other's work | Agents work in isolation |
 | Context preservation | Shared state across agents | Each agent starts fresh |
 
+> **Note:** Agent Teams is currently an experimental Claude Code feature. To enable it:
+> ```bash
+> export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+> ```
+> Without this flag, Megazord automatically falls back to subagent mode (still fully functional, just without inter-agent communication).
+
 ### CORTEX Adaptive Reasoning
 
 For how agents reason through complexity, see [CORTEX](#cortex).
