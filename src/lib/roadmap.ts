@@ -461,11 +461,11 @@ export function insertPhase(
 	}
 
 	// Find the detail section for `afterPhase` and insert a new detail section after it
-	let afterDetailIdx = -1;
+	let _afterDetailIdx = -1;
 	let nextSectionIdx = -1;
 	for (let i = 0; i < lines.length; i++) {
 		if (lines[i].match(new RegExp(`^###\\s+Phase\\s+${afterPhase}:\\s+`))) {
-			afterDetailIdx = i;
+			_afterDetailIdx = i;
 			// Find where this detail section ends
 			for (let j = i + 1; j < lines.length; j++) {
 				if (lines[j].startsWith("### ") || lines[j].startsWith("## ")) {

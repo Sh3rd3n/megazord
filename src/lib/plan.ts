@@ -39,7 +39,7 @@ export interface PlanWave {
 // ─── Plan filename pattern ──────────────────────────────────────────────────
 
 const PLAN_FILENAME_RE = /^\d+-\d+-PLAN\.md$/;
-const SUMMARY_FILENAME_RE = /^\d+-\d+-SUMMARY\.md$/;
+const _SUMMARY_FILENAME_RE = /^\d+-\d+-SUMMARY\.md$/;
 
 // ─── Functions ──────────────────────────────────────────────────────────────
 
@@ -93,7 +93,7 @@ export function computeWaves(plans: PlanFile[]): PlanWave[] {
 		if (!waveMap.has(w)) {
 			waveMap.set(w, []);
 		}
-		waveMap.get(w)!.push(plan);
+		waveMap.get(w)?.push(plan);
 	}
 
 	return Array.from(waveMap.entries())
@@ -136,7 +136,7 @@ export function detectWaveConflicts(plans: PlanFile[]): Map<string, string[]> {
 			if (!fileOwners.has(file)) {
 				fileOwners.set(file, []);
 			}
-			fileOwners.get(file)!.push(ownerId);
+			fileOwners.get(file)?.push(ownerId);
 		}
 	}
 
