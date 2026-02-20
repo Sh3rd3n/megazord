@@ -528,10 +528,10 @@ export function advancePlan(planningDir: string): AdvancePlanResult {
 export function recordMetric(
 	planningDir: string,
 	phase: string,
-	plan: string,
+	_plan: string,
 	duration: string,
-	tasks: number,
-	files: number,
+	_tasks: number,
+	_files: number,
 ): void {
 	const statePath = join(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return;

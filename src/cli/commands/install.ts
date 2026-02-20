@@ -14,7 +14,6 @@ import {
 	installedPluginsPath,
 	knownMarketplacesPath,
 	megazordDir,
-	megazordVersionPath,
 	settingsPath,
 } from "../../lib/paths.js";
 import { VERSION } from "../utils/version.js";
