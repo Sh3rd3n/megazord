@@ -7,11 +7,14 @@ export const claudeDir = join(homedir(), ".claude");
 /** Megazord installation directory: ~/.claude/megazord/ */
 export const megazordDir = join(claudeDir, "megazord");
 
-/** Megazord version file: ~/.claude/megazord/.version */
-export const megazordVersionPath = join(megazordDir, ".version");
+/** Megazord plugin subdirectory: ~/.claude/megazord/mz/ */
+export const megazordPluginDir = join(megazordDir, "mz");
 
-/** Megazord update check file: ~/.claude/megazord/.update-check */
-export const megazordUpdateCheckPath = join(megazordDir, ".update-check");
+/** Megazord version file: ~/.claude/megazord/mz/.version */
+export const megazordVersionPath = join(megazordPluginDir, ".version");
+
+/** Megazord update check file: ~/.claude/megazord/mz/.update-check */
+export const megazordUpdateCheckPath = join(megazordPluginDir, ".update-check");
 
 /** Plugins directory: ~/.claude/plugins/ */
 export const pluginsDir = join(claudeDir, "plugins");
