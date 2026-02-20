@@ -311,6 +311,21 @@ Megazord uses Claude Code's built-in Agent Teams: `TeamCreate`, `SendMessage`, `
 | Agent awareness | Agents see each other's work | Agents work in isolation |
 | Context preservation | Shared state across agents | Each agent starts fresh |
 
+### CORTEX Adaptive Reasoning
+
+CORTEX is Megazord's reasoning engine — the intelligence layer that makes agents think before they act. While other frameworks fire-and-forget tasks to LLMs, CORTEX forces structured analysis proportional to problem complexity:
+
+- **Domain classification** maps every task to a complexity domain (Clear → Chaotic), scaling cognitive overhead to match actual risk
+- **Pre-mortem analysis** identifies failure modes before code is written, not after
+- **Assumption auditing** traces the chain from raw data through interpretation to assumption, flagging unverified leaps
+- **Consequence tracing** follows decisions through second and third-order effects
+- **First-principles decomposition** breaks Complex problems to irreducible truths before generating solutions
+- **Problem reframing** explores whether the stated problem is the real problem via abstraction laddering
+- **Systems analysis** uses the Iceberg Model to look past surface symptoms to structural causes
+- **Structured root-cause analysis** brings Issue Tree decomposition and cause-category mapping to debugging
+
+This isn't bolted on — it's wired into the executor's decision loop. Every non-trivial choice goes through CORTEX before a single line of code is written.
+
 ### 6 Specialized Agents
 
 Every agent has one job and does it well:
