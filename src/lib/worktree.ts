@@ -47,15 +47,10 @@ export function createWorktree(
 
 	try {
 		fse.ensureDirSync(join(base, team));
-		execSync(
-			`git worktree add "${wtPath}" -b "${branch}" ${baseRef}`,
-			EXEC_OPTS,
-		);
+		execSync(`git worktree add "${wtPath}" -b "${branch}" ${baseRef}`, EXEC_OPTS);
 	} catch (err) {
 		const msg = err instanceof Error ? err.message : String(err);
-		throw new Error(
-			`Failed to create worktree for ${agent} in team ${team}: ${msg}`,
-		);
+		throw new Error(`Failed to create worktree for ${agent} in team ${team}: ${msg}`);
 	}
 
 	return { path: wtPath, branch, agent, team };
@@ -65,11 +60,7 @@ export function createWorktree(
  * Remove a worktree and its tracking branch.
  * Silently ignores errors if worktree or branch was already removed.
  */
-export function removeWorktree(
-	team: string,
-	agent: string,
-	baseDir?: string,
-): void {
+export function removeWorktree(team: string, agent: string, baseDir?: string): void {
 	const base = getWorktreeBase(baseDir);
 	const wtPath = join(base, team, agent);
 	const branch = `mz/${team}/${agent}`;

@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { megazordVersionPath, megazordUpdateCheckPath } from "../../lib/paths.js";
+import { megazordUpdateCheckPath, megazordVersionPath } from "../../lib/paths.js";
 
 interface UpdateCheckData {
 	latest: string;
@@ -68,9 +68,7 @@ export function getUpdateNotification(): string | null {
 	if (!existsSync(megazordUpdateCheckPath)) return null;
 
 	try {
-		const data: UpdateCheckData = JSON.parse(
-			readFileSync(megazordUpdateCheckPath, "utf-8"),
-		);
+		const data: UpdateCheckData = JSON.parse(readFileSync(megazordUpdateCheckPath, "utf-8"));
 		if (data.latest !== data.current) {
 			return `Megazord v${data.latest} available — run: megazord-cli update`;
 		}

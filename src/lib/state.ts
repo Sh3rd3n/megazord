@@ -1,5 +1,5 @@
-import { join } from "node:path";
 import { execSync } from "node:child_process";
+import { join } from "node:path";
 import fse from "fs-extra";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -104,9 +104,7 @@ export function readPosition(planningDir: string): StatePosition | null {
 	const phaseLine = extractField(lines, "Phase");
 	if (!phaseLine) return null;
 
-	const phaseMatch = phaseLine.match(
-		/^(\d+)\s+of\s+(\d+)\s*\(([^)]+)\)/,
-	);
+	const phaseMatch = phaseLine.match(/^(\d+)\s+of\s+(\d+)\s*\(([^)]+)\)/);
 	const phase = phaseMatch ? Number.parseInt(phaseMatch[1], 10) : 0;
 	const totalPhases = phaseMatch ? Number.parseInt(phaseMatch[2], 10) : 0;
 	const phaseName = phaseMatch ? phaseMatch[3].trim() : "";
@@ -126,9 +124,7 @@ export function readPosition(planningDir: string): StatePosition | null {
 	// Parse "Progress: [...] NN%"
 	const progressLine = lines.find((l) => l.trim().startsWith("Progress:"));
 	const progressMatch = progressLine?.match(/(\d+)%/);
-	const progressPercent = progressMatch
-		? Number.parseInt(progressMatch[1], 10)
-		: 0;
+	const progressPercent = progressMatch ? Number.parseInt(progressMatch[1], 10) : 0;
 
 	return {
 		phase,
@@ -147,9 +143,7 @@ export function readPosition(planningDir: string): StatePosition | null {
  * Handles both the original 3-field format and the extended 5-field format.
  * Returns null if STATE.md doesn't exist.
  */
-export function readSessionContinuity(
-	planningDir: string,
-): SessionContinuity | null {
+export function readSessionContinuity(planningDir: string): SessionContinuity | null {
 	const statePath = join(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return null;
 
@@ -166,14 +160,8 @@ export function readSessionContinuity(
 		lastSession,
 		stoppedAt,
 		resumeFile,
-		stashRef:
-			stashRefRaw && stashRefRaw.toLowerCase() !== "none"
-				? stashRefRaw
-				: null,
-		lastError:
-			lastErrorRaw && lastErrorRaw.toLowerCase() !== "none"
-				? lastErrorRaw
-				: null,
+		stashRef: stashRefRaw && stashRefRaw.toLowerCase() !== "none" ? stashRefRaw : null,
+		lastError: lastErrorRaw && lastErrorRaw.toLowerCase() !== "none" ? lastErrorRaw : null,
 	};
 }
 
@@ -183,11 +171,7 @@ export function readSessionContinuity(
  * Replace a section in STATE.md content (between its ## heading and the next ## heading).
  * Returns the updated full content string.
  */
-function replaceSection(
-	content: string,
-	heading: string,
-	newSectionBody: string,
-): string {
+function replaceSection(content: string, heading: string, newSectionBody: string): string {
 	const lines = content.split("\n");
 	const result: string[] = [];
 	let inSection = false;
@@ -228,10 +212,7 @@ function replaceSection(
  * Only updates fields that are provided in the updates object.
  * Preserves all other sections.
  */
-export function updatePosition(
-	planningDir: string,
-	updates: Partial<StatePosition>,
-): void {
+export function updatePosition(planningDir: string, updates: Partial<StatePosition>): void {
 	const statePath = join(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return;
 
@@ -243,8 +224,7 @@ export function updatePosition(
 	const merged = { ...current, ...updates };
 
 	// Rebuild section body
-	const statusSuffix =
-		merged.status !== "Unknown" ? ` -- ${merged.status}` : "";
+	const statusSuffix = merged.status !== "Unknown" ? ` -- ${merged.status}` : "";
 	const body = [
 		`Phase: ${merged.phase} of ${merged.totalPhases} (${merged.phaseName})${statusSuffix}`,
 		`Plan: ${merged.plan} of ${merged.totalPlans} in current phase`,
@@ -335,9 +315,7 @@ export function stashPause(description: string): StashResult {
 
 		// Count stashes before
 		const beforeList = execSync("git stash list", { encoding: "utf-8" });
-		const beforeCount = beforeList
-			.split("\n")
-			.filter(Boolean).length;
+		const beforeCount = beforeList.split("\n").filter(Boolean).length;
 
 		// Stash with tagged message
 		const safeDescription = description.replace(/"/g, '\\"');
@@ -347,9 +325,7 @@ export function stashPause(description: string): StashResult {
 
 		// Count stashes after to verify
 		const afterList = execSync("git stash list", { encoding: "utf-8" });
-		const afterCount = afterList
-			.split("\n")
-			.filter(Boolean).length;
+		const afterCount = afterList.split("\n").filter(Boolean).length;
 
 		if (afterCount > beforeCount) {
 			const stashRef = execSync('git stash list --format="%gd" -1', {
@@ -401,8 +377,7 @@ export function stashResume(stashRef: string): StashResult {
 			message: "Stash restored successfully",
 		};
 	} catch (err) {
-		const errStr =
-			err instanceof Error ? err.message : String(err);
+		const errStr = err instanceof Error ? err.message : String(err);
 		if (errStr.includes("CONFLICT")) {
 			return {
 				success: false,
@@ -440,19 +415,14 @@ export function calculateProgress(planningDir: string): {
 	const lines = roadmapContent.split("\n");
 
 	// Count phases from roadmap: lines matching "- [ ] **Phase" or "- [x] **Phase"
-	const phaseLines = lines.filter(
-		(l) =>
-			l.match(/^-\s+\[[ x]\]\s+\*\*Phase\s+\d+/) !== null,
-	);
+	const phaseLines = lines.filter((l) => l.match(/^-\s+\[[ x]\]\s+\*\*Phase\s+\d+/) !== null);
 	const totalPhases = phaseLines.length;
 	if (totalPhases === 0) {
 		return { overall: 0, currentPhase: { completed: 0, total: 0 } };
 	}
 
 	// Count completed phases
-	const completedPhases = phaseLines.filter((l) =>
-		l.match(/^-\s+\[x\]/),
-	).length;
+	const completedPhases = phaseLines.filter((l) => l.match(/^-\s+\[x\]/)).length;
 
 	// Determine current phase from STATE.md
 	const position = readPosition(planningDir);
@@ -483,21 +453,15 @@ export function calculateProgress(planningDir: string): {
 			// Count SUMMARY.md files (completed plans)
 			const summaryFiles = fse
 				.readdirSync(currentPhaseDir)
-				.filter(
-					(f: string) => f.match(/^\d+-\d+-SUMMARY\.md$/) !== null,
-				);
+				.filter((f: string) => f.match(/^\d+-\d+-SUMMARY\.md$/) !== null);
 			completedPlansInPhase = summaryFiles.length;
 		}
 	}
 
 	// Calculate overall progress
 	const currentPhaseFraction =
-		totalPlansInPhase > 0
-			? completedPlansInPhase / totalPlansInPhase
-			: 0;
-	const overall = Math.round(
-		((completedPhases + currentPhaseFraction) / totalPhases) * 100,
-	);
+		totalPlansInPhase > 0 ? completedPlansInPhase / totalPlansInPhase : 0;
+	const overall = Math.round(((completedPhases + currentPhaseFraction) / totalPhases) * 100);
 
 	return {
 		overall,
@@ -602,8 +566,7 @@ export function recordMetric(
 				newPlans > 0
 					? `${(newTotal / newPlans).toFixed(newTotal % newPlans === 0 ? 0 : 1)}min`
 					: `${durationMin}min`;
-			lines[phaseRowIdx] =
-				`| ${phase} | ${newPlans} | ${newTotal}min | ${newAvg} |`;
+			lines[phaseRowIdx] = `| ${phase} | ${newPlans} | ${newTotal}min | ${newAvg} |`;
 		}
 	} else {
 		// Find the table end to insert new row (after last | line in the By Phase table)
@@ -635,18 +598,14 @@ export function recordMetric(
 	// ─── Update "Velocity" section ──────────────────────────────────────
 	for (let i = 0; i < lines.length; i++) {
 		// Update total plans completed
-		const plansMatch = lines[i].match(
-			/^-\s+Total plans completed:\s*(\d+)/,
-		);
+		const plansMatch = lines[i].match(/^-\s+Total plans completed:\s*(\d+)/);
 		if (plansMatch) {
 			const current = Number.parseInt(plansMatch[1], 10);
 			lines[i] = `- Total plans completed: ${current + 1}`;
 		}
 
 		// Update total execution time (in hours)
-		const timeMatch = lines[i].match(
-			/^-\s+Total execution time:\s*([\d.]+)\s*hours?/,
-		);
+		const timeMatch = lines[i].match(/^-\s+Total execution time:\s*([\d.]+)\s*hours?/);
 		if (timeMatch) {
 			const currentHours = Number.parseFloat(timeMatch[1]);
 			const newHours = (currentHours + durationMin / 60).toFixed(2);
@@ -654,26 +613,15 @@ export function recordMetric(
 		}
 
 		// Update average duration
-		const avgMatch = lines[i].match(
-			/^-\s+Average duration:\s*(\d+)min/,
-		);
+		const avgMatch = lines[i].match(/^-\s+Average duration:\s*(\d+)min/);
 		if (avgMatch) {
 			// Recalculate from total time and total plans
 			// Find the updated values
-			const totalPlansLine = lines.find((l) =>
-				l.match(/^-\s+Total plans completed:/),
-			);
-			const totalTimeLine = lines.find((l) =>
-				l.match(/^-\s+Total execution time:/),
-			);
+			const totalPlansLine = lines.find((l) => l.match(/^-\s+Total plans completed:/));
+			const totalTimeLine = lines.find((l) => l.match(/^-\s+Total execution time:/));
 			if (totalPlansLine && totalTimeLine) {
-				const tp = Number.parseInt(
-					totalPlansLine.match(/(\d+)$/)?.[1] ?? "1",
-					10,
-				);
-				const tt = Number.parseFloat(
-					totalTimeLine.match(/([\d.]+)\s*hours?/)?.[1] ?? "0",
-				);
+				const tp = Number.parseInt(totalPlansLine.match(/(\d+)$/)?.[1] ?? "1", 10);
+				const tt = Number.parseFloat(totalTimeLine.match(/([\d.]+)\s*hours?/)?.[1] ?? "0");
 				const avgMin = Math.round((tt * 60) / tp);
 				lines[i] = `- Average duration: ${avgMin}min`;
 			}
@@ -688,11 +636,7 @@ export function recordMetric(
  * Add a decision to the "### Decisions" subsection within "## Accumulated Context".
  * Appends `- Phase {phase}: {decision}` after the last existing decision line.
  */
-export function addDecision(
-	planningDir: string,
-	phase: string,
-	decision: string,
-): void {
+export function addDecision(planningDir: string, phase: string, decision: string): void {
 	const statePath = join(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return;
 
