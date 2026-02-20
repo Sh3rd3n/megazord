@@ -12,25 +12,13 @@ Reference `@skills/init/design-system.md` for all visual output formatting.
 
 ## Step 1: Display Banner
 
-Output the full init banner from the design system:
+Run the banner script to display the colored Megazord logo (Power Rangers palette, auto-adapts to terminal width):
 
-```
-╔═════════════════════════════════════════════════════════════════════════╗
-║                                                                         ║
-║  ███╗   ███╗███████╗ ██████╗  █████╗ ███████╗ ██████╗ ██████╗ ██████╗   ║
-║  ████╗ ████║██╔════╝██╔════╝ ██╔══██╗╚════██║██╔═══██╗██╔══██╗██╔══██╗  ║
-║  ██╔████╔██║█████╗  ██║  ███╗███████║  ███╔╝ ██║   ██║██████╔╝██║  ██║  ║
-║  ██║╚██╔╝██║██╔══╝  ██║   ██║██╔══██║ ███╔╝  ██║   ██║██╔══██╗██║  ██║  ║
-║  ██║ ╚═╝ ██║███████╗╚██████╔╝██║  ██║███████╗╚██████╔╝██║  ██║██████╔╝  ║
-║  ╚═╝     ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝   ║
-║                                                                         ║
-║  ⚡ MEGAZORD v0.1.0                                                     ║
-║  Project Management × Code Quality × Agent Teams                        ║
-║                                                                         ║
-╚═════════════════════════════════════════════════════════════════════════╝
+```bash
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/banner.sh" "1.1.1"
 ```
 
-Replace `v0.1.0` with the actual version from the project's `package.json` if available.
+Replace `"1.1.0"` with the actual version from the project's `package.json` if available. If `CLAUDE_PLUGIN_ROOT` is not set, use the plugin's install path (`~/.claude/megazord/scripts/banner.sh`).
 
 ## Step 2: Environment Detection
 

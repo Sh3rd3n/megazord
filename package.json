@@ -1,69 +1,74 @@
 {
-  "name": "megazord-cli",
-  "version": "1.0.0",
-  "type": "module",
-  "description": "Claude Code framework unifying project management, code quality, and multi-agent coordination",
-  "license": "MIT",
-  "author": {
-    "name": "Luca Derosas",
-    "url": "https://github.com/sh3rd3n"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/sh3rd3n/megazord.git"
-  },
-  "homepage": "https://github.com/sh3rd3n/megazord",
-  "bugs": {
-    "url": "https://github.com/sh3rd3n/megazord/issues"
-  },
-  "keywords": [
-    "claude-code",
-    "claude-code-plugin",
-    "ai-agent",
-    "project-management",
-    "code-quality",
-    "multi-agent",
-    "workflow",
-    "cli"
-  ],
-  "engines": {
-    "node": ">=22"
-  },
-  "bin": {
-    "megazord": "bin/megazord.mjs"
-  },
-  "files": [
-    "bin",
-    "scripts",
-    "skills",
-    "agents",
-    "hooks",
-    "commands",
-    ".claude-plugin",
-    "CHANGELOG.md"
-  ],
-  "scripts": {
-    "build": "tsdown",
-    "postbuild": "node bin/megazord.mjs update --yes",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest",
-    "lint": "biome check .",
-    "format": "biome format --write ."
-  },
-  "dependencies": {
-    "commander": "^14.0.0",
-    "zod": "^4.3.0",
-    "picocolors": "^1.1.0",
-    "ora": "^8.0.0",
-    "fs-extra": "^11.0.0",
-    "gray-matter": "^4.0.3"
-  },
-  "devDependencies": {
-    "typescript": "~5.8.0",
-    "tsdown": "^0.20.0",
-    "vitest": "^4.0.0",
-    "@biomejs/biome": "^2.3.0",
-    "@types/fs-extra": "^11.0.0",
-    "@types/node": "^22.0.0"
-  }
+	"name": "megazord-cli",
+	"version": "1.1.1",
+	"type": "module",
+	"description": "Claude Code framework unifying project management, code quality, and multi-agent coordination",
+	"license": "MIT",
+	"author": {
+		"name": "Luca Derosas",
+		"url": "https://github.com/sh3rd3n"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sh3rd3n/megazord.git"
+	},
+	"homepage": "https://github.com/sh3rd3n/megazord",
+	"bugs": {
+		"url": "https://github.com/sh3rd3n/megazord/issues"
+	},
+	"keywords": [
+		"claude-code",
+		"claude-code-plugin",
+		"ai-agent",
+		"project-management",
+		"code-quality",
+		"multi-agent",
+		"workflow",
+		"cli"
+	],
+	"engines": {
+		"node": ">=22"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
+	"bin": {
+		"megazord": "bin/megazord.mjs",
+		"megazord-cli": "bin/megazord.mjs"
+	},
+	"files": [
+		"bin",
+		"scripts",
+		"skills",
+		"agents",
+		"hooks",
+		"commands",
+		".claude-plugin",
+		"CHANGELOG.md"
+	],
+	"scripts": {
+		"build": "tsdown",
+		"postbuild": "node bin/megazord.mjs install",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest",
+		"lint": "biome check .",
+		"format": "biome format --write ."
+	},
+	"dependencies": {
+		"commander": "^14.0.0",
+		"zod": "^4.3.0",
+		"picocolors": "^1.1.0",
+		"ora": "^8.0.0",
+		"fs-extra": "^11.0.0",
+		"gray-matter": "^4.0.3"
+	},
+	"devDependencies": {
+		"typescript": "~5.8.0",
+		"tsdown": "^0.20.0",
+		"vitest": "^4.0.0",
+		"@biomejs/biome": "^2.3.0",
+		"@types/fs-extra": "^11.0.0",
+		"@types/node": "^22.0.0"
+	}
 }

@@ -1,10 +1,10 @@
 import type { Command } from "commander";
 import {
-	listPlanFiles,
 	computeWaves,
+	detectWaveConflicts,
 	getIncompletePlans,
 	isPlanComplete,
-	detectWaveConflicts,
+	listPlanFiles,
 } from "../../lib/plan.js";
 
 /**
@@ -12,9 +12,7 @@ import {
  * All output is JSON for machine-readable consumption by skills.
  */
 export function registerPlanCommands(parent: Command): void {
-	const plan = parent
-		.command("plan")
-		.description("Plan parsing and wave computation tools");
+	const plan = parent.command("plan").description("Plan parsing and wave computation tools");
 
 	plan
 		.command("list")

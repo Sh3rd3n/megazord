@@ -1,10 +1,10 @@
 import type { Command } from "commander";
 import {
-	parseRoadmapPhases,
 	addPhase,
-	removePhase,
-	insertPhase,
 	checkVerificationGate,
+	insertPhase,
+	parseRoadmapPhases,
+	removePhase,
 } from "../../lib/roadmap.js";
 
 /**
@@ -12,9 +12,7 @@ import {
  * All output is JSON for machine-readable consumption by skills.
  */
 export function registerRoadmapCommands(parent: Command): void {
-	const roadmap = parent
-		.command("roadmap")
-		.description("Roadmap phase management operations");
+	const roadmap = parent.command("roadmap").description("Roadmap phase management operations");
 
 	roadmap
 		.command("list")
@@ -67,9 +65,7 @@ export function registerRoadmapCommands(parent: Command): void {
 
 	roadmap
 		.command("insert-phase")
-		.description(
-			"Insert a decimal phase between existing phases without renumbering",
-		)
+		.description("Insert a decimal phase between existing phases without renumbering")
 		.requiredOption("--after <number>", "Phase number to insert after")
 		.requiredOption("--description <string>", "Phase description/name")
 		.option("--goal <string>", "Phase goal")
@@ -77,12 +73,7 @@ export function registerRoadmapCommands(parent: Command): void {
 			try {
 				const planningDir = `${process.cwd()}/.planning`;
 				const afterPhase = Number.parseInt(opts.after, 10);
-				const result = insertPhase(
-					planningDir,
-					afterPhase,
-					opts.description,
-					opts.goal,
-				);
+				const result = insertPhase(planningDir, afterPhase, opts.description, opts.goal);
 				console.log(JSON.stringify(result, null, 2));
 			} catch (err) {
 				const msg = err instanceof Error ? err.message : String(err);
@@ -93,9 +84,7 @@ export function registerRoadmapCommands(parent: Command): void {
 
 	roadmap
 		.command("check-gate")
-		.description(
-			"Check verification gate status for a phase",
-		)
+		.description("Check verification gate status for a phase")
 		.requiredOption("--phase <number>", "Phase number to check")
 		.action((opts: { phase: string }) => {
 			try {

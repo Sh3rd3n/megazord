@@ -75,21 +75,13 @@ function padPhase(n: number): string {
  * Find the phase directory for a given phase number (integer or decimal).
  * Scans the phases/ directory for a matching prefix.
  */
-function findPhaseDir(
-	planningDir: string,
-	phaseNumber: number | string,
-): string | null {
+function findPhaseDir(planningDir: string, phaseNumber: number | string): string | null {
 	const phasesDir = join(planningDir, "phases");
 	if (!fse.pathExistsSync(phasesDir)) return null;
 
-	const prefix =
-		typeof phaseNumber === "number"
-			? padPhase(phaseNumber)
-			: String(phaseNumber);
+	const prefix = typeof phaseNumber === "number" ? padPhase(phaseNumber) : String(phaseNumber);
 
-	const dirs = fse
-		.readdirSync(phasesDir)
-		.filter((d: string) => d.startsWith(`${prefix}-`));
+	const dirs = fse.readdirSync(phasesDir).filter((d: string) => d.startsWith(`${prefix}-`));
 
 	return dirs.length > 0 ? join(phasesDir, dirs[0]) : null;
 }
@@ -123,9 +115,7 @@ export function parseRoadmapPhases(planningDir: string): RoadmapPhase[] {
 		const numStr = match[2];
 		const name = match[3].trim();
 		const description = match[4]?.trim() ?? "";
-		const phaseNum = numStr.includes(".")
-			? Number.parseFloat(numStr)
-			: Number.parseInt(numStr, 10);
+		const phaseNum = numStr.includes(".") ? Number.parseFloat(numStr) : Number.parseInt(numStr, 10);
 
 		// Determine status
 		let status: "completed" | "in-progress" | "not-started";
@@ -153,9 +143,7 @@ export function parseRoadmapPhases(planningDir: string): RoadmapPhase[] {
 				const goalMatch = lines[i].match(/^\*\*Goal\*\*:\s*(.+)$/);
 				if (goalMatch) goal = goalMatch[1].trim();
 
-				const reqMatch = lines[i].match(
-					/^\*\*Requirements\*\*:\s*(.+)$/,
-				);
+				const reqMatch = lines[i].match(/^\*\*Requirements\*\*:\s*(.+)$/);
 				if (reqMatch) {
 					requirements = reqMatch[1]
 						.split(",")
@@ -163,9 +151,7 @@ export function parseRoadmapPhases(planningDir: string): RoadmapPhase[] {
 						.filter(Boolean);
 				}
 
-				const depMatch = lines[i].match(
-					/^\*\*Depends on\*\*:\s*(.+)$/,
-				);
+				const depMatch = lines[i].match(/^\*\*Depends on\*\*:\s*(.+)$/);
 				if (depMatch) depends_on = depMatch[1].trim();
 			}
 		}
@@ -197,11 +183,7 @@ export function parseRoadmapPhases(planningDir: string): RoadmapPhase[] {
  * Add a new phase at the end of the roadmap.
  * Creates phase directory and updates ROADMAP.md.
  */
-export function addPhase(
-	planningDir: string,
-	description: string,
-	goal?: string,
-): AddPhaseResult {
+export function addPhase(planningDir: string, description: string, goal?: string): AddPhaseResult {
 	const roadmapPath = join(planningDir, ROADMAP_FILENAME);
 	const content = fse.readFileSync(roadmapPath, "utf-8");
 
@@ -262,9 +244,7 @@ export function addPhase(
 	if (progressIdx >= 0) {
 		// Adjust progressIdx because we may have inserted a line above
 		const adjustedProgressIdx =
-			lastPhaseListIdx >= 0 && lastPhaseListIdx < progressIdx
-				? progressIdx + 1
-				: progressIdx;
+			lastPhaseListIdx >= 0 && lastPhaseListIdx < progressIdx ? progressIdx + 1 : progressIdx;
 		lines.splice(adjustedProgressIdx, 0, ...detailSection);
 	}
 
@@ -275,10 +255,7 @@ export function addPhase(
 	let lastTableRowIdx = -1;
 	let inProgressTable = false;
 	for (let i = 0; i < progressTableLines.length; i++) {
-		if (
-			progressTableLines[i].includes("Plans Complete") &&
-			progressTableLines[i].startsWith("|")
-		) {
+		if (progressTableLines[i].includes("Plans Complete") && progressTableLines[i].startsWith("|")) {
 			inProgressTable = true;
 			continue;
 		}
@@ -318,10 +295,7 @@ export function addPhase(
  * Validates phase is not completed or in-progress.
  * Renumbers subsequent phases.
  */
-export function removePhase(
-	planningDir: string,
-	phaseNumber: number,
-): RemovePhaseResult {
+export function removePhase(planningDir: string, phaseNumber: number): RemovePhaseResult {
 	const phases = parseRoadmapPhases(planningDir);
 	const target = phases.find((p) => p.number === phaseNumber);
 
@@ -330,15 +304,11 @@ export function removePhase(
 	}
 
 	if (target.status === "completed") {
-		throw new Error(
-			`Phase ${phaseNumber} is completed and cannot be removed`,
-		);
+		throw new Error(`Phase ${phaseNumber} is completed and cannot be removed`);
 	}
 
 	if (target.status === "in-progress") {
-		throw new Error(
-			`Phase ${phaseNumber} is in-progress and cannot be removed`,
-		);
+		throw new Error(`Phase ${phaseNumber} is in-progress and cannot be removed`);
 	}
 
 	const roadmapPath = join(planningDir, ROADMAP_FILENAME);
@@ -357,11 +327,7 @@ export function removePhase(
 	let skipping = false;
 
 	for (const line of lines) {
-		if (
-			line.match(
-				new RegExp(`^###\\s+Phase\\s+${phaseNumber}:\\s+`),
-			)
-		) {
+		if (line.match(new RegExp(`^###\\s+Phase\\s+${phaseNumber}:\\s+`))) {
 			skipping = true;
 			continue;
 		}
@@ -376,19 +342,14 @@ export function removePhase(
 	content = result.join("\n");
 
 	// Remove the progress table row
-	const tableRowPattern = new RegExp(
-		`^\\|\\s*${phaseNumber}\\.\\s+.*\\|.*\\|.*\\|.*\\|$`,
-		"m",
-	);
+	const tableRowPattern = new RegExp(`^\\|\\s*${phaseNumber}\\.\\s+.*\\|.*\\|.*\\|.*\\|$`, "m");
 	content = content.replace(tableRowPattern, "").replace(/\n{3,}/g, "\n\n");
 
 	// Remove phase directory if it exists and has no SUMMARY files
 	const phaseDir = findPhaseDir(planningDir, phaseNumber);
 	if (phaseDir && fse.pathExistsSync(phaseDir)) {
 		const files = fse.readdirSync(phaseDir);
-		const hasSummaries = files.some((f: string) =>
-			f.match(/SUMMARY\.md$/),
-		);
+		const hasSummaries = files.some((f: string) => f.match(/SUMMARY\.md$/));
 		if (!hasSummaries) {
 			fse.removeSync(phaseDir);
 		}
@@ -398,10 +359,7 @@ export function removePhase(
 	const renumbered: Record<number, number> = {};
 	const subsequentPhases = phases
 		.filter(
-			(p) =>
-				typeof p.number === "number" &&
-				Number.isInteger(p.number) &&
-				p.number > phaseNumber,
+			(p) => typeof p.number === "number" && Number.isInteger(p.number) && p.number > phaseNumber,
 		)
 		.sort(
 			(a, b) =>
@@ -419,27 +377,15 @@ export function removePhase(
 
 		// Update references in ROADMAP.md content
 		content = content
-			.replace(
-				new RegExp(`Phase\\s+${oldNum}:`, "g"),
-				`Phase ${newNum}:`,
-			)
-			.replace(
-				new RegExp(`Phase\\s+${oldNum}\\b`, "g"),
-				`Phase ${newNum}`,
-			)
-			.replace(
-				new RegExp(`${oldNum}\\.\\s+${phase.name}`, "g"),
-				`${newNum}. ${phase.name}`,
-			);
+			.replace(new RegExp(`Phase\\s+${oldNum}:`, "g"), `Phase ${newNum}:`)
+			.replace(new RegExp(`Phase\\s+${oldNum}\\b`, "g"), `Phase ${newNum}`)
+			.replace(new RegExp(`${oldNum}\\.\\s+${phase.name}`, "g"), `${newNum}. ${phase.name}`);
 
 		// Rename phase directory
 		const oldDir = findPhaseDir(planningDir, oldNum);
 		if (oldDir && fse.pathExistsSync(oldDir)) {
 			const dirName = oldDir.split("/").pop() ?? "";
-			const newDirName = dirName.replace(
-				new RegExp(`^${oldPadded}`),
-				newPadded,
-			);
+			const newDirName = dirName.replace(new RegExp(`^${oldPadded}`), newPadded);
 			const newDir = join(planningDir, "phases", newDirName);
 			fse.moveSync(oldDir, newDir);
 		}
@@ -466,13 +412,11 @@ export function insertPhase(
 
 	// Scan for existing decimal phases after `afterPhase`
 	const existingDecimals: number[] = [];
-	const decimalRe = new RegExp(
-		`Phase\\s+${afterPhase}\\.(\\d+):`,
-		"g",
-	);
-	let match: RegExpExecArray | null;
-	while ((match = decimalRe.exec(content)) !== null) {
+	const decimalRe = new RegExp(`Phase\\s+${afterPhase}\\.(\\d+):`, "g");
+	let match: RegExpExecArray | null = decimalRe.exec(content);
+	while (match !== null) {
 		existingDecimals.push(Number.parseInt(match[1], 10));
+		match = decimalRe.exec(content);
 	}
 
 	// Also scan phase directories for decimal naming
@@ -480,13 +424,9 @@ export function insertPhase(
 	if (fse.pathExistsSync(phasesDir)) {
 		const dirs = fse.readdirSync(phasesDir);
 		for (const dir of dirs) {
-			const dirMatch = (dir as string).match(
-				new RegExp(`^${padPhase(afterPhase)}\\.(\\d+)-`),
-			);
+			const dirMatch = (dir as string).match(new RegExp(`^${padPhase(afterPhase)}\\.(\\d+)-`));
 			if (dirMatch) {
-				existingDecimals.push(
-					Number.parseInt(dirMatch[1], 10),
-				);
+				existingDecimals.push(Number.parseInt(dirMatch[1], 10));
 			}
 		}
 	}
@@ -499,11 +439,7 @@ export function insertPhase(
 
 	const phaseNumber = `${afterPhase}.${nextDecimal}`;
 	const slug = generateSlug(description);
-	const directory = join(
-		planningDir,
-		"phases",
-		`${padPhase(afterPhase)}.${nextDecimal}-${slug}`,
-	);
+	const directory = join(planningDir, "phases", `${padPhase(afterPhase)}.${nextDecimal}-${slug}`);
 
 	// Create phase directory
 	fse.mkdirSync(directory, { recursive: true });
@@ -513,13 +449,7 @@ export function insertPhase(
 	// Find the phase list entry for `afterPhase` and insert after it
 	let afterPhaseListIdx = -1;
 	for (let i = 0; i < lines.length; i++) {
-		if (
-			lines[i].match(
-				new RegExp(
-					`^-\\s+\\[[ x]\\]\\s+\\*\\*Phase\\s+${afterPhase}:`,
-				),
-			)
-		) {
+		if (lines[i].match(new RegExp(`^-\\s+\\[[ x]\\]\\s+\\*\\*Phase\\s+${afterPhase}:`))) {
 			afterPhaseListIdx = i;
 			break;
 		}
@@ -531,15 +461,11 @@ export function insertPhase(
 	}
 
 	// Find the detail section for `afterPhase` and insert a new detail section after it
-	let afterDetailIdx = -1;
+	let _afterDetailIdx = -1;
 	let nextSectionIdx = -1;
 	for (let i = 0; i < lines.length; i++) {
-		if (
-			lines[i].match(
-				new RegExp(`^###\\s+Phase\\s+${afterPhase}:\\s+`),
-			)
-		) {
-			afterDetailIdx = i;
+		if (lines[i].match(new RegExp(`^###\\s+Phase\\s+${afterPhase}:\\s+`))) {
+			_afterDetailIdx = i;
 			// Find where this detail section ends
 			for (let j = i + 1; j < lines.length; j++) {
 				if (lines[j].startsWith("### ") || lines[j].startsWith("## ")) {
@@ -608,9 +534,7 @@ export function checkVerificationGate(
 
 	// Look for VERIFICATION.md (pattern: NN-VERIFICATION.md)
 	const files = fse.readdirSync(phaseDir);
-	const verificationFile = files.find((f: string) =>
-		f.match(/VERIFICATION\.md$/),
-	);
+	const verificationFile = files.find((f: string) => f.match(/VERIFICATION\.md$/));
 
 	if (!verificationFile) {
 		return {

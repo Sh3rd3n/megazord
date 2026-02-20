@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 320" width="820" height="320">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f13"/>
+      <stop offset="100%" stop-color="#1a1a24"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="820" height="320" rx="16" fill="url(#bg)"/>
+  <rect width="820" height="320" rx="16" fill="none" stroke="#2a2a3a" stroke-width="1"/>
+
+  <!-- ASCII Art MEGAZORD - each letter a different Ranger color -->
+  <g transform="translate(-28, 0)" font-family="'Courier New', 'Monaco', 'Menlo', monospace" font-size="16" font-weight="700" xml:space="preserve">
+
+    <!-- M - Red Ranger -->
+    <text x="60" y="68" fill="#E63946">███╗<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>███╗</text>
+    <text x="60" y="86" fill="#E63946">████╗<tspan fill="transparent">█</tspan>████║</text>
+    <text x="60" y="104" fill="#E63946">██╔████╔██║</text>
+    <text x="60" y="122" fill="#E63946">██║╚██╔╝██║</text>
+    <text x="60" y="140" fill="#E63946">██║<tspan fill="transparent">█</tspan>╚═╝<tspan fill="transparent">█</tspan>██║</text>
+    <text x="60" y="158" fill="#E63946">╚═╝<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>╚═╝</text>
+
+    <!-- E - Blue Ranger -->
+    <text x="180" y="68" fill="#457B9D">███████╗</text>
+    <text x="180" y="86" fill="#457B9D">██╔════╝</text>
+    <text x="180" y="104" fill="#457B9D">█████╗<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan></text>
+    <text x="180" y="122" fill="#457B9D">██╔══╝<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan></text>
+    <text x="180" y="140" fill="#457B9D">███████╗</text>
+    <text x="180" y="158" fill="#457B9D">╚══════╝</text>
+
+    <!-- G - Yellow Ranger -->
+    <text x="270" y="68" fill="#F4A300"><tspan fill="transparent">█</tspan>██████╗<tspan fill="transparent">█</tspan></text>
+    <text x="270" y="86" fill="#F4A300">██╔════╝<tspan fill="transparent">█</tspan></text>
+    <text x="270" y="104" fill="#F4A300">██║<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>███╗</text>
+    <text x="270" y="122" fill="#F4A300">██║<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>██║</text>
+    <text x="270" y="140" fill="#F4A300">╚██████╔╝</text>
+    <text x="270" y="158" fill="#F4A300"><tspan fill="transparent">█</tspan>╚═════╝<tspan fill="transparent">█</tspan></text>
+
+    <!-- A - Pink Ranger -->
+    <text x="370" y="68" fill="#E891B2"><tspan fill="transparent">█</tspan>█████╗<tspan fill="transparent">█</tspan></text>
+    <text x="370" y="86" fill="#E891B2">██╔══██╗</text>
+    <text x="370" y="104" fill="#E891B2">███████║</text>
+    <text x="370" y="122" fill="#E891B2">██╔══██║</text>
+    <text x="370" y="140" fill="#E891B2">██║<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>██║</text>
+    <text x="370" y="158" fill="#E891B2">╚═╝<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>╚═╝</text>
+
+    <!-- Z - Green Ranger -->
+    <text x="460" y="68" fill="#2DC653">███████╗</text>
+    <text x="460" y="86" fill="#2DC653">╚════██║</text>
+    <text x="460" y="104" fill="#2DC653"><tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>███╔╝<tspan fill="transparent">█</tspan></text>
+    <text x="460" y="122" fill="#2DC653"><tspan fill="transparent">█</tspan>███╔╝<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan></text>
+    <text x="460" y="140" fill="#2DC653">███████╗</text>
+    <text x="460" y="158" fill="#2DC653">╚══════╝</text>
+
+    <!-- O - Red Ranger -->
+    <text x="550" y="68" fill="#E63946"><tspan fill="transparent">█</tspan>██████╗<tspan fill="transparent">█</tspan></text>
+    <text x="550" y="86" fill="#E63946">██╔═══██╗</text>
+    <text x="550" y="104" fill="#E63946">██║<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>██║</text>
+    <text x="550" y="122" fill="#E63946">██║<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>██║</text>
+    <text x="550" y="140" fill="#E63946">╚██████╔╝</text>
+    <text x="550" y="158" fill="#E63946"><tspan fill="transparent">█</tspan>╚═════╝<tspan fill="transparent">█</tspan></text>
+
+    <!-- R - Blue Ranger -->
+    <text x="650" y="68" fill="#457B9D">██████╗<tspan fill="transparent">█</tspan></text>
+    <text x="650" y="86" fill="#457B9D">██╔══██╗</text>
+    <text x="650" y="104" fill="#457B9D">██████╔╝</text>
+    <text x="650" y="122" fill="#457B9D">██╔══██╗</text>
+    <text x="650" y="140" fill="#457B9D">██║<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>██║</text>
+    <text x="650" y="158" fill="#457B9D">╚═╝<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>╚═╝</text>
+
+    <!-- D - Yellow Ranger -->
+    <text x="740" y="68" fill="#F4A300">██████╗<tspan fill="transparent">█</tspan></text>
+    <text x="740" y="86" fill="#F4A300">██╔══██╗</text>
+    <text x="740" y="104" fill="#F4A300">██║<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>██║</text>
+    <text x="740" y="122" fill="#F4A300">██║<tspan fill="transparent">█</tspan><tspan fill="transparent">█</tspan>██║</text>
+    <text x="740" y="140" fill="#F4A300">██████╔╝</text>
+    <text x="740" y="158" fill="#F4A300">╚═════╝<tspan fill="transparent">█</tspan></text>
+  </g>
+
+
+  <!-- Tagline -->
+  <text x="410" y="212" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#A1A1AA" letter-spacing="3">MORPHIN' YOUR DEV WORKFLOW</text>
+
+  <!-- Subtitle - single line with colored dot separators -->
+  <g transform="translate(-6, 0)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#6B7280">
+    <circle cx="222" cy="258" r="4" fill="#E63946"/>
+    <text x="232" y="262">Project Management</text>
+    <text x="370" y="262" fill="#4B5563">×</text>
+    <circle cx="393" cy="258" r="4" fill="#457B9D"/>
+    <text x="403" y="262">Code Quality</text>
+    <text x="500" y="262" fill="#4B5563">×</text>
+    <circle cx="523" cy="258" r="4" fill="#F4A300"/>
+    <text x="533" y="262">Agent Teams</text>
+  </g>
+
+  <!-- Version badge -->
+  <rect x="360" y="290" width="100" height="22" rx="11" fill="none" stroke="#2a2a3a" stroke-width="1"/>
+  <text x="410" y="305" text-anchor="middle" font-family="'Courier New', monospace" font-size="11" fill="#6B7280">v1.1.1</text>
+</svg>

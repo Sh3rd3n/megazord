@@ -7,11 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0] - Unreleased
+## [1.1.1] - 2026-02-20
 
 ### Added
 
-- Distribution, documentation, CI/CD, npm publication, and marketplace support (Phases 12-16).
+- npm publication as `megazord-cli` (unscoped public package on npmjs.com).
+- Silent CLI installer (`bunx megazord-cli install`) with atomic temp-dir-and-rename rollback.
+- Update command (`bunx megazord-cli update`) with silent overwrite to `~/.claude/megazord/`.
+- Uninstall command (`bunx megazord-cli uninstall`) with directory removal and Claude Code deregistration.
+- Dedicated installation directory at `~/.claude/megazord/` with version and update-check files.
+- npm registry update check with 24-hour cache and 3-second timeout.
+- `/mz:update` slash command for in-session updates via `bunx megazord-cli@latest update`.
+- GitHub Actions CI workflow (lint, typecheck, test) triggered on push and PR to master.
+- Automated release workflow with OIDC provenance and Trusted Publishing via `release.yml`.
+- CORTEX adaptive thinking with 8-signal Cynefin classification matrix and structured framework templates (Inversion, Ladder of Inference, Second-Order, First Principles, Abstraction Laddering, Iceberg Model).
+- CORTEX-aware debug depth control with conditional Issue Tree and Ishikawa decomposition for non-trivial bugs.
+- Go orchestrator CORTEX embedding protocol for automatic skill delivery to executor agents.
+- README with hero banner, quickstart guide, command reference, and architecture overview.
+- CHANGELOG following Keep a Changelog 1.1.0 format.
+
+### Changed
+
+- Package renamed from `megazord` to `megazord-cli` (npm name squatter on `megazord`).
+- Dual bin entries: both `megazord` and `megazord-cli` point to same entrypoint.
+- Version deduplication: single source of truth in `package.json`, read at runtime.
+- Plugin files installed to `~/.claude/megazord/` instead of Claude Code plugin cache.
+- `detect-plugins.ts` uses `megazordDir` existence as primary check (installed_plugins.json as fallback).
+
+### Fixed
+
+- Missing `scripts/` in package.json `files` array (prevented session-start hook from shipping).
+- Missing `agents/` in install command copy list (agents directory was not copied to installation).
 
 ## [1.0.0] - 2026-02-19
 
