@@ -1,5 +1,6 @@
-import { join } from "node:path";
+import { basename } from "node:path";
 import fse from "fs-extra";
+import { safeJoin, sanitizeEntry } from "./paths.js";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -76,14 +77,14 @@ function padPhase(n: number): string {
  * Scans the phases/ directory for a matching prefix.
  */
 function findPhaseDir(planningDir: string, phaseNumber: number | string): string | null {
-	const phasesDir = join(planningDir, "phases");
+	const phasesDir = safeJoin(planningDir, "phases");
 	if (!fse.pathExistsSync(phasesDir)) return null;
 
 	const prefix = typeof phaseNumber === "number" ? padPhase(phaseNumber) : String(phaseNumber);
 
 	const dirs = fse.readdirSync(phasesDir).filter((d: string) => d.startsWith(`${prefix}-`));
 
-	return dirs.length > 0 ? join(phasesDir, dirs[0]) : null;
+	return dirs.length > 0 ? safeJoin(phasesDir, sanitizeEntry(dirs[0])) : null;
 }
 
 // ─── Roadmap Parsing ────────────────────────────────────────────────────────
@@ -94,7 +95,7 @@ function findPhaseDir(planningDir: string, phaseNumber: number | string): string
  * Returns sorted by phase number.
  */
 export function parseRoadmapPhases(planningDir: string): RoadmapPhase[] {
-	const roadmapPath = join(planningDir, ROADMAP_FILENAME);
+	const roadmapPath = safeJoin(planningDir, ROADMAP_FILENAME);
 	if (!fse.pathExistsSync(roadmapPath)) return [];
 
 	const content = fse.readFileSync(roadmapPath, "utf-8");
@@ -184,7 +185,7 @@ export function parseRoadmapPhases(planningDir: string): RoadmapPhase[] {
  * Creates phase directory and updates ROADMAP.md.
  */
 export function addPhase(planningDir: string, description: string, goal?: string): AddPhaseResult {
-	const roadmapPath = join(planningDir, ROADMAP_FILENAME);
+	const roadmapPath = safeJoin(planningDir, ROADMAP_FILENAME);
 	const content = fse.readFileSync(roadmapPath, "utf-8");
 
 	// Find highest existing integer phase
@@ -198,7 +199,7 @@ export function addPhase(planningDir: string, description: string, goal?: string
 	const newPhase = maxPhase + 1;
 	const padded = padPhase(newPhase);
 	const slug = generateSlug(description);
-	const directory = join(planningDir, "phases", `${padded}-${slug}`);
+	const directory = safeJoin(planningDir, "phases", `${padded}-${slug}`);
 
 	// Create phase directory
 	fse.mkdirSync(directory, { recursive: true });
@@ -311,7 +312,7 @@ export function removePhase(planningDir: string, phaseNumber: number): RemovePha
 		throw new Error(`Phase ${phaseNumber} is in-progress and cannot be removed`);
 	}
 
-	const roadmapPath = join(planningDir, ROADMAP_FILENAME);
+	const roadmapPath = safeJoin(planningDir, ROADMAP_FILENAME);
 	let content = fse.readFileSync(roadmapPath, "utf-8");
 
 	// Remove the phase list entry
@@ -384,9 +385,9 @@ export function removePhase(planningDir: string, phaseNumber: number): RemovePha
 		// Rename phase directory
 		const oldDir = findPhaseDir(planningDir, oldNum);
 		if (oldDir && fse.pathExistsSync(oldDir)) {
-			const dirName = oldDir.split("/").pop() ?? "";
+			const dirName = basename(oldDir);
 			const newDirName = dirName.replace(new RegExp(`^${oldPadded}`), newPadded);
-			const newDir = join(planningDir, "phases", newDirName);
+			const newDir = safeJoin(planningDir, "phases", newDirName);
 			fse.moveSync(oldDir, newDir);
 		}
 	}
@@ -407,7 +408,7 @@ export function insertPhase(
 	description: string,
 	goal?: string,
 ): InsertPhaseResult {
-	const roadmapPath = join(planningDir, ROADMAP_FILENAME);
+	const roadmapPath = safeJoin(planningDir, ROADMAP_FILENAME);
 	const content = fse.readFileSync(roadmapPath, "utf-8");
 
 	// Scan for existing decimal phases after `afterPhase`
@@ -420,11 +421,13 @@ export function insertPhase(
 	}
 
 	// Also scan phase directories for decimal naming
-	const phasesDir = join(planningDir, "phases");
+	const phasesDir = safeJoin(planningDir, "phases");
 	if (fse.pathExistsSync(phasesDir)) {
 		const dirs = fse.readdirSync(phasesDir);
 		for (const dir of dirs) {
-			const dirMatch = (dir as string).match(new RegExp(`^${padPhase(afterPhase)}\\.(\\d+)-`));
+			const dirMatch = sanitizeEntry(dir as string).match(
+				new RegExp(`^${padPhase(afterPhase)}\\.(\\d+)-`),
+			);
 			if (dirMatch) {
 				existingDecimals.push(Number.parseInt(dirMatch[1], 10));
 			}
@@ -439,7 +442,11 @@ export function insertPhase(
 
 	const phaseNumber = `${afterPhase}.${nextDecimal}`;
 	const slug = generateSlug(description);
-	const directory = join(planningDir, "phases", `${padPhase(afterPhase)}.${nextDecimal}-${slug}`);
+	const directory = safeJoin(
+		planningDir,
+		"phases",
+		`${padPhase(afterPhase)}.${nextDecimal}-${slug}`,
+	);
 
 	// Create phase directory
 	fse.mkdirSync(directory, { recursive: true });
@@ -545,7 +552,7 @@ export function checkVerificationGate(
 		};
 	}
 
-	const verificationPath = join(phaseDir, verificationFile);
+	const verificationPath = safeJoin(phaseDir, sanitizeEntry(verificationFile));
 	const content = fse.readFileSync(verificationPath, "utf-8");
 
 	// Parse status from frontmatter (status: passed | gaps_found | human_needed)

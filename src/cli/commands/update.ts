@@ -7,16 +7,17 @@ import {
 	statSync,
 	writeFileSync,
 } from "node:fs";
-import { join } from "node:path";
-import { megazordDir, megazordVersionPath } from "../../lib/paths.js";
+import { basename, join } from "node:path";
+import { megazordDir, megazordVersionPath, safeJoin } from "../../lib/paths.js";
 import { VERSION } from "../utils/version.js";
 
 /** Recursively copy a directory. */
 function copyDirSync(src: string, dest: string): void {
 	mkdirSync(dest, { recursive: true });
 	for (const entry of readdirSync(src)) {
-		const srcPath = join(src, entry);
-		const destPath = join(dest, entry);
+		const safe = basename(entry);
+		const srcPath = safeJoin(src, safe);
+		const destPath = safeJoin(dest, safe);
 		if (statSync(srcPath).isDirectory()) {
 			copyDirSync(srcPath, destPath);
 		} else {

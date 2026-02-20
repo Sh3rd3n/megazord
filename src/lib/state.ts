@@ -1,6 +1,6 @@
 import { execSync } from "node:child_process";
-import { join } from "node:path";
 import fse from "fs-extra";
+import { safeJoin } from "./paths.js";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -94,7 +94,7 @@ function extractField(lines: string[], fieldName: string): string | null {
  *   Progress: [███░░░░░░░] 25%
  */
 export function readPosition(planningDir: string): StatePosition | null {
-	const statePath = join(planningDir, STATE_FILENAME);
+	const statePath = safeJoin(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return null;
 
 	const content = fse.readFileSync(statePath, "utf-8");
@@ -144,7 +144,7 @@ export function readPosition(planningDir: string): StatePosition | null {
  * Returns null if STATE.md doesn't exist.
  */
 export function readSessionContinuity(planningDir: string): SessionContinuity | null {
-	const statePath = join(planningDir, STATE_FILENAME);
+	const statePath = safeJoin(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return null;
 
 	const content = fse.readFileSync(statePath, "utf-8");
@@ -213,7 +213,7 @@ function replaceSection(content: string, heading: string, newSectionBody: string
  * Preserves all other sections.
  */
 export function updatePosition(planningDir: string, updates: Partial<StatePosition>): void {
-	const statePath = join(planningDir, STATE_FILENAME);
+	const statePath = safeJoin(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return;
 
 	// Read current values
@@ -248,7 +248,7 @@ export function updateSessionContinuity(
 	planningDir: string,
 	updates: Partial<SessionContinuity>,
 ): void {
-	const statePath = join(planningDir, STATE_FILENAME);
+	const statePath = safeJoin(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return;
 
 	// Read current values
@@ -358,6 +358,15 @@ export function stashPause(description: string): StashResult {
  * Handles missing stash refs and merge conflicts gracefully.
  */
 export function stashResume(stashRef: string): StashResult {
+	// Validate stash ref format (e.g., "stash@{0}")
+	if (!/^stash@\{\d+\}$/.test(stashRef)) {
+		return {
+			success: false,
+			stashRef,
+			message: `Invalid stash ref format: ${stashRef}`,
+		};
+	}
+
 	try {
 		// Verify stash exists
 		const stashList = execSync("git stash list", { encoding: "utf-8" });
@@ -406,7 +415,7 @@ export function calculateProgress(planningDir: string): {
 	overall: number;
 	currentPhase: { completed: number; total: number };
 } {
-	const roadmapPath = join(planningDir, ROADMAP_FILENAME);
+	const roadmapPath = safeJoin(planningDir, ROADMAP_FILENAME);
 	if (!fse.pathExistsSync(roadmapPath)) {
 		return { overall: 0, currentPhase: { completed: 0, total: 0 } };
 	}
@@ -429,7 +438,7 @@ export function calculateProgress(planningDir: string): {
 	const currentPhaseNum = position?.phase ?? completedPhases + 1;
 
 	// Find phase directory for current phase
-	const phasesDir = join(planningDir, "phases");
+	const phasesDir = safeJoin(planningDir, "phases");
 	let currentPhaseDir: string | null = null;
 	let totalPlansInPhase = 0;
 	let completedPlansInPhase = 0;
@@ -442,7 +451,7 @@ export function calculateProgress(planningDir: string): {
 		});
 
 		if (phaseDirs.length > 0) {
-			currentPhaseDir = join(phasesDir, phaseDirs[0]);
+			currentPhaseDir = safeJoin(phasesDir, phaseDirs[0]);
 
 			// Count PLAN.md files
 			const planFiles = fse
@@ -533,7 +542,7 @@ export function recordMetric(
 	_tasks: number,
 	_files: number,
 ): void {
-	const statePath = join(planningDir, STATE_FILENAME);
+	const statePath = safeJoin(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return;
 
 	let content = fse.readFileSync(statePath, "utf-8");
@@ -637,7 +646,7 @@ export function recordMetric(
  * Appends `- Phase {phase}: {decision}` after the last existing decision line.
  */
 export function addDecision(planningDir: string, phase: string, decision: string): void {
-	const statePath = join(planningDir, STATE_FILENAME);
+	const statePath = safeJoin(planningDir, STATE_FILENAME);
 	if (!fse.pathExistsSync(statePath)) return;
 
 	const content = fse.readFileSync(statePath, "utf-8");

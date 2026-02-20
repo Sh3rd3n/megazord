@@ -1,5 +1,5 @@
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { basename, join, resolve } from "node:path";
 
 /** Root Claude directory: ~/.claude/ */
 export const claudeDir = join(homedir(), ".claude");
@@ -31,7 +31,28 @@ export const gsdCommandsDir = join(claudeDir, "commands", "gsd");
 /** Known marketplaces registry: ~/.claude/plugins/known_marketplaces.json */
 export const knownMarketplacesPath = join(pluginsDir, "known_marketplaces.json");
 
+/**
+ * Join path segments and validate the result stays within the base directory.
+ * Prevents directory traversal attacks (e.g., "../../etc/passwd").
+ */
+export function safeJoin(base: string, ...segments: string[]): string {
+	const resolved = resolve(base, ...segments);
+	const baseResolved = resolve(base);
+	if (resolved !== baseResolved && !resolved.startsWith(`${baseResolved}/`)) {
+		throw new Error(`Path traversal detected: resolved path escapes base directory`);
+	}
+	return resolved;
+}
+
+/**
+ * Sanitize a directory entry from readdirSync to prevent path traversal.
+ * Strips any path separators, returning only the base filename.
+ */
+export function sanitizeEntry(entry: string): string {
+	return basename(entry);
+}
+
 /** Resolve a plugin path in the cache by name */
 export function resolvePluginPath(name: string): string {
-	return join(pluginsCacheDir, name);
+	return safeJoin(pluginsCacheDir, name);
 }

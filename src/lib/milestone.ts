@@ -1,6 +1,7 @@
 import { execSync } from "node:child_process";
 import { join } from "node:path";
 import fse from "fs-extra";
+import { safeJoin, sanitizeEntry } from "./paths.js";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -59,7 +60,7 @@ function findPhaseDir(planningDir: string, phaseNumber: number): string | null {
 	const prefix = padPhase(phaseNumber);
 	const dirs = fse.readdirSync(phasesDir).filter((d: string) => d.startsWith(`${prefix}-`));
 
-	return dirs.length > 0 ? join(phasesDir, dirs[0]) : null;
+	return dirs.length > 0 ? safeJoin(phasesDir, sanitizeEntry(dirs[0])) : null;
 }
 
 /**
@@ -80,7 +81,7 @@ export function createMilestone(
 	name: string,
 	phases: number[],
 ): CreateMilestoneResult {
-	const milestonePath = join(planningDir, "MILESTONE.md");
+	const milestonePath = safeJoin(planningDir, "MILESTONE.md");
 
 	const content = [
 		"---",
@@ -123,37 +124,37 @@ export function createMilestone(
  * and creating a git tag.
  */
 export function archiveMilestone(planningDir: string, version: string): ArchiveResult {
-	const milestonesDir = join(planningDir, MILESTONES_DIR);
+	const milestonesDir = safeJoin(planningDir, MILESTONES_DIR);
 	fse.mkdirSync(milestonesDir, { recursive: true });
 
 	const archived: string[] = [];
 
 	// Archive ROADMAP.md
-	const roadmapSrc = join(planningDir, "ROADMAP.md");
-	const roadmapDst = join(milestonesDir, `${version}-ROADMAP.md`);
+	const roadmapSrc = safeJoin(planningDir, "ROADMAP.md");
+	const roadmapDst = safeJoin(milestonesDir, `${version}-ROADMAP.md`);
 	if (fse.pathExistsSync(roadmapSrc)) {
 		fse.copySync(roadmapSrc, roadmapDst);
 		archived.push(roadmapDst);
 	}
 
 	// Archive REQUIREMENTS.md
-	const reqSrc = join(planningDir, "REQUIREMENTS.md");
-	const reqDst = join(milestonesDir, `${version}-REQUIREMENTS.md`);
+	const reqSrc = safeJoin(planningDir, "REQUIREMENTS.md");
+	const reqDst = safeJoin(milestonesDir, `${version}-REQUIREMENTS.md`);
 	if (fse.pathExistsSync(reqSrc)) {
 		fse.copySync(reqSrc, reqDst);
 		archived.push(reqDst);
 	}
 
 	// Optionally copy phase directories to milestones/{version}-phases/
-	const phasesDir = join(planningDir, "phases");
+	const phasesDir = safeJoin(planningDir, "phases");
 	if (fse.pathExistsSync(phasesDir)) {
-		const phaseArchiveDir = join(milestonesDir, `${version}-phases`);
+		const phaseArchiveDir = safeJoin(milestonesDir, `${version}-phases`);
 		fse.copySync(phasesDir, phaseArchiveDir);
 		archived.push(phaseArchiveDir);
 	}
 
 	// Create/append to MILESTONES.md log
-	const logPath = join(milestonesDir, MILESTONES_LOG);
+	const logPath = safeJoin(milestonesDir, MILESTONES_LOG);
 	const dateStr = today();
 	const logEntry = `| ${version} | ${dateStr} | Archived | ${archived.length} files |\n`;
 
@@ -171,7 +172,10 @@ export function archiveMilestone(planningDir: string, version: string): ArchiveR
 		fse.writeFileSync(logPath, logContent, "utf-8");
 	}
 
-	// Create git tag
+	// Create git tag (validate version to prevent shell injection)
+	if (!/^[\w.-]+$/.test(version)) {
+		throw new Error(`Invalid version format: ${version}`);
+	}
 	try {
 		const tagMessage = `Milestone ${version} archived on ${dateStr}`;
 		execSync(`git tag -a "milestone/${version}" -m "${tagMessage.replace(/"/g, '\\"')}"`, {
@@ -228,7 +232,7 @@ export function checkMilestoneAudit(planningDir: string, phases: number[]): Audi
 			continue;
 		}
 
-		const verificationPath = join(phaseDir, verificationFile);
+		const verificationPath = safeJoin(phaseDir, sanitizeEntry(verificationFile));
 		const content = fse.readFileSync(verificationPath, "utf-8");
 
 		// Parse status from frontmatter
