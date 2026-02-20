@@ -190,21 +190,30 @@ Walk away, come back to completed work with clean git history.
 
 ```mermaid
 graph LR
-  subgraph Wave 1 - parallel
-    T1["Task 01<br/>User Model"]
-    T2["Task 02<br/>Product Model"]
+  subgraph w1["⚡ Wave 1 — parallel"]
+    T1("Task 01<br/>User Model")
+    T2("Task 02<br/>Product Model")
   end
-  subgraph Wave 2 - parallel
-    T3["Task 03<br/>Orders API"]
-    T4["Task 04<br/>Cart API"]
+  subgraph w2["⚡ Wave 2 — parallel"]
+    T3("Task 03<br/>Orders API")
+    T4("Task 04<br/>Cart API")
   end
-  subgraph Wave 3
-    T5["Task 05<br/>Checkout UI"]
+  subgraph w3["⚡ Wave 3"]
+    T5("Task 05<br/>Checkout UI")
   end
   T1 --> T3
   T2 --> T4
   T3 --> T5
   T4 --> T5
+
+  style T1 fill:#E63946,stroke:#c62828,color:#fff
+  style T2 fill:#457B9D,stroke:#2e6080,color:#fff
+  style T3 fill:#F4A300,stroke:#c68400,color:#fff
+  style T4 fill:#2DC653,stroke:#1a9e3f,color:#fff
+  style T5 fill:#E891B2,stroke:#d06a94,color:#fff
+  style w1 fill:#1e1e2e,stroke:#444,color:#ccc
+  style w2 fill:#1e1e2e,stroke:#444,color:#ccc
+  style w3 fill:#1e1e2e,stroke:#444,color:#ccc
 ```
 
 Independent tasks run in parallel within each wave. Waves run sequentially -- Wave 2 waits for Wave 1 to finish.
