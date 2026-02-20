@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Sh3rd3n/megazord/master/assets/megazord-hero.svg" alt="Megazord" width="600" />
-</p>
+<h1 align="center">Megazord</h1>
 
 <p align="center">
   <em>One framework for the entire development lifecycle -- with agents that actually talk to each other.</em>
