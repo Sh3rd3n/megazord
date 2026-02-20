@@ -16,11 +16,7 @@
 </p>
 
 <p align="center">
-
-```bash
-bunx megazord-cli
-```
-
+  <code>bunx megazord-cli</code>
 </p>
 
 <p align="center">
