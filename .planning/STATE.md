@@ -29,7 +29,7 @@ Progress: [####################################.] 97% (26/26 v1.0 plans complete
 - 13-01: 3min 11s (2 tasks, 2 files)
 - 14-01: 1min 41s (1 task, 2 files)
 - 14-02: 1min 33s (2 tasks, 1 file)
-- 14.1-01: pending
+- 14.1-01: 2min 39s (2 tasks, 2 files)
 - 14.1-02: 2min 17s (2 tasks, 3 files)
 - 15-01: 1min 5s (2 tasks, 3 files)
 - 15-02: 3min 15s (3 tasks, 6 files)
@@ -69,6 +69,9 @@ Recent decisions affecting current work:
 - Issue Tree + Ishikawa activation is conditional: full decomposition for non-trivial bugs, skip for obvious fixes
 - CORTEX boundary: manual /mz:debug = debug skill owns, execution context = executor CORTEX owns
 - Go orchestrator reads skills/cortex/SKILL.md and embeds as <cortex_protocol> block when cortex_enabled is true
+- CORTEX protocol duplicated inline in executor (not @-referenced) due to Task boundary limitation -- sync comment added
+- 8-signal classification matrix replaces 4-row domain table for reproducible classification
+- Chaotic domain only from crisis signals, never from quantitative thresholds alone
 
 ### Roadmap Evolution
 
@@ -93,7 +96,7 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed 14.1-02-PLAN.md
-Resume file: .planning/phases/14.1-cortex-thinking-frameworks/14.1-02-SUMMARY.md
+Stopped at: Completed 14.1-01-PLAN.md
+Resume file: .planning/phases/14.1-cortex-thinking-frameworks/14.1-01-SUMMARY.md
 Stash ref: None
 Last error: None

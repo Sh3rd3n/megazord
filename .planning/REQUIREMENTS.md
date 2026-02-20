@@ -53,11 +53,11 @@ Requirements for v1.1 Distribution & Publication. Each maps to roadmap phases.
 
 ### CORTEX Thinking Frameworks (Phase 14.1)
 
-- [ ] **CORTEX-01**: Enhanced challenge block format — Inversion (pre-mortem), Ladder of Inference (assumption chain), Second-Order Thinking (consequence trace) for Complicated+ tasks
-- [ ] **CORTEX-02**: Complex domain structured brainstorm — First Principles decomposition + Abstraction Laddering (why/how reframing) replacing ad-hoc mini-brainstorm
-- [ ] **CORTEX-03**: Iceberg Model systems analysis — triggered when task touches area flagged in previous task's SUMMARY as modified/rejected
+- [x] **CORTEX-01**: Enhanced challenge block format — Inversion (pre-mortem), Ladder of Inference (assumption chain), Second-Order Thinking (consequence trace) for Complicated+ tasks
+- [x] **CORTEX-02**: Complex domain structured brainstorm — First Principles decomposition + Abstraction Laddering (why/how reframing) replacing ad-hoc mini-brainstorm
+- [x] **CORTEX-03**: Iceberg Model systems analysis — triggered when task touches area flagged in previous task's SUMMARY as modified/rejected
 - [x] **CORTEX-04**: Debug root-cause analysis — Issue Tree (MECE decomposition) + Ishikawa cause categories (Code, Data, Environment, Dependencies, Timing, State)
-- [ ] **CORTEX-05**: Concrete classification signal heuristics — LOC ranges, module counts, API surface metrics replacing vague descriptions
+- [x] **CORTEX-05**: Concrete classification signal heuristics — LOC ranges, module counts, API surface metrics replacing vague descriptions
 
 ### Beads Pattern (deferred to v1.2+)
 
@@ -97,11 +97,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NPM-01 | Phase 15 | Pending |
 | NPM-02 | Phase 15 | Complete |
 | NPM-03 | Phase 15 | Complete |
-| CORTEX-01 | Phase 14.1 | Pending |
-| CORTEX-02 | Phase 14.1 | Pending |
-| CORTEX-03 | Phase 14.1 | Pending |
+| CORTEX-01 | Phase 14.1 | Complete |
+| CORTEX-02 | Phase 14.1 | Complete |
+| CORTEX-03 | Phase 14.1 | Complete |
 | CORTEX-04 | Phase 14.1 | Complete |
-| CORTEX-05 | Phase 14.1 | Pending |
+| CORTEX-05 | Phase 14.1 | Complete |
 | MKT-01 | Phase 16 | Pending |
 | MKT-02 | Phase 16 | Pending |
 | MKT-03 | Phase 16 | Pending |

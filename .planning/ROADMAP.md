@@ -95,8 +95,8 @@ Plans:
 **Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 14.1-01-PLAN.md — CORTEX skill creation + executor enhancement (classification heuristics, challenge block, complex analysis, iceberg model)
-- [ ] 14.1-02-PLAN.md — Debug skill CORTEX-aware depth control + go orchestrator CORTEX embedding
+- [x] 14.1-01-PLAN.md — CORTEX skill creation + executor enhancement (classification heuristics, challenge block, complex analysis, iceberg model)
+- [x] 14.1-02-PLAN.md — Debug skill CORTEX-aware depth control + go orchestrator CORTEX embedding
 
 ### Phase 15: npm Publication
 **Goal**: Anyone can install Megazord from npm and it works on a clean machine with no prior setup
