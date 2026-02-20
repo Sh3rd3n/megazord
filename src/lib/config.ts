@@ -1,6 +1,6 @@
-import { join } from "node:path";
 import fse from "fs-extra";
 import { z } from "zod";
+import { safeJoin } from "./paths.js";
 
 // ─── Config filename ────────────────────────────────────────────────────────
 
@@ -221,7 +221,7 @@ export function resolveAgentModel(config: MegazordConfig, agentRole: AgentRole):
 
 /** Load and validate config from .planning/ directory */
 export function loadConfig(planningDir: string): MegazordConfig {
-	const configPath = join(planningDir, CONFIG_FILENAME);
+	const configPath = safeJoin(planningDir, CONFIG_FILENAME);
 	if (!fse.pathExistsSync(configPath)) {
 		throw new Error(`Config not found: ${configPath}. Run /mz:init first.`);
 	}
@@ -235,7 +235,7 @@ export function loadConfig(planningDir: string): MegazordConfig {
 
 /** Save config to .planning/ directory with pretty formatting */
 export function saveConfig(planningDir: string, config: MegazordConfig): void {
-	const configPath = join(planningDir, CONFIG_FILENAME);
+	const configPath = safeJoin(planningDir, CONFIG_FILENAME);
 	fse.writeJsonSync(configPath, config, { spaces: 2 });
 }
 
@@ -275,7 +275,7 @@ export interface GsdConfig {
 
 /** Detect if .planning/ contains a GSD-format config (no version field) */
 export function detectGsdConfig(planningDir: string): GsdConfig | null {
-	const configPath = join(planningDir, "config.json");
+	const configPath = safeJoin(planningDir, "config.json");
 	if (!fse.pathExistsSync(configPath)) return null;
 
 	const raw = fse.readJsonSync(configPath);

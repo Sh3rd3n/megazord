@@ -2,6 +2,7 @@ import { execSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import fse from "fs-extra";
+import { safeJoin, sanitizeEntry } from "./paths.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -20,6 +21,16 @@ export interface WorktreeInfo {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const EXEC_OPTS = { encoding: "utf-8" as const, stdio: "pipe" as const };
+
+/** Validate that a team/agent name contains only safe characters */
+function validateName(name: string, label: string): string {
+	if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+		throw new Error(
+			`Invalid ${label} name: must contain only alphanumeric, hyphens, and underscores`,
+		);
+	}
+	return name;
+}
 
 /**
  * Returns the base directory for worktrees.
@@ -41,8 +52,10 @@ export function createWorktree(
 	baseRef = "HEAD",
 	baseDir?: string,
 ): WorktreeInfo {
+	validateName(team, "team");
+	validateName(agent, "agent");
 	const base = getWorktreeBase(baseDir);
-	const wtPath = join(base, team, agent);
+	const wtPath = safeJoin(base, team, agent);
 	const branch = `mz/${team}/${agent}`;
 
 	try {
@@ -61,8 +74,10 @@ export function createWorktree(
  * Silently ignores errors if worktree or branch was already removed.
  */
 export function removeWorktree(team: string, agent: string, baseDir?: string): void {
+	validateName(team, "team");
+	validateName(agent, "agent");
 	const base = getWorktreeBase(baseDir);
-	const wtPath = join(base, team, agent);
+	const wtPath = safeJoin(base, team, agent);
 	const branch = `mz/${team}/${agent}`;
 
 	try {
@@ -87,6 +102,8 @@ export function mergeWorktree(
 	agent: string,
 	strategy: "merge" | "rebase" = "merge",
 ): { success: boolean; conflicts: boolean; message: string } {
+	validateName(team, "team");
+	validateName(agent, "agent");
 	const branch = `mz/${team}/${agent}`;
 
 	try {
@@ -156,7 +173,7 @@ export function pruneTeamWorktrees(team: string, baseDir?: string): void {
 	if (fse.pathExistsSync(teamDir)) {
 		const agents = fse.readdirSync(teamDir);
 		for (const agent of agents) {
-			removeWorktree(team, agent as string, baseDir);
+			removeWorktree(team, sanitizeEntry(agent as string), baseDir);
 		}
 		fse.removeSync(teamDir);
 	}

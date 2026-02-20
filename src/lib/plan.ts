@@ -1,7 +1,8 @@
-import { join } from "node:path";
+import { basename } from "node:path";
 import fse from "fs-extra";
 import matter from "gray-matter";
 import { z } from "zod";
+import { safeJoin, sanitizeEntry } from "./paths.js";
 
 // ─── Schemas ────────────────────────────────────────────────────────────────
 
@@ -59,7 +60,7 @@ export function parsePlan(planPath: string): PlanFile {
 
 	return {
 		path: planPath,
-		filename: planPath.split("/").pop() ?? "",
+		filename: basename(planPath),
 		metadata: result.data,
 		content: raw, // Full content including frontmatter for embedding
 	};
@@ -78,7 +79,7 @@ export function listPlanFiles(phaseDir: string): PlanFile[] {
 		.filter((f: string) => PLAN_FILENAME_RE.test(f))
 		.sort();
 
-	return files.map((f: string) => parsePlan(join(phaseDir, f)));
+	return files.map((f: string) => parsePlan(safeJoin(phaseDir, sanitizeEntry(f))));
 }
 
 /**
@@ -109,7 +110,7 @@ export function computeWaves(plans: PlanFile[]): PlanWave[] {
 export function isPlanComplete(phaseDir: string, meta: PlanMetadata): boolean {
 	const padded = meta.phase.split("-")[0];
 	const summaryFilename = `${padded}-${meta.plan}-SUMMARY.md`;
-	return fse.pathExistsSync(join(phaseDir, summaryFilename));
+	return fse.pathExistsSync(safeJoin(phaseDir, summaryFilename));
 }
 
 /**
