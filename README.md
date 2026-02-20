@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/megazord-hero.svg" alt="Megazord" width="820">
+  <img src="https://raw.githubusercontent.com/Sh3rd3n/megazord/master/assets/megazord-hero.svg" alt="Megazord" width="820">
 </p>
 
 <p align="center">
@@ -186,7 +186,7 @@ Walk away, come back to completed work with clean git history.
 **How wave execution works:**
 
 <p align="center">
-  <img src="assets/wave-execution.svg" alt="Wave Execution Flow" width="820">
+  <img src="https://raw.githubusercontent.com/Sh3rd3n/megazord/master/assets/wave-execution.svg" alt="Wave Execution Flow" width="820">
 </p>
 
 Independent tasks run in parallel within each wave. Waves run sequentially -- Wave 2 waits for Wave 1 to finish.
@@ -238,7 +238,7 @@ Most AI coding tools treat every task the same. A variable rename gets the same 
 CORTEX classifies every task through **Cynefin complexity domains** -- Clear, Complicated, Complex, Chaotic -- and scales analysis to match actual risk. Clear tasks execute instantly with zero overhead. Complicated tasks get structured challenge analysis. Complex tasks trigger full decomposition before a single line of code is written. Chaotic situations stop execution entirely and escalate to the human.
 
 <p align="center">
-  <img src="assets/cortex-diagram.svg" alt="CORTEX Cynefin Domain Flow" width="820">
+  <img src="https://raw.githubusercontent.com/Sh3rd3n/megazord/master/assets/cortex-diagram.svg" alt="CORTEX Cynefin Domain Flow" width="820">
 </p>
 
 ### Thinking Frameworks
