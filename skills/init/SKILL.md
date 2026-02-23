@@ -9,6 +9,7 @@ disable-model-invocation: false
 Initialize a new Megazord project or migrate an existing GSD project. This skill guides you through project setup with presets, model selection, workflow preferences, and deep context gathering.
 
 Reference `@skills/init/design-system.md` for all visual output formatting.
+Reference `@skills/shared/interview-language.md` for language detection and session-wide persistence rules.
 
 ## Step 1: Display Banner
 
@@ -19,6 +20,25 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/banner.sh" "1.1.2"
 ```
 
 Replace `"1.1.0"` with the actual version from the project's `package.json` if available. If `CLAUDE_PLUGIN_ROOT` is not set, use the plugin's install path (`~/.claude/megazord/scripts/banner.sh`).
+
+## Step 1b: Language Detection
+
+Detect the user's language following the rules in `@skills/shared/interview-language.md`.
+
+The user's first natural-language message determines the session language. If the user's first interaction is just the `/mz:init` command with no additional text, wait until they provide a natural-language response (e.g., answering the first question) and detect from that.
+
+Once detected, apply the language to ALL subsequent output in this session:
+- All AskUserQuestion `question` text
+- All AskUserQuestion option labels and descriptions
+- All summary text and confirmation messages
+- All error messages and guidance text
+
+Keep in English regardless of detected language:
+- Config keys and values in megazord.config.json
+- File names and paths (.planning/*, skills/*)
+- Section headers in PROJECT.md, STATE.md (these are machine-readable)
+- Command names (/mz:*, /gsd:*)
+- Technical terms (TDD, CORTEX, YOLO, etc.)
 
 ## Step 2: Environment Detection
 
@@ -71,6 +91,8 @@ Use AskUserQuestion:
   - "Strict (Recommended)" -- description: "Everything on: TDD, auto review, brainstorming, CORTEX, systematic debug"
   - "Balanced" -- description: "Review + brainstorming on, TDD and CORTEX off"
   - "Minimal" -- description: "Essential base features only"
+
+Translate all option labels and descriptions to the detected session language per `@skills/shared/interview-language.md`. The examples above are in English; adapt to the session language. For example, in Italian: "Strict (Consigliato)" with description "Tutto attivo: TDD, review automatica, brainstorming, CORTEX, debug sistematico".
 
 Record the selected preset. Its toggle values will be used as defaults for all quality and workflow settings.
 
@@ -168,6 +190,8 @@ Ask: "Does this look correct? Anything to add or correct?"
 If the project name was not set yet, use the name from `package.json` as the default and confirm with the user.
 
 ### 7b. Deep Questions
+
+Conduct the deep questioning conversation in the detected session language. Questions, follow-ups, summaries, and acknowledgments are all in the user's language. Project data captured from answers (requirements, constraints, decisions) is written in the language the user provides -- do not translate user-provided content.
 
 Gather comprehensive project context through conversational questions. There is no artificial limit on questions -- be thorough. This is where `/mz:init` becomes valuable.
 
