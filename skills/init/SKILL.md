@@ -10,6 +10,7 @@ Initialize a new Megazord project or migrate an existing GSD project. This skill
 
 Reference `@skills/init/design-system.md` for all visual output formatting.
 Reference `@skills/shared/interview-language.md` for language detection and session-wide persistence rules.
+Reference `@skills/shared/interview-options.md` for option format, ordering, and explanation standards.
 
 ## Step 1: Display Banner
 
@@ -83,16 +84,19 @@ Check if the user invoked `/mz:init --quick` or `/mz:init quick` (look for "quic
 ## Step 4: Preset Selection
 
 Reference `@skills/init/presets.md` for the full toggle values of each preset.
+Reference `@skills/shared/interview-options.md` for option format and explanation standards.
 
 Use AskUserQuestion:
 - header: "Profile" (7 chars)
 - question: "Select your quality profile (you can customize individual settings next)"
 - options:
-  - "Strict (Recommended)" -- description: "Everything on: TDD, auto review, brainstorming, CORTEX, systematic debug"
-  - "Balanced" -- description: "Review + brainstorming on, TDD and CORTEX off"
-  - "Minimal" -- description: "Essential base features only"
+  - "Strict (Recommended)" -- description: "Pro: maximum quality, TDD first, automatic reviews. Con: more tokens, longer execution."
+  - "Balanced" -- description: "Pro: good quality/speed balance, active reviews. Con: no TDD or CORTEX."
+  - "Minimal" -- description: "Pro: maximum speed, zero ceremony. Con: no safety net."
 
-Translate all option labels and descriptions to the detected session language per `@skills/shared/interview-language.md`. The examples above are in English; adapt to the session language. For example, in Italian: "Strict (Consigliato)" with description "Tutto attivo: TDD, review automatica, brainstorming, CORTEX, debug sistematico".
+Translate all option labels and descriptions to the detected session language per `@skills/shared/interview-language.md`. The examples above are in English for illustration; adapt to the session language. For example, in Italian: "Strict (Consigliato)" with description "Pro: massima qualità, test prima del codice, review automatiche. Contro: più token, esecuzione più lunga."
+
+This is a personal preference question -- do NOT add "fai tu" / "AI decides" to this step.
 
 Record the selected preset. Its toggle values will be used as defaults for all quality and workflow settings.
 
@@ -100,39 +104,56 @@ Record the selected preset. Its toggle values will be used as defaults for all q
 
 Collect model and workflow preferences one at a time.
 
+All selection questions in this step follow the option format from `@skills/shared/interview-options.md`:
+- Include pro/contra in each option's description field (translate to session language)
+- Order by fitness (recommended first)
+- Add "fai tu" / "AI decides" as the last option on technical/opinionated questions (translated to session language)
+- Omit "fai tu" on binary operational choices
+
 **5a. Model profile:**
 Use AskUserQuestion:
 - header: "Model" (5 chars)
 - question: "AI model profile for planning agents"
 - options:
-  - "Quality (Recommended)" -- description: "Opus everywhere -- highest quality, higher cost"
-  - "Balanced" -- description: "Opus for planning, Sonnet for execution"
-  - "Budget" -- description: "Sonnet/Haiku -- fastest, lowest cost"
+  - "Quality (Recommended)" -- description: "Pro: best results across all tasks. Con: higher cost, slower."
+  - "Balanced" -- description: "Pro: good compromise, Opus where it counts. Con: non-uniform quality."
+  - "Budget" -- description: "Pro: very fast, minimum cost. Con: reduced quality on complex tasks."
+  - "Fai tu" (translated to session language) -- description: "Claude picks the best profile for your project."
+
+Note: model profile is a technical/opinionated question -- "fai tu" IS appropriate. Translate all labels and descriptions to the session language. The examples above are in English for illustration.
 
 **5b. Execution mode:**
 Use AskUserQuestion:
 - header: "Mode" (4 chars)
 - question: "Execution mode"
 - options:
-  - "YOLO (Recommended)" -- description: "Autonomous execution, minimal prompts"
-  - "Interactive" -- description: "Confirm before each major action"
+  - "YOLO (Recommended)" -- description: "Pro: smooth execution, no interruptions. Con: less manual control."
+  - "Interactive" -- description: "Pro: control over each action. Con: slows workflow, requires constant attention."
+  - "Fai tu" (translated to session language) -- description: "Claude picks the mode that fits your project context."
+
+Note: execution mode is an opinionated technical choice -- "fai tu" IS appropriate. Translate all labels and descriptions to the session language.
 
 **5c. Planning depth:**
 Use AskUserQuestion:
 - header: "Depth" (5 chars)
 - question: "Planning depth"
 - options:
-  - "Comprehensive (Recommended)" -- description: "Deep research, thorough planning, full verification"
-  - "Standard" -- description: "Balanced research and planning"
-  - "Quick" -- description: "Minimal planning, fast execution"
+  - "Comprehensive (Recommended)" -- description: "Pro: deep research, detailed plans, full verification. Con: takes more time."
+  - "Standard" -- description: "Pro: good balance between quality and speed. Con: less thorough research."
+  - "Quick" -- description: "Pro: fast planning, fast execution. Con: less verification, more risk."
+  - "Fai tu" (translated to session language) -- description: "Claude picks the depth that fits your project complexity."
+
+Note: planning depth is an opinionated technical choice -- "fai tu" IS appropriate. Translate all labels and descriptions to the session language.
 
 **5d. Git tracking:**
 Use AskUserQuestion:
 - header: "Git" (3 chars)
 - question: "Git tracking for planning docs"
 - options:
-  - "Yes (Recommended)" -- description: "Commit .planning/ changes alongside code"
-  - "No" -- description: "Skip planning doc commits"
+  - "Yes (Recommended)" -- description: "Pro: full history, rollback possible. Con: additional commits in the log."
+  - "No" -- description: "Pro: cleaner git log. Con: no trace of planning decisions."
+
+Note: Git tracking is a binary operational preference -- do NOT add "fai tu" to this question. Translate labels and descriptions to the session language.
 
 ## Step 6: Quality Customization Gate
 
