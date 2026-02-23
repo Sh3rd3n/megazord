@@ -1,6 +1,7 @@
 # Deep Context Gathering Guide
 
 Reference `@skills/shared/interview-options.md` for option format, ordering, "fai tu" placement, and explanation standards.
+Reference `@skills/shared/interview-language.md` for language detection and session-wide persistence rules.
 
 Reference for the `/mz:init` skill's deep questioning phase (Step 7). Adapted from the GSD methodology for Megazord's project initialization.
 
@@ -42,9 +43,11 @@ Before asking questions, scan the codebase for answers. Users validate detected 
 
 ### Presenting Detected Context
 
-Compile detected information into a summary. Present it to the user for validation before moving to deep questions. Example:
+Compile detected information into a summary. Present it to the user for validation before moving to deep questions. Present the detected context summary in the session language.
 
-"I detected a TypeScript project using Bun as the runtime, Vitest for testing, Biome for linting, and tsdown for building. The project uses ESM modules. Does this look correct? Anything to add or correct?"
+Example (English): "I detected a TypeScript project using Bun as the runtime, Vitest for testing, Biome for linting, and tsdown for building. The project uses ESM modules. Does this look correct? Anything to add or correct?"
+
+Example (Italian): "Ho rilevato un progetto TypeScript con Bun come runtime, Vitest per i test, Biome per il linting e tsdown per il build. Il progetto usa moduli ESM. Ti sembra corretto? Qualcosa da aggiungere o correggere?"
 
 This saves time and shows competence. Users are more engaged when they see their project understood.
 
@@ -129,6 +132,7 @@ Capture decisions already made so they are respected throughout development.
 - Acknowledge what you learn: "Got it -- so the core challenge is X."
 - End each section with a summary: "Here's what I have so far for requirements. Anything missing?"
 - When presenting choices, always use AskUserQuestion with the format from `@skills/shared/interview-options.md`. Never use numbered text lists for selection questions.
+- Conduct the entire conversation in the detected session language. Do not switch to English for questions or follow-ups, even when discussing English-named technologies. Example (Italian): "Che database preferisci per questo progetto?" not "What database do you want?"
 
 ## AI-Chosen Items in Summary
 

@@ -9,6 +9,7 @@ disable-model-invocation: false
 Facilitate Socratic brainstorming that explores 5+ alternative approaches before converging on a direction. Produces CONTEXT.md-compatible output for downstream planning. Works both within phase context and as standalone brainstorming.
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/interview-language.md` for language detection and session-wide persistence rules.
 
 ## Step 1: Display Banner
 
@@ -19,6 +20,14 @@ Output the stage banner:
 |  MEGAZORD > DISCUSS                           |
 +===============================================+
 ```
+
+## Step 1b: Language Detection
+
+Detect the user's language from their first natural-language message following the rules in `@skills/shared/interview-language.md`.
+
+Apply the detected language to all Socratic dialogue: seed questions, challenges, suggestions, summaries, convergence prompts, and the final output document's prose sections.
+
+Keep in English: file paths, CONTEXT.md section headers (`<domain>`, `<decisions>`, `<specifics>`, `<deferred>`), technical terms, and command names.
 
 ## Step 2: Determine Context
 
@@ -103,6 +112,8 @@ When the user signals readiness to converge (or after the soft-limit nudge):
    | {approach 2} | {strengths} | {weaknesses} |
    | ... | ... | ... |
 
+Present the summary table in the session language. Column headers and approach names may mix English technical terms with session-language descriptions.
+
 2. **Ask the user** to select one of:
    - Pick a single approach
    - Combine elements from multiple approaches
@@ -180,6 +191,7 @@ Display confirmation:
 - **Output format**: CONTEXT.md compatible (domain/decisions/specifics/deferred sections)
 - **Works standalone**: brainstorm without any project or phase context, output to `.planning/brainstorms/`
 - **No auto-trigger**: this skill is manually invoked by the user (not triggered automatically during execution)
+- **Session language**: Detect from first message, apply to all dialogue output per `@skills/shared/interview-language.md`
 
 ## Error Handling
 
