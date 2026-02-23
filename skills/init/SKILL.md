@@ -41,6 +41,32 @@ Keep in English regardless of detected language:
 - Command names (/mz:*, /gsd:*)
 - Technical terms (TDD, CORTEX, YOLO, etc.)
 
+## Step 1c: Deep Project Scan
+
+Runs ONCE, immediately after banner display and language detection, BEFORE any questions are asked. This step is SILENT -- no output is shown to the user. Results feed into Steps 2, 7a, and the COME block as pre-filled defaults.
+
+**Scan the project for existing documentation and dependencies:**
+
+- `package.json` -- extract: name, dependencies, devDependencies, scripts, engines, type (ESM vs CJS)
+- Config files: `tsconfig.json`, `*.config.{ts,js,json,mjs}`, `Cargo.toml`, `go.mod`, `pyproject.toml`, `requirements.txt`
+- Documentation: `README.md`, `CLAUDE.md`, doc folders (`docs/`, `documentation/`)
+- CI/CD: `.github/workflows/*`, `Dockerfile`, `docker-compose.yml`
+- Existing planning: `.planning/`, `REQUIREMENTS.md`, `TODO.md`
+- Source structure: glob for `**/*.{ts,tsx,js,jsx,py,rs,go}` to determine language distribution
+- Test patterns: `**/*.test.*`, `**/*.spec.*`
+- Git history: `git log --oneline -10`, `git log --format='%an' | sort -u`
+
+**Store scan results internally with source annotations.** Each detected value is tagged with its origin for later use. Examples:
+
+- `{ value: "typescript", source: "tsconfig.json" }`
+- `{ value: "vitest", source: "package.json devDependencies" }`
+- `{ value: "bun", source: "package.json engines" }`
+
+Scan results flow into:
+- **Step 2:** richer detection of project type (greenfield vs brownfield)
+- **Step 7a:** auto-detect presentation with source-annotated findings
+- **Step 7d (COME block):** pre-filled defaults for every technical choice question
+
 ## Step 2: Environment Detection
 
 Check the current project directory for existing planning structure.
@@ -180,51 +206,83 @@ After all overrides are collected, merge them with the preset values.
 
 ## Step 7: Deep Context Gathering
 
-Reference `@skills/init/questioning.md` for the full questioning methodology.
+Reference `@skills/init/questioning.md` for the full COSA/COME questioning methodology.
 
-### 7a. Auto-detect (if codebase exists)
+### 7a. Auto-detect presentation
 
-Check if the project has existing code by looking for common markers: `package.json`, `src/`, `*.ts`, `*.tsx`, `Cargo.toml`, `go.mod`, `requirements.txt`, `pyproject.toml`, etc.
+The deep scan from Step 1c already collected all available project signals. Now present those findings to the user for validation.
 
-**If existing code found:**
-- Read `package.json` (if present): extract name, dependencies, devDependencies, scripts
-- Glob for file patterns: `**/*.{ts,tsx,js,jsx,py,rs,go}` to determine language distribution
-- Glob for config files: `*.config.{ts,js,json,mjs}` to detect tooling
-- Glob for tests: `**/*.test.*`, `**/*.spec.*` to detect test patterns
-- Check git history: `git log --oneline -10` for recent activity and patterns
+**If Step 1c found existing code or documentation:**
 
-Present findings to the user:
+Present detected context in the session language with source annotations:
+
 ```
 ╔═══════════════════════════════════════════════════════╗
 ║  Auto-Detected Project Context                        ║
 ╠═══════════════════════════════════════════════════════╣
-║  Language:    {detected language}                      ║
-║  Runtime:     {detected runtime}                       ║
-║  Testing:     {detected test framework}                ║
-║  Linting:     {detected linter}                        ║
-║  Building:    {detected build tool}                    ║
+║  Language:    {detected language}  (source)           ║
+║  Runtime:     {detected runtime}   (source)           ║
+║  Testing:     {detected framework} (source)           ║
+║  Linting:     {detected linter}    (source)           ║
+║  Building:    {detected build tool}(source)           ║
 ╚═══════════════════════════════════════════════════════╝
 ```
 
-Ask: "Does this look correct? Anything to add or correct?"
+Example in Italian: "Ho rilevato da package.json: progetto TypeScript, runtime Bun, testing Vitest..."
 
-If the project name was not set yet, use the name from `package.json` as the default and confirm with the user.
+Ask for confirmation/corrections in the session language: "Does this look correct? Anything to add or correct?"
 
-### 7b. Deep Questions
+If the project name was not set yet, use the name from `package.json` (source: package.json) as the default and confirm with the user.
 
-Conduct the deep questioning conversation in the detected session language. Questions, follow-ups, summaries, and acknowledgments are all in the user's language. Project data captured from answers (requirements, constraints, decisions) is written in the language the user provides -- do not translate user-provided content.
+**If Step 1c found no existing code (greenfield):** Skip this sub-step. Proceed directly to 7b.
 
-Gather comprehensive project context through conversational questions. There is no artificial limit on questions -- be thorough. This is where `/mz:init` becomes valuable.
+### 7b. COSA Block -- Functional Requirements (WHAT)
 
-Follow the methodology in `@skills/init/questioning.md`. Core areas to cover:
+Conduct the COSA questioning in the detected session language. This block establishes what the project does BEFORE any technical choices.
 
-1. **Project identity:** What is this project? One-sentence elevator pitch. (If not already captured from auto-detect or quick mode.)
-2. **Core value:** What is the single most important thing this project must do well?
-3. **Requirements:** What must it do? What is explicitly out of scope?
-4. **Tech stack:** Technologies, frameworks, libraries (validate auto-detected or gather fresh).
-5. **Conventions:** Code style, naming patterns, architectural patterns, commit conventions.
-6. **Constraints:** Timeline, team size, performance requirements, compliance, budget.
-7. **Key decisions:** Any decisions already made that future development should respect.
+**Core COSA areas:**
+
+1. **Project identity:** One-sentence elevator pitch. (Skip if captured from auto-detect.)
+2. **Core value:** The single most important thing this project must do well.
+3. **Requirements:** Must-have features, nice-to-haves, explicitly out of scope.
+4. **Constraints:** Timeline, team size, performance, compliance, budget.
+
+**COSA behavior rules:**
+
+- **Conversational, not interrogative.** No AskUserQuestion selection questions in this block -- freeform dialogue only.
+- **Tech mentions during COSA:** When the user mentions a technology (e.g., "I want to use React"), acknowledge it in the session language: "Ottimo, lo segno per dopo" (translated to session language). Record the mention internally as a pre-fill for the COME block. Redirect back to the functional question that was being discussed. Do NOT engage in technical discussion during COSA.
+- **Brownfield shortcut:** When Step 1c detected existing code or documentation, shorten COSA. Analyze scan results to deduce functional requirements (from README, code structure, doc folders, test names). Present deduced requirements as a confirmation list in the session language. Frame as "let me confirm what I found" not "let me quiz you." Only ask open-ended COSA questions for items NOT deducible from the scan.
+
+### 7c. Transition Summary
+
+After the COSA block completes, show a mini-summary of all gathered functional requirements in the session language:
+
+```
+--- Functional requirements gathered ---
+[bullet list of captured WHAT items: identity, core value, requirements, constraints]
+---
+Ora parliamo di come costruirlo. (translated to session language)
+```
+
+Then transition explicitly to the COME block.
+
+### 7d. COME Block -- Technical Choices (HOW)
+
+Gather technical implementation decisions. This block uses AskUserQuestion with the option standards from `@skills/shared/interview-options.md`.
+
+**Core COME areas:**
+
+1. **Tech stack:** Runtime, database, testing, build tools. Validate auto-detected from Step 1c or gather fresh.
+2. **Conventions:** Code style, naming patterns, architectural patterns, commit conventions.
+3. **Key decisions:** Locked architectural choices, non-negotiable tech, past failures to avoid.
+
+**COME behavior rules:**
+
+- **Use AskUserQuestion for every selection question** per `@skills/shared/interview-options.md` standards (pro/contra, fai tu placement, modern-first ordering).
+- **Pre-fill from Step 1c:** When deep scan detected existing dependencies, present them as the default/first option with source annotation. Example description: "Pro: already in use (detected from package.json), zero migration cost. {other pros}. Con: {drawbacks}." (Translate source annotation to session language.)
+- **Tech mentions noted during COSA:** When the user mentioned a technology during the COSA block, pre-fill it as the default/first option when that topic comes up in COME.
+- **User answer always wins:** When auto-detected values conflict with explicit user answers, accept the user's choice. May note the discrepancy: "Noto che package.json usa X, ma hai scelto Y -- procedo con Y." (translated to session language)
+- **Skip already-answered questions:** Questions answered during Step 7a validation do not need to be asked again.
 
 Build the `PROJECT.md` content from gathered context using the fixed section structure:
 - What This Is
