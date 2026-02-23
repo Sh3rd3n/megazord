@@ -292,6 +292,67 @@ Build the `PROJECT.md` content from gathered context using the fixed section str
 - Constraints
 - Key Decisions
 
+### 7e. Completeness Validation
+
+After both COSA (7b) and COME (7d) blocks complete, run a single completeness check before writing any files. This step verifies that all mandatory PROJECT.md sections have sufficient content. It does NOT re-ask questions already answered -- it only identifies sections that are empty or placeholder-only.
+
+**Mandatory sections (gap definition):**
+
+A gap is any of the following sections that would be written WITHOUT meaningful content:
+
+1. **What This Is** -- captured from COSA Vision/Purpose
+2. **Core Value** -- captured from COSA Vision/Purpose
+3. **Requirements -- Active** -- captured from COSA Requirements Elicitation
+4. **Context** -- captured from COME Tech Stack
+5. **Constraints** -- captured from COSA Constraints + COME Tech Stack
+6. **Key Decisions** -- captured from COME Key Decisions
+
+An empty section or a section with only placeholder text ("TBD", "None yet") counts as a gap.
+
+**If gaps are found:**
+
+Present them in the session language using this format:
+
+```
+--- Verifica completezza ---
+Ho trovato {N} sezione/i senza contenuto sufficiente:
+
+1. [Section name] -- [brief description of what is missing]
+2. [Section name] -- [brief description of what is missing]
+
+Posso farti qualche domanda mirata per colmare questi gap, oppure possiamo procedere segnandoli come TBD.
+```
+
+(Translate entirely to the detected session language. The example above is Italian for illustration.)
+
+**Gap resolution flow:**
+
+- Ask targeted questions ONE AT A TIME -- never all at once.
+- Each question is specific to the missing section:
+  - For "Core Value": "Per la sezione 'Core Value', qual e la cosa piu importante che questo progetto deve fare bene?"
+  - For "Context": "Qual e il contesto tecnico principale -- su quale stack o ecosistema si basa il progetto?"
+  - (Translate each question to the detected session language.)
+- After each answer, acknowledge it and move to the next gap.
+- The user can respond "skip" or equivalent at any point -- mark that section as "TBD" and continue.
+
+**Skip entire completeness check:**
+
+If the user wants to skip the check entirely, mark ALL gap sections as "TBD" in the PROJECT.md draft and add this note:
+
+```
+> Some sections marked TBD -- run `/mz:init` to fill them in later or update PROJECT.md manually.
+```
+
+Planning proceeds with the reduced context available. The planner will work with what is there.
+
+**No gaps found:**
+
+If all mandatory sections have content, display a brief confirmation in the session language:
+
+"Tutte le sezioni del PROJECT.md sono complete." (translated to session language)
+
+Then proceed directly to Step 8 without any additional interaction.
+
 ## Step 8: Write Files
 
 Create all project initialization files.
