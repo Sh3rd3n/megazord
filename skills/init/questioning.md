@@ -9,6 +9,35 @@ Reference for the `/mz:init` skill's deep questioning phase (Step 7). Adapted fr
 
 The init questionnaire is the foundation for everything Megazord does afterward. Shallow questioning produces vague plans. Deep questioning produces precise, actionable roadmaps. There is no artificial limit on questions -- be thorough. The `--quick` flag is the escape hatch for users who want to skip this.
 
+## Flow Structure
+
+The interview has two distinct phases that must be conducted in order:
+
+**COSA Block -- Functional Requirements (WHAT):** Establishes the founder's vision. What the project does, for whom, with what constraints. This mirrors the user acting as the visionary -- they own WHAT.
+
+**COME Block -- Technical Choices (HOW):** Establishes the builder's toolkit. How to implement the vision technically. This mirrors Claude acting as the builder -- we discuss HOW together.
+
+These blocks are NOT interchangeable. WHAT must be fully captured before HOW begins. Starting with technical choices before understanding functional requirements produces misaligned plans.
+
+### Handling Tech Mentions During COSA
+
+When the user mentions a technology during functional questioning (e.g., "I want to use React", "we'll need Postgres"):
+
+1. **Acknowledge:** "Ottimo, lo segno per dopo." (translated to session language) -- a brief, warm acknowledgment.
+2. **Record internally:** Note the tech mention as a pre-fill hint for the COME block when that topic comes up.
+3. **Redirect:** Return to the functional question that was being discussed. Do NOT engage in technical discussion (no "React is great because..."). Stay in COSA mode.
+4. **Pre-fill in COME:** When the COME block reaches the relevant question, present the mentioned technology as the first/default option.
+
+### Brownfield COSA Shortcut
+
+When Step 1c deep scan detected existing code or documentation:
+
+1. **Analyze scan results** to deduce functional requirements from README, existing code structure, doc folders, test names, and planning files.
+2. **Present deduced requirements** as a confirmation list in the session language: "Based on what I found, this project [description]. The core features seem to be: [list]. Is this correct?"
+3. **User confirms, corrects, or adds** missing items. This is collaborative, not a quiz.
+4. **Frame as "let me confirm what I found"** -- not "let me ask you things I already know." The user should feel understood, not interviewed about their own project.
+5. **Only ask open-ended COSA questions** for items NOT deducible from the scan.
+
 ## Auto-Detect First
 
 Before asking questions, scan the codebase for answers. Users validate detected context faster than they answer from scratch.
@@ -51,9 +80,26 @@ Example (Italian): "Ho rilevato un progetto TypeScript con Bun come runtime, Vit
 
 This saves time and shows competence. Users are more engaged when they see their project understood.
 
+### Pre-fill Integration
+
+Scan results from Step 1c flow into COME block questions as pre-filled defaults:
+
+- **Source annotation format:** "(Rilevato da {source})" translated to session language. Examples: "(detected from package.json)", "(rilevato da tsconfig.json)", "(détecté dans Cargo.toml)".
+- **Pre-filled values appear as the first/recommended option** in AskUserQuestion. Their description starts with the source annotation, then continues with normal pro/contra: "Already in use (detected from package.json), zero migration cost. Pro: {advantages}. Con: {drawbacks}."
+- **User answer always wins:** When auto-detected values conflict with explicit user answers, accept the user's choice without argument. Claude may note the discrepancy once: "Noto che package.json usa X, ma hai scelto Y -- procedo con Y." (translated to session language)
+- **Tech mentions from COSA:** Technologies the user mentioned during the COSA block are also treated as pre-fill hints -- they appear as the first option in the relevant COME question.
+
 ## Questioning Areas
 
-### 1. Vision and Purpose
+The questioning areas are split into two blocks matching the interview flow. Conduct all COSA areas before transitioning to COME.
+
+---
+
+### COSA Questioning Areas (Functional Requirements)
+
+Conduct these conversationally, without AskUserQuestion selection questions. The goal is understanding the project's purpose, value, and constraints.
+
+#### 1. Vision and Purpose
 
 Start broad, then narrow.
 
@@ -64,7 +110,7 @@ Start broad, then narrow.
 
 Use the answers to write the "What This Is" and "Core Value" sections of PROJECT.md.
 
-### 2. Requirements Elicitation
+#### 2. Requirements Elicitation
 
 Get concrete about what must be built.
 
@@ -75,37 +121,7 @@ Get concrete about what must be built.
 
 Organize into Active (must build) and Out of Scope (explicitly excluded) lists. Press for specifics -- "user authentication" is vague; "email/password login with OAuth2 Google" is actionable.
 
-### 3. Tech Stack
-
-Validate auto-detected or gather fresh. Use AskUserQuestion for every selection with the option format from `@skills/shared/interview-options.md`.
-
-**Option presentation for tech choices:**
-- Order options modern-first per the preference table in interview-options.md
-- Include inline pro/contra in each option's description field
-- Add "fai tu" as the last option (translated to session language)
-- If auto-detect found an existing stack, present the detected choice as the first option with a note: "Pro: already in use, zero migration cost"
-
-**Key tech questions (each as AskUserQuestion):**
-- "Runtime?" -- options ordered: Bun, Node.js, Deno, + fai tu
-- "What database/storage will this use?" -- options ordered: Postgres, SQLite, MySQL/MongoDB, + fai tu
-- "Testing framework?" -- options ordered: Vitest, Jest, Bun test, + fai tu
-- "Any specific libraries or frameworks that must be used?" (freeform -- no fai tu, this is requirements gathering)
-- "Any technologies explicitly avoided? Why?" (freeform -- no fai tu)
-- "What deployment target?" -- options ordered by project type, + fai tu
-
-For each question: adapt options to the specific project context. If the user already answered a question via auto-detect validation, skip it. Do not re-ask what is already known.
-
-### 4. Conventions and Patterns
-
-Understand the code culture.
-
-- "Do you follow any specific code style guide?"
-- "Preferred naming conventions?" (camelCase, snake_case, etc.)
-- "Commit message format?" (conventional commits, free-form, etc.)
-- "Any architectural patterns?" (clean architecture, hexagonal, MVC, etc.)
-- "Monorepo or single package?"
-
-### 5. Constraints
+#### 3. Constraints
 
 Surface the non-functional requirements.
 
@@ -115,7 +131,43 @@ Surface the non-functional requirements.
 - "Compliance or security requirements?" (HIPAA, SOC2, GDPR, etc.)
 - "Budget constraints for infrastructure?"
 
-### 6. Key Decisions
+---
+
+### COME Questioning Areas (Technical Choices)
+
+Conduct these using AskUserQuestion with the option standards from `@skills/shared/interview-options.md`. Show the COSA transition summary before starting this block.
+
+#### 4. Tech Stack
+
+Validate auto-detected (from Step 1c) or gather fresh. Use AskUserQuestion for every selection.
+
+**Option presentation for tech choices:**
+- Order options modern-first per the preference table in interview-options.md
+- Include inline pro/contra in each option's description field
+- Add "fai tu" as the last option (translated to session language)
+- If Step 1c found an existing stack, present the detected choice as the first option with source annotation: "Already in use (detected from package.json), zero migration cost. Pro: {advantages}. Con: {drawbacks}."
+
+**Key tech questions (each as AskUserQuestion):**
+- "Runtime?" -- options ordered: Bun, Node.js, Deno, + fai tu
+- "What database/storage will this use?" -- options ordered: Postgres, SQLite, MySQL/MongoDB, + fai tu
+- "Testing framework?" -- options ordered: Vitest, Jest, Bun test, + fai tu
+- "Any specific libraries or frameworks that must be used?" (freeform -- no fai tu, this is requirements gathering)
+- "Any technologies explicitly avoided? Why?" (freeform -- no fai tu)
+- "What deployment target?" -- options ordered by project type, + fai tu
+
+For each question: adapt options to the specific project context. If the user already answered a question via Step 7a validation, skip it. Do not re-ask what is already known.
+
+#### 5. Conventions and Patterns
+
+Understand the code culture.
+
+- "Do you follow any specific code style guide?"
+- "Preferred naming conventions?" (camelCase, snake_case, etc.)
+- "Commit message format?" (conventional commits, free-form, etc.)
+- "Any architectural patterns?" (clean architecture, hexagonal, MVC, etc.)
+- "Monorepo or single package?"
+
+#### 6. Key Decisions
 
 Capture decisions already made so they are respected throughout development.
 
@@ -125,13 +177,26 @@ Capture decisions already made so they are respected throughout development.
 
 ## Conversation Style
 
+**During COSA (functional block):**
 - Be conversational, not interrogative. Follow up on interesting answers.
 - Group related questions naturally. Don't read from a checklist.
+- No AskUserQuestion selection questions -- freeform dialogue only.
 - If the user gives a detailed answer, skip related questions they already covered.
 - If the user is brief, dig deeper: "Can you tell me more about...?"
 - Acknowledge what you learn: "Got it -- so the core challenge is X."
-- End each section with a summary: "Here's what I have so far for requirements. Anything missing?"
-- When presenting choices, always use AskUserQuestion with the format from `@skills/shared/interview-options.md`. Never use numbered text lists for selection questions.
+- End each COSA area with a brief confirmation: "Here's what I have so far for requirements. Anything missing?"
+
+**During COME (technical block):**
+- Use AskUserQuestion for every selection question per `@skills/shared/interview-options.md`. Never use numbered text lists for selection questions.
+- Pre-fill detected values as the first option with source annotations.
+- Be systematic but efficient -- skip questions already answered in Step 7a.
+
+**Transition between blocks:**
+- After COSA completes, show the transition summary (mini-summary of gathered functional requirements).
+- Explicitly announce the shift: "Now let's talk about how to build it." (translated to session language)
+- This is a clear boundary -- the user should feel two distinct phases, not one long interrogation.
+
+**Throughout the entire interview:**
 - Conduct the entire conversation in the detected session language. Do not switch to English for questions or follow-ups, even when discussing English-named technologies. Example (Italian): "Che database preferisci per questo progetto?" not "What database do you want?"
 
 ## AI-Chosen Items in Summary
@@ -156,13 +221,13 @@ If no items were delegated, skip this section entirely.
 
 As you gather context, mentally organize answers into the PROJECT.md structure:
 
-| Question Area | Maps to PROJECT.md Section |
-|---------------|---------------------------|
-| Vision/purpose | What This Is, Core Value |
-| Requirements | Requirements (Active, Out of Scope) |
-| Tech stack | Context, Constraints (Stack) |
-| Conventions | Constraints |
-| Constraints | Constraints |
-| Key decisions | Key Decisions table |
+| Question Area | Block | Maps to PROJECT.md Section |
+|---------------|-------|---------------------------|
+| Vision/purpose | COSA | What This Is, Core Value |
+| Requirements | COSA | Requirements (Active, Out of Scope) |
+| Constraints | COSA | Constraints |
+| Tech stack | COME | Context, Constraints (Stack) |
+| Conventions | COME | Constraints |
+| Key decisions | COME | Key Decisions table |
 
 After all questions, present a draft of the PROJECT.md content for user review before writing to disk.
