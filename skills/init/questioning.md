@@ -1,5 +1,7 @@
 # Deep Context Gathering Guide
 
+Reference `@skills/shared/interview-options.md` for option format, ordering, "fai tu" placement, and explanation standards.
+
 Reference for the `/mz:init` skill's deep questioning phase (Step 7). Adapted from the GSD methodology for Megazord's project initialization.
 
 ## Philosophy
@@ -72,13 +74,23 @@ Organize into Active (must build) and Out of Scope (explicitly excluded) lists. 
 
 ### 3. Tech Stack
 
-Validate auto-detected or gather fresh.
+Validate auto-detected or gather fresh. Use AskUserQuestion for every selection with the option format from `@skills/shared/interview-options.md`.
 
-- "Is the detected tech stack correct?" (if auto-detect ran)
-- "What database/storage will this use?"
-- "Any specific libraries or frameworks that must be used?"
-- "Any technologies explicitly avoided? Why?"
-- "What deployment target?" (Vercel, AWS, self-hosted, etc.)
+**Option presentation for tech choices:**
+- Order options modern-first per the preference table in interview-options.md
+- Include inline pro/contra in each option's description field
+- Add "fai tu" as the last option (translated to session language)
+- If auto-detect found an existing stack, present the detected choice as the first option with a note: "Pro: already in use, zero migration cost"
+
+**Key tech questions (each as AskUserQuestion):**
+- "Runtime?" -- options ordered: Bun, Node.js, Deno, + fai tu
+- "What database/storage will this use?" -- options ordered: Postgres, SQLite, MySQL/MongoDB, + fai tu
+- "Testing framework?" -- options ordered: Vitest, Jest, Bun test, + fai tu
+- "Any specific libraries or frameworks that must be used?" (freeform -- no fai tu, this is requirements gathering)
+- "Any technologies explicitly avoided? Why?" (freeform -- no fai tu)
+- "What deployment target?" -- options ordered by project type, + fai tu
+
+For each question: adapt options to the specific project context. If the user already answered a question via auto-detect validation, skip it. Do not re-ask what is already known.
 
 ### 4. Conventions and Patterns
 
@@ -116,6 +128,25 @@ Capture decisions already made so they are respected throughout development.
 - If the user is brief, dig deeper: "Can you tell me more about...?"
 - Acknowledge what you learn: "Got it -- so the core challenge is X."
 - End each section with a summary: "Here's what I have so far for requirements. Anything missing?"
+- When presenting choices, always use AskUserQuestion with the format from `@skills/shared/interview-options.md`. Never use numbered text lists for selection questions.
+
+## AI-Chosen Items in Summary
+
+When building the PROJECT.md draft at the end of the questionnaire, mark any item the user delegated via "fai tu" / "AI decides":
+
+- In the Context or Constraints sections, append `(fai tu)` or `(AI)` to the delegated item
+- Example: "Runtime: Bun (fai tu)", "Database: Postgres (AI)"
+- This gives the user visibility into which decisions were their own vs delegated
+
+In the final summary presented to the user before writing to disk, list AI-chosen items separately:
+
+```
+▸ AI-Chosen Decisions
+  Runtime: Bun -- scelto per velocità e TypeScript nativo
+  Database: Postgres -- standard affidabile per progetti relazionali
+```
+
+If no items were delegated, skip this section entirely.
 
 ## Building PROJECT.md
 
