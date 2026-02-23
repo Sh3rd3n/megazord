@@ -137,9 +137,62 @@ Surface the non-functional requirements.
 
 Conduct these using AskUserQuestion with the option standards from `@skills/shared/interview-options.md`. Show the COSA transition summary before starting this block.
 
+### Pushback on Suboptimal Choices
+
+This methodology applies to ALL COME questions. Pushback is a guardrail, not a blocker -- the user always has the final word.
+
+#### When to push back
+
+Push back on ANY choice where a meaningfully better alternative exists for the user's specific project context. This is not limited to deprecated or dangerous technology. It includes:
+
+- Suboptimal tooling (e.g., choosing npm when Bun is already detected in the project)
+- Suboptimal test frameworks (e.g., choosing Jest when Vitest is faster and config-compatible)
+- Architectural mismatches (e.g., choosing REST when the use case clearly benefits from GraphQL)
+- Convention conflicts (e.g., choosing a monorepo tool when there is only one package)
+
+#### How to push back
+
+Signal ONCE with this exact format (translated to session language):
+
+"[Choice] ha [problema specifico]. Hai considerato [alternativa]? [vantaggio specifico]."
+
+The message MUST contain all three elements:
+1. The specific problem with the chosen option
+2. A specific named alternative
+3. A specific advantage of the alternative
+
+Follow immediately with a confirmation question:
+"Vuoi procedere con [choice] o preferisci [alternative]?" (translated to session language)
+
+Do NOT use generic warnings ("this might not be the best choice"). Be concrete and specific.
+
+#### Intensity rules
+
+- Push back EXACTLY ONCE per choice. If the user confirms their original choice after pushback, accept immediately without repeating.
+- Do NOT re-litigate. Do NOT add qualifiers ("well, if you're sure..."). Accept cleanly.
+- If the user provides reasoning ("I chose X because..."), acknowledge it in the session language: "Capito, procedo con X." (translated) -- then continue.
+
+#### Annotation of contested choices
+
+When the user insists on their choice after pushback, record it in context with this annotation format:
+
+"Scelta utente nonostante alternativa suggerita: [user's reasoning if given, or 'preferenza personale']"
+
+This annotation appears in the Key Decisions table of PROJECT.md. It serves as documentation for future developers so they understand WHY a non-standard choice was made.
+
+#### What NOT to push back on
+
+- Personal preference questions (Step 4 preset selection, naming conventions with no clear winner)
+- Choices where the user has already explained specific context that justifies the decision
+- Binary operational choices (git tracking on/off) where neither option is objectively better
+
+---
+
 #### 4. Tech Stack
 
 Validate auto-detected (from Step 1c) or gather fresh. Use AskUserQuestion for every selection.
+
+Apply pushback methodology (see "Pushback on Suboptimal Choices" above) to every selection in this section.
 
 **Option presentation for tech choices:**
 - Order options modern-first per the preference table in interview-options.md
@@ -158,6 +211,8 @@ Validate auto-detected (from Step 1c) or gather fresh. Use AskUserQuestion for e
 For each question: adapt options to the specific project context. If the user already answered a question via Step 7a validation, skip it. Do not re-ask what is already known.
 
 #### 5. Conventions and Patterns
+
+Apply pushback methodology when convention choices conflict with project context (e.g., choosing camelCase in a snake_case Python project).
 
 Understand the code culture.
 
