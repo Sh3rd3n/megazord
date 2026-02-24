@@ -138,7 +138,11 @@ function readUpdateAvailable(): string | null {
 }
 
 function displayUpdateNotification(latestVersion: string): void {
-	console.log(yellow(`\u2b06 Megazord v${latestVersion} available \u2014 run: bunx megazord-cli@latest update\n`));
+	console.log(
+		yellow(
+			`\u2b06 Megazord v${latestVersion} available \u2014 run: bunx megazord-cli@latest update\n`,
+		),
+	);
 }
 
 // ─── Main lifecycle command ───────────────────────────────────────────────────
@@ -204,7 +208,9 @@ async function runSessionLifecycle(): Promise<void> {
 export function registerSessionLifecycleCommands(parent: Command): void {
 	parent
 		.command("session-lifecycle")
-		.description("Check for post-update changelog or update notification (called by session-start.sh)")
+		.description(
+			"Check for post-update changelog or update notification (called by session-start.sh)",
+		)
 		.action(async () => {
 			try {
 				await runSessionLifecycle();

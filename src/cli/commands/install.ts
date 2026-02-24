@@ -14,7 +14,6 @@ import {
 	installedPluginsPath,
 	knownMarketplacesPath,
 	megazordDir,
-	megazordLastSeenVersionPath,
 	megazordPluginDir,
 	safeJoin,
 	settingsPath,
