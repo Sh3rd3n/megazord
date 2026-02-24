@@ -296,6 +296,8 @@ This document is the single source of truth for content formatting. The followin
 - `skills/lifecycle/` — update summaries, migration output, phase references
 - `skills/discuss/` — session summaries, inline phase references
 
+Reference `@skills/shared/terminology.md` for official term definitions used across all skill output.
+
 **Boundary with design-system.md:**
 - `presentation-standards.md` = CONTENT formatting (what to write, how to structure it)
 - `design-system.md` = CHROME formatting (ASCII boxes, separators, color, stage banners)
@@ -362,3 +364,15 @@ After (heading format — correct):
 | `/mz:go` | `/mz:go` | Execute current phase (no number needed, always add phase context line above) |
 | `/mz:init` | `/mz:init` | Project initialization (no phase) |
 | `/mz:status` | `/mz:status` | Project status (no phase) |
+
+---
+
+## 9. Terminology Consistency
+
+All skill output MUST use official terms from `@skills/shared/terminology.md`. Key rules:
+
+- **One name per concept:** A phase is always "phase", never "stage" or "section"
+- **No synonym drift:** If the glossary says "complete", do not write "done" or "finished" in output
+- **Context exceptions:** "Step" for skill-internal flow, "stage" only in "stage banner", "run" in informal contexts
+
+See `@skills/shared/terminology.md` for the complete glossary.
