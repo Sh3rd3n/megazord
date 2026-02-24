@@ -16,6 +16,9 @@ export const megazordVersionPath = join(megazordPluginDir, ".version");
 /** Megazord update check file: ~/.claude/megazord/mz/.update-check */
 export const megazordUpdateCheckPath = join(megazordPluginDir, ".update-check");
 
+/** Megazord last-seen-version file: ~/.claude/megazord/mz/.last-seen-version */
+export const megazordLastSeenVersionPath = join(megazordPluginDir, ".last-seen-version");
+
 /** Plugins directory: ~/.claude/plugins/ */
 export const pluginsDir = join(claudeDir, "plugins");
 
