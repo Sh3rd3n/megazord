@@ -18,7 +18,7 @@ Reference `@skills/shared/terminology.md` for official term definitions.
 Run the banner script to display the colored Megazord logo (Power Rangers palette, auto-adapts to terminal width):
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/banner.sh" "1.1.2"
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/banner.sh" "1.2.0"
 ```
 
 Replace `"1.1.0"` with the actual version from the project's `package.json` if available. If `CLAUDE_PLUGIN_ROOT` is not set, use the plugin's install path (`~/.claude/megazord/scripts/banner.sh`).
