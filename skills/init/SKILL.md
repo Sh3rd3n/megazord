@@ -517,14 +517,16 @@ Tip: Consider adding to your CLAUDE.md:
   "This project uses Megazord. Run /mz:status for current state."
 ```
 
-End with the next-up block:
+End with the next-up block (per presentation-standards.md Section 8):
 
 ```
-═══════════════════════════════════════════════════════
-▸ Next Up
-**Create Your Roadmap** -- plan your project phases and milestones
+## Next Up
+
+**Create Your Roadmap** — plan your project phases and milestones
+
 `/mz:plan`
-═══════════════════════════════════════════════════════
+
+<sub>/clear — start fresh context for the next step</sub>
 ```
 
 For greenfield projects (no existing code detected), offer to auto-advance: "Would you like to start roadmap creation now?"

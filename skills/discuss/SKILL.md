@@ -9,6 +9,7 @@ disable-model-invocation: false
 Facilitate Socratic brainstorming that explores 5+ alternative approaches before converging on a direction. Produces CONTEXT.md-compatible output for downstream planning. Works both within phase context and as standalone brainstorming.
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/presentation-standards.md` for content formatting and Next Up block rules.
 Reference `@skills/shared/interview-language.md` for language detection and session-wide persistence rules.
 Reference `@skills/shared/terminology.md` for official term definitions.
 
