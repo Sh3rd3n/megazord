@@ -9,6 +9,7 @@ disable-model-invocation: false
 Execute the current phase plan by orchestrating executor agents. Supports two execution modes: **subagent delegation** (Task tool, fire-and-forget) and **Agent Teams** (TeamCreate, SendMessage, shared TaskList with real-time coordination). Auto-detects the optimal mode per wave based on plan complexity, with `--teams`/`--no-teams` overrides.
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/presentation-standards.md` for content formatting rules.
 Reference `@skills/go/executor.md` for execution protocol and spawning patterns.
 Reference `@skills/go/teams.md` for Agent Teams execution protocol.
 
@@ -115,7 +116,7 @@ node {plugin_path}/bin/megazord.mjs tools plan incomplete --phase-dir {phase_dir
 If all plans are complete (empty incomplete list), display info and stop:
 ```
 > Phase Status
-  Phase {N}: {Name}
+  Phase {N}: {Name} — {functional_sentence_from_goal}
   All plans complete. Run /mz:verify to validate.
 ```
 
@@ -132,13 +133,15 @@ node {plugin_path}/bin/megazord.mjs tools plan conflicts --phase-dir {phase_dir}
 Display the execution plan:
 ```
 > Execution Plan
-  Phase {N}: {Name}
+  Phase {N}: {Name} — {functional_sentence_from_goal}
   Plans: {total} ({incomplete} remaining)
   Waves: {wave_count}
 
-  Wave 1: {plan_list} (parallel/sequential)
-  Wave 2: {plan_list}
+  Wave 1: {plan_list} — {functional_summary} (parallel)
+  Wave 2: {plan_list} — {functional_summary} (sequential)
 ```
+
+Extract the functional sentence from the phase Goal in ROADMAP.md. Wave functional summaries are derived from the plans' objectives — e.g., "foundation and shared references" not just plan numbers.
 
 If conflicts are detected, note which plans will be serialized and why.
 
@@ -196,7 +199,10 @@ If not set or empty: silently fall back to subagents. Display:
 
 For each wave (waves execute sequentially):
 
-Display: `> Wave {N}`
+Display:
+```
+> Wave {N}/{total_waves} — {wave_plan_count} tasks {parallel_note}
+```
 
 The execution path depends on the mode determined in Step 5.
 
@@ -213,7 +219,18 @@ Determine plan execution order within the wave:
 
 For each plan in the wave:
 
-Display: `  * Plan {NN}: {objective from plan file}...`
+Display (with progress bar showing plans completed so far within the wave):
+```
+  ████░░░░░░ Plan {NN}: {functional_objective}...
+```
+
+After each plan completes:
+```
+  ██████████ Plan {NN}: {functional_objective} ✓ ({duration})
+  ████░░░░░░ Plan {MM}: {functional_objective}...
+```
+
+The progress bar (10 chars, `█` filled / `░` empty) updates as plans complete within the wave. Use `round(completed/total * 10)` filled characters.
 
 #### Resolve Models for Agents
 
@@ -291,7 +308,7 @@ Note: The `<reviewer_agent>` section is only included when `review_enabled` is `
 
 9. Display result:
 ```
-  > Plan {NN}: {duration}, {N} tasks, {commit_count} commits
+  > Plan {NN}: {functional_objective} — ✓ {duration}, {N} tasks, {commit_count} commits
 ```
 
 #### After All Plans in Wave Complete (Subagent Path)
@@ -324,7 +341,8 @@ If a plan FAILS in this wave (executor returns without `## PLAN COMPLETE`):
 
 1. Display failure:
 ```
-  X Plan {NN}: FAILED -- {error description}
+  ✗ Plan {NN}: {functional_objective} — FAILED: {error description}
+    Recovery: /mz:go to resume from this plan
 ```
 
 2. Save the error output:
@@ -550,22 +568,19 @@ After all waves complete, check each completed plan's SUMMARY.md for "Unresolved
 
 ## Step 9: Post-Execution Summary
 
-Display summary using the design system action box:
+Display summary using heading-based layout (action boxes are reserved for important banners per presentation-standards.md — execution summaries use headings):
 
 ```
-+===============================================+
-|  Execution Complete                           |
-+-----------------------------------------------+
-|  Phase {N}: {Name}                            |
-|  Mode: {Subagents | Agent Teams | Mixed}      |
-|  Plans: {completed}/{total}                   |
-|  Commits: {total_commits}                     |
-|  Duration: {total_time}                       |
-|                                               |
-|  Wave 1 [Subagents]: Plan 01 ({time})         |
-|  Wave 2 [Agent Teams]: Plan 02 ({time}),      |
-|         Plan 03 ({time})                       |
-+===============================================+
+### Execution Complete
+
+Phase {N}: {Name} — {functional_sentence}
+Mode: {Subagents | Agent Teams | Mixed}
+Plans: {completed}/{total}
+Commits: {total_commits}
+Duration: {total_time}
+
+Wave 1 [Subagents]: Plan 01 — {functional_obj} ({time})
+Wave 2 [Agent Teams]: Plan 02 — {functional_obj} ({time}), Plan 03 — {functional_obj} ({time})
 ```
 
 Display the Next Up block. Determine verifier suggestion based on config:
@@ -574,7 +589,7 @@ Display the Next Up block. Determine verifier suggestion based on config:
 ```
 ===============================================
 > Next Up
-**Verify Phase {N}** -- validate deliverables
+**Verify Phase {N}: {Name}** — validate deliverables
 `/mz:verify`
 ===============================================
 ```
@@ -583,7 +598,7 @@ Display the Next Up block. Determine verifier suggestion based on config:
 ```
 ===============================================
 > Next Up
-**Phase {N} execution complete.** Verifier is disabled in config.
+**Phase {N}: {Name} — execution complete.** Verifier is disabled in config.
 Run `/mz:plan` to advance to next phase, or `/mz:verify` to verify manually.
 ===============================================
 ```
@@ -594,7 +609,7 @@ Run `/mz:plan` to advance to next phase, or `/mz:verify` to verify manually.
 ```
 ===============================================
 > Next Up
-**Resume Execution** -- fix failure and continue
+**Resume Execution** — fix failure and continue
 `/mz:go`
 ===============================================
 ```
@@ -603,7 +618,7 @@ Run `/mz:plan` to advance to next phase, or `/mz:verify` to verify manually.
 ```
 ===============================================
 > Next Up
-**Project Complete** -- all phases delivered
+**Project Complete** — all phases delivered
 ===============================================
 ```
 
