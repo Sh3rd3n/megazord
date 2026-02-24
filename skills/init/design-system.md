@@ -90,14 +90,17 @@ Use for sub-sections within action boxes or skill output. Always one space after
 ## Next Up Block
 
 ```
-═══════════════════════════════════════════════════
-▸ Next Up
-**{Task Name}** -- {brief description}
-`/mz:{command}`
-═══════════════════════════════════════════════════
+## Next Up
+
+**{Phase {N}: {Name} — {functional_sentence}}**
+`/mz:{command} {phase_number}`
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
-Use at the end of every skill output to suggest the logical next action.
+Use at the end of every skill output to suggest the logical next action. Always end with one, always suggest exactly one primary command, always include `/clear` as a sub-note.
+
+See `@skills/shared/presentation-standards.md` Section 8 for full Next Up block rules, including phase number requirements, alternative commands, and the before/after format example.
 
 ## Usage Rules
 
@@ -108,7 +111,7 @@ Use at the end of every skill output to suggest the logical next action.
 5. **Status symbols** -- use consistently, never mix meanings
 6. **Progress bar** -- phase progress, plan progress, any completion metric
 7. **Section headers** -- within boxes or after separators
-8. **Next up block** -- always end with one, always suggest exactly one command
+8. **Next up block** -- always end with one, always suggest exactly one primary command, always include `/clear` as a `<sub>` sub-note
 9. **Content formatting** -- summaries, roadmaps, phase references, and task descriptions follow `@skills/shared/presentation-standards.md`
 
 All Megazord output MUST use these tokens. No plain text headers, no markdown `#` headings in user-facing output, no ad-hoc formatting.

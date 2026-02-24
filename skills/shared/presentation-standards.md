@@ -301,3 +301,64 @@ This document is the single source of truth for content formatting. The followin
 - `design-system.md` = CHROME formatting (ASCII boxes, separators, color, stage banners)
 
 When in doubt: if it's about structure and wording, use this document. If it's about visual wrapping and decoration, use design-system.md.
+
+---
+
+## 8. Next Up Block Rules
+
+Every skill output MUST end with a Next Up block. This block is the authoritative format for all next-action suggestions across Megazord.
+
+**Structure:**
+
+```
+## Next Up
+
+**{Phase {N}: {Name} — {functional_sentence}}**
+`/mz:{command} {phase_number}`
+
+- Alternative: `/mz:{other_command} {phase_number}` — {brief description}
+
+<sub>`/clear` — start fresh context for the next step</sub>
+```
+
+**Rules:**
+
+1. **Heading:** Use `## Next Up` (standard markdown H2) — no decorative symbols, no ASCII box borders, no separator lines wrapping the block
+2. **Command format:** Display the primary command in a backtick inline on its own line — clean, copy-pasteable, no arrows, boxes, or emoji interfering with the command text
+3. **Specific phase numbers:** Commands ALWAYS include the specific phase number (e.g., `/mz:plan 4` never bare `/mz:plan` when a phase is known); `/mz:go` operates on the current phase and does not need a number, but add inline phase context in the description line above
+4. **Command prominence:** Main command displayed first and prominently, followed by 1-2 alternatives as a secondary bullet list (indented, labeled with "Alternative:")
+5. **`/clear` placement:** Always include `/clear` suggestion as a `<sub>` note at the bottom of every Next Up block — this is the standard and only placement
+6. **Visual separation:** Block is preceded by a blank line from the previous content section — it is a visually distinct section, not inline prose
+7. **Inline phase context:** When the next action involves a specific phase, include a bold description line before the command: "**{What to do}: Phase {N}: {Name} — {functional_sentence}**" so users always know what they are doing next
+
+**Before / after example:**
+
+Before (separator-boxed format — incorrect):
+```
+═══════════════════════════════════════════════════
+▸ Next Up
+**Execute Phase 4: Navigation** — start with plan 01
+`/mz:go`
+═══════════════════════════════════════════════════
+```
+
+After (heading format — correct):
+```
+## Next Up
+
+**Execute Phase 4: Navigation — users always know what to do next**
+`/mz:go`
+
+<sub>`/clear` — start fresh context for the next step</sub>
+```
+
+**Commands that require phase numbers:**
+
+| Command | Format | When to use |
+|---------|--------|-------------|
+| `/mz:plan` | `/mz:plan {N}` | Planning a specific phase |
+| `/mz:verify` | `/mz:verify {N}` | Verifying a specific phase |
+| `/mz:discuss` | `/mz:discuss {N}` | Discussing a specific phase |
+| `/mz:go` | `/mz:go` | Execute current phase (no number needed, always add phase context line above) |
+| `/mz:init` | `/mz:init` | Project initialization (no phase) |
+| `/mz:status` | `/mz:status` | Project status (no phase) |
