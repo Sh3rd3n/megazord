@@ -11,6 +11,7 @@ Orchestrate the full milestone lifecycle: audit verification status, archive the
 **Note:** This skill handles the entire end-of-milestone flow in a single entry point. When audit finds gaps, it proposes gap-closure phases and exits. When audit passes, it proceeds through archive, deferred item collection, and next-version preparation.
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/presentation-standards.md` for content formatting rules.
 
 ## Step 1: Display Banner
 
@@ -69,12 +70,14 @@ Use the resolved `{plugin_path}` for all `node {plugin_path}/bin/megazord.mjs` c
 |  Completed: {M}/{N}                           |
 |  Progress: {percentage}%                      |
 |                                               |
-|  {Phase status list with symbols}             |
-|  Phase 1: Core Plugin Infrastructure    [done]|
-|  Phase 2: Project Initialization        [done]|
-|  ...                                          |
+|  ✓ Phase 1: {Name} — {functional_sentence}   |
+|  ✓ Phase 2: {Name} — {functional_sentence}   |
+|  ◆ Phase 3: {Name} — {functional_sentence}   |
+|  ○ Phase 4: {Name} — {functional_sentence}   |
 +===============================================+
 ```
+
+Use status symbols (✓ complete, ◆ in progress, ○ pending) instead of [done] tags. Extract functional sentences from the phase Goal in ROADMAP.md — one line per phase, never a bare phase number.
 
 4. If no version argument was provided:
    - Check `.planning/MILESTONE.md` for a `version:` field in frontmatter. If found, use it.
@@ -145,8 +148,8 @@ Display gaps clearly with a per-phase status table:
 |  Phases verified: {passed}/{total}            |
 |                                               |
 |  Failed:                                      |
-|  - Phase {N}: {reason}                        |
-|  - Phase {M}: No VERIFICATION.md             |
+|  - Phase {N}: {Name} — {reason}              |
+|  - Phase {M}: {Name} — No VERIFICATION.md    |
 +===============================================+
 ```
 
@@ -175,8 +178,8 @@ Then propose gap-closure phases:
      ```
      ===============================================
      > Next Up
-     **Gap-closure phases added.** Plan and execute them.
-     `/mz:plan` for the new phase(s), then `/mz:go` to execute, then `/mz:lifecycle` again.
+     **Gap-closure phases added.** Plan and execute them, then re-audit.
+     `/mz:plan` for Phase {X}: {gap description}, then `/mz:go`, then `/mz:lifecycle` again.
      ===============================================
      ```
 5. **EXIT** -- Do NOT proceed to archive when gaps exist.
@@ -396,7 +399,7 @@ Proceed with archive? (yes/no)
 ```
 ===============================================
 > Next Up
-**Ready for {next_version}.** Create the roadmap and start planning.
+**Ready for {next_version}: {name}.** Create the roadmap and start planning.
 `/mz:plan`
 ===============================================
 ```

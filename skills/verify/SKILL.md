@@ -11,6 +11,7 @@ Verify that a phase achieved its GOAL by performing goal-backward verification a
 **Note:** This skill always works when invoked manually, regardless of the `workflow.verifier` config setting. The config toggle only controls whether `/mz:go` automatically suggests verification after execution.
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/presentation-standards.md` for content formatting rules.
 Reference `@skills/verify/verifier.md` for verification protocol and spawning patterns.
 
 ## Step 1: Display Banner
@@ -67,9 +68,10 @@ node {plugin_path}/bin/megazord.mjs tools plan incomplete --phase-dir {phase_dir
 Display:
 ```
 > Target
-  Phase {N}: {Name}
-  Goal: {phase goal from ROADMAP.md}
+  Phase {N}: {Name} — {functional_sentence_from_goal}
 ```
+
+The goal is already inline in the functional sentence — no separate "Goal:" line needed.
 
 ## Step 3b: Milestone Audit Mode (alternative path)
 
@@ -114,8 +116,8 @@ Display:
    |  Phases verified: {passed}/{total}            |
    |                                               |
    |  Failed:                                      |
-   |  - Phase {N}: {reason}                        |
-   |  - Phase {M}: No VERIFICATION.md             |
+   |  - Phase {N}: {Name} — {reason}              |
+   |  - Phase {M}: {Name} — No VERIFICATION.md    |
    +===============================================+
    ```
    Suggest: "Run `/mz:verify {N}` for each failed phase."
@@ -133,7 +135,7 @@ Display:
    ===============================================
    > Next Up
    **Milestone {version} audit passed.** Ready to archive.
-   `/mz:plan` to complete milestone lifecycle.
+   `/mz:lifecycle` to complete milestone lifecycle.
    ===============================================
    ```
 
@@ -142,7 +144,7 @@ Display:
    ===============================================
    > Next Up
    **Address gaps before closing milestone.**
-   `/mz:verify {N}` for each failed phase.
+   `/mz:verify {N}` for each failed phase — Phase {N}: {Name}.
    ===============================================
    ```
 
@@ -237,7 +239,7 @@ All truths verified, all artifacts exist and are wired, all requirements covered
 Display success:
 ```
 +===============================================+
-|  Phase {N} Verification: PASSED              |
+|  Phase {N}: {Name} — Verification: PASSED    |
 +===============================================+
 |  Truths: {N}/{N} passed                      |
 |  Artifacts: {N}/{N} verified                 |
@@ -255,7 +257,7 @@ Some truths failed, artifacts missing, or requirements uncovered.
 Display gaps clearly with details from VERIFICATION.md:
 ```
 +===============================================+
-|  Phase {N} Verification: GAPS FOUND          |
+|  Phase {N}: {Name} — Verification: GAPS FOUND|
 +===============================================+
 |  Truths: {passed}/{total} ({failed} failed)  |
 |  Artifacts: {passed}/{total}                 |
@@ -305,7 +307,7 @@ If passed:
 ```
 ===============================================
 > Next Up
-**Phase {N} verified.** Ready for Phase {N+1}.
+**Phase {N}: {Name} — verified.** Ready for Phase {N+1}: {NextName}.
 `/mz:plan`
 ===============================================
 ```
