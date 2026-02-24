@@ -154,20 +154,23 @@ Determine the appropriate next action based on current state:
 
 - If `.planning/` does not exist or no config: suggest `/mz:init`
 - If no ROADMAP.md exists: suggest `/mz:plan` (to create roadmap)
-- If current phase has no PLAN.md files: suggest `/mz:plan`
+- If current phase has no PLAN.md files: suggest `/mz:plan {N}` (include specific phase number)
 - If current phase is mid-execution (plans exist, not all complete): suggest `/mz:go`
-- If current phase is complete but not verified: suggest `/mz:verify`
+- If current phase is complete but not verified: suggest `/mz:verify {N}` (include specific phase number)
 - If all phases are complete: display "All phases complete!"
 
+Use the heading-based Next Up format (per presentation-standards.md Section 8):
+
 ```
-═══════════════════════════════════════════════════
-▸ Next Up
-**{Task Name}** — Phase {N}: {Name} — {functional_sentence_from_goal}
-`/mz:{command}`
-═══════════════════════════════════════════════════
+## Next Up
+
+**{What to do}: Phase {N}: {Name} — {functional_sentence_from_goal}**
+`/mz:{command} {phase_number}`
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
-Extract the functional sentence for the target phase from ROADMAP.md Goal field (max 8-10 words, user-centric).
+Extract the functional sentence for the target phase from ROADMAP.md Goal field (max 8-10 words, user-centric). Always include the specific phase number in the command (e.g., `/mz:plan 4`, `/mz:verify 3`).
 
 If NOT verbose, stop here. Do not display verbose sections.
 
@@ -235,4 +238,4 @@ Show up to 5 most recent decisions. If more exist, show "... and {N} more in STA
 
 ### Next Up Block
 
-Same as Step 5 -- always end with the Next Up block.
+Same as Step 5 -- always end with the Next Up block using the `## Next Up` heading format per presentation-standards.md Section 8.

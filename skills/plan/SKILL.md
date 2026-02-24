@@ -185,7 +185,15 @@ After determining the target phase and BEFORE any research or planning, check th
    ```
    Use AskUserQuestion (header: "Gate", 4 chars):
    - "Continue anyway" (proceed with planning)
-   - "Run /mz:verify first" (display "Run `/mz:verify {N-1}` to verify the previous phase first." and exit)
+   - "Run /mz:verify first" (display the following and exit):
+     ```
+     ## Next Up
+
+     **Verify Phase {N-1}: {PrevName} — confirm deliverables before planning Phase {N}**
+     `/mz:verify {N-1}`
+
+     <sub>`/clear` — start fresh context for the next step</sub>
+     ```
 4. **If verification passed** (status is "passed" or "human_needed"):
    Display confirmation:
    ```
@@ -226,7 +234,16 @@ Use AskUserQuestion:
 - question: "Continue planning without context?"
 - options: "Continue" / "Run /mz:discuss first"
 
-If "Run /mz:discuss first": Display "Run `/mz:discuss {N}` to gather context for this phase." and exit.
+If "Run /mz:discuss first": Display the following and exit:
+
+```
+## Next Up
+
+**Gather context for Phase {N}: {Name} — {functional_sentence_from_goal}**
+`/mz:discuss {N}`
+
+<sub>`/clear` — start fresh context for the next step</sub>
+```
 If "Continue": Proceed without CONTEXT.md content.
 
 **Important:** This is a soft check -- warn but do not block. The user decides.
@@ -447,14 +464,15 @@ Wave 2: {plan_list} — {functional_summary_of_wave}
 
 Where `{functional_objective}` is extracted from each plan's `<objective>` section — user-centric, max 10 words. Wave summaries should be functional: "Wave 1: Plans 01, 02 — foundation and reference docs" not just "Wave 1: 01, 02".
 
-End with the Next Up block with inline phase context (per presentation-standards.md Section 4):
+End with the Next Up block using the heading format (per presentation-standards.md Section 8):
 
 ```
-═══════════════════════════════════════════════════
-▸ Next Up
-**Execute Phase {N}: {Name}** — start with plan 01
+## Next Up
+
+**Execute Phase {N}: {Name} — {functional_sentence_from_goal}**
 `/mz:go`
-═══════════════════════════════════════════════════
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
 ## Error Handling
