@@ -28,12 +28,11 @@ Output the stage banner:
 Read `.planning/megazord.config.json`. If missing, display error and stop:
 
 ```
-+===============================================+
-|  X Project Not Initialized                    |
-+-----------------------------------------------+
-|  No megazord.config.json found.               |
-|  Run /mz:init to set up your project first.   |
-+===============================================+
+## Error
+
+Project not initialized — no megazord.config.json found.
+
+`/mz:init`
 ```
 
 If config exists, continue loading:
@@ -77,7 +76,14 @@ Determine the plugin path for CLI commands:
 1. Read `plugin_path` from the config JSON.
 2. If `plugin_path` is not set in config, try `~/.claude/plugins/mz`. Check if `~/.claude/plugins/mz/bin/megazord.mjs` exists.
 3. If neither exists, display error and stop:
-   > Plugin path not configured. Run `/mz:settings` and set `plugin_path`, or re-run `/mz:init`.
+
+```
+## Error
+
+Plugin path not configured.
+
+`/mz:settings` to set plugin_path, or `/mz:init` to re-initialize.
+```
 
 Load the Agent Teams configuration from config:
 - `config.agent_teams.enabled`: `"auto"` (default), `"always"`, or `"never"`
@@ -99,13 +105,13 @@ node {plugin_path}/bin/megazord.mjs tools plan list --phase-dir {phase_dir}
 ```
 
 If no plans returned, display error and stop:
+
 ```
-+===============================================+
-|  X No Plans Found                             |
-+-----------------------------------------------+
-|  No plans found for Phase {N}.                |
-|  Run /mz:plan to create plans first.          |
-+===============================================+
+## Error
+
+No plans found for Phase {N}: {Name}.
+
+`/mz:plan {N}`
 ```
 
 Get incomplete plans:
@@ -358,9 +364,14 @@ node {plugin_path}/bin/megazord.mjs tools state update-session --last-error "Pla
 5. STOP after this wave. Do NOT start the next wave.
 
 6. Display:
+
 ```
-Execution stopped after wave {N} due to failure.
-Run /mz:go to resume from the first incomplete plan.
+## Error
+
+Execution stopped after Wave {N} — Plan {NN}: {functional_objective} failed.
+{brief error description}
+
+`/mz:go` to resume from the first incomplete plan.
 ```
 
 ---
@@ -587,39 +598,43 @@ Display the Next Up block. Determine verifier suggestion based on config:
 
 - If all plans complete AND `config.workflow.verifier` is true:
 ```
-===============================================
-> Next Up
-**Verify Phase {N}: {Name}** — validate deliverables
-`/mz:verify`
-===============================================
+## Next Up
+
+**Verify Phase {N}: {Name}** — validate deliverables before advancing
+`/mz:verify {N}`
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
 - If all plans complete AND `config.workflow.verifier` is false:
 ```
-===============================================
-> Next Up
+## Next Up
+
 **Phase {N}: {Name} — execution complete.** Verifier is disabled in config.
-Run `/mz:plan` to advance to next phase, or `/mz:verify` to verify manually.
-===============================================
+`/mz:plan {N+1}`
+
+- Or verify manually: `/mz:verify {N}`
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
 **IMPORTANT:** The `/mz:verify` skill itself is NEVER gated. It always works when manually invoked. Only the automated suggestion in /mz:go changes based on config.
 
 - If some plans remain (failure case):
 ```
-===============================================
-> Next Up
-**Resume Execution** — fix failure and continue
+## Next Up
+
+**Resume execution** — fix failure and continue
 `/mz:go`
-===============================================
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
 - If all phases complete:
 ```
-===============================================
-> Next Up
-**Project Complete** — all phases delivered
-===============================================
+## Next Up
+
+**Project complete** — all phases delivered
 ```
 
 ## Error Handling Summary
