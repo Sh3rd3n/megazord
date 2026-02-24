@@ -96,30 +96,50 @@ Maintain an internal counter of distinct approaches explored. For each exchange 
 
 **Convergence triggers:**
 
-- After at least 5 distinct approaches have been explored, the skill MAY suggest moving to convergence: "We've explored {N} different angles. Ready to pick a direction, or want to keep going?"
-- The skill does NOT force convergence -- the user may want to explore more
-- Soft limit: after 10-15 exchanges without convergence, explicitly nudge: "We've covered a lot of ground ({N} approaches). Want to converge on a direction?"
+After at least 5 distinct approaches have been explored, pause the Socratic dialogue and display a **structured checkpoint** — NOT a bare nudge:
+
+```
+### Discussion Checkpoint
+
+{Summary of decisions taken so far — Claude's discretion: bullets if 1-3 decisions, short paragraph if 4+}
+
+**Approaches explored:** {N}
+**Decisions so far:** {list key decisions/directions that emerged}
+
+Want to go deeper, or ready to move on?
+```
+
+The skill does NOT force convergence — the user may want to explore more.
+
+Soft limit: after 10-15 exchanges without convergence, use the same checkpoint format with stronger framing: "We've covered significant ground. Here's where we are:" followed by the structured checkpoint block.
+
+**Key rule:** The checkpoint is a structured format for clarity. The dialogue BEFORE the checkpoint stays fully Socratic. Do NOT make the entire dialogue structured — only the checkpoint moments.
 
 ## Step 5: Convergence
 
-When the user signals readiness to converge (or after the soft-limit nudge):
+**If user responds "go deeper"** (or equivalent: "more", "continue", "keep going"):
+- Return to Step 4 Socratic dialogue immediately
+- No summary table yet — that comes at the next checkpoint
 
-1. **Summarize** all explored approaches in a concise table:
+**If user responds "ready"** (or equivalent: "done", "let's move on", "ship it"):
+- Write CONTEXT.md directly — NO preview or confirmation step
+- Skip the approach comparison table
+- Extract decisions from the discussion, organize into CONTEXT.md sections, write the file
+- Jump to Step 6 output confirmation
 
-   | Approach | Strengths | Weaknesses |
-   |----------|-----------|------------|
-   | {approach 1} | {strengths} | {weaknesses} |
-   | {approach 2} | {strengths} | {weaknesses} |
-   | ... | ... | ... |
+**If user picks a specific direction or asks for the summary table:**
+- Show the approach comparison table:
 
-Present the summary table in the session language. Column headers and approach names may mix English technical terms with session-language descriptions.
+  | Approach | Strengths | Weaknesses |
+  |----------|-----------|------------|
+  | {approach 1} | {strengths} | {weaknesses} |
+  | {approach 2} | {strengths} | {weaknesses} |
+  | ... | ... | ... |
 
-2. **Ask the user** to select one of:
-   - Pick a single approach
-   - Combine elements from multiple approaches
-   - Explore further (return to Step 4)
-
-3. **Record** their selection as the primary decision. If they combine elements, document which elements from which approaches.
+  Present the table in the session language. Column headers and approach names may mix English technical terms with session-language descriptions.
+- Ask: "Want to go with this direction, or explore more?"
+- If they confirm a direction, proceed to CONTEXT.md write
+- If they want to explore more, return to Step 4
 
 ## Step 6: Output
 
@@ -175,12 +195,25 @@ Display confirmation:
 
 ## Step 7: Next Up
 
+**If phase context (active phase or explicit phase number):**
+
 ```
-===============================================
-> Next Up
-{If phase context}: **Plan this phase** -- `/mz:plan`
-{If standalone}: **Use this context** -- reference {output file path} in your next planning session
-===============================================
+## Next Up
+
+**Plan Phase {N}: {Phase Name}** — turn decisions into executable tasks
+`/mz:plan {N}`
+
+<sub>`/clear` — start fresh context for the next step</sub>
+```
+
+**If standalone (no phase context):**
+
+```
+## Next Up
+
+**Use this context** — reference {output file path} in your next planning session
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
 ## Key Behaviors
@@ -188,6 +221,8 @@ Display confirmation:
 - **Minimum 5 alternative approaches** explored before convergence is offered (user decision -- overrides default of 3)
 - **Socratic dialogue** throughout: probing questions, not questionnaires or numbered lists
 - **Thinking partner tone**: build on ideas, challenge assumptions, genuine curiosity
+- **Structured checkpoints at convergence moments**: summary of decisions taken + "Want to go deeper?" — NOT a bare nudge
+- **"Ready" shortcut**: if user says "ready" (or equivalent), write CONTEXT.md directly without preview or confirmation
 - **Output format**: CONTEXT.md compatible (domain/decisions/specifics/deferred sections)
 - **Works standalone**: brainstorm without any project or phase context, output to `.planning/brainstorms/`
 - **No auto-trigger**: this skill is manually invoked by the user (not triggered automatically during execution)
