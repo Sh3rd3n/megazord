@@ -159,6 +159,12 @@ export async function install(): Promise<void> {
 		// Write .last-seen-version equal to .version so no changelog fires on initial session
 		writeFileSync(join(tmpPluginDir, ".last-seen-version"), VERSION);
 
+		// Copy CHANGELOG.md so session-lifecycle can display it without network access
+		const changelogSrc = join(packageRoot, "CHANGELOG.md");
+		if (existsSync(changelogSrc)) {
+			writeFileSync(join(tmpPluginDir, "CHANGELOG.md"), readFileSync(changelogSrc));
+		}
+
 		// Generate marketplace.json at .claude-plugin/marketplace.json
 		const marketplaceDir = join(tmpDir, ".claude-plugin");
 		mkdirSync(marketplaceDir, { recursive: true });

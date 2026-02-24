@@ -54,8 +54,14 @@ export async function update(): Promise<void> {
 			}
 		}
 
-		// Update .version file
+		// Update .version file (intentionally does NOT update .last-seen-version — mismatch triggers changelog)
 		writeFileSync(megazordVersionPath, VERSION);
+
+		// Copy CHANGELOG.md so session-lifecycle can display it without network access
+		const changelogSrc = join(packageRoot, "CHANGELOG.md");
+		if (existsSync(changelogSrc)) {
+			writeFileSync(join(megazordPluginDir, "CHANGELOG.md"), readFileSync(changelogSrc));
+		}
 
 		console.log(`Megazord updated to v${VERSION}`);
 	} catch (err) {
