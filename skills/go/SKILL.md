@@ -10,6 +10,7 @@ Execute the current phase plan by orchestrating executor agents. Supports two ex
 
 Reference `@skills/init/design-system.md` for visual output formatting.
 Reference `@skills/shared/presentation-standards.md` for content formatting rules.
+Reference `@skills/shared/terminology.md` for official term definitions.
 Reference `@skills/go/executor.md` for execution protocol and spawning patterns.
 Reference `@skills/go/teams.md` for Agent Teams execution protocol.
 

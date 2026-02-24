@@ -11,6 +11,7 @@ Initialize a new Megazord project or migrate an existing GSD project. This skill
 Reference `@skills/init/design-system.md` for all visual output formatting.
 Reference `@skills/shared/interview-language.md` for language detection and session-wide persistence rules.
 Reference `@skills/shared/interview-options.md` for option format, ordering, and explanation standards.
+Reference `@skills/shared/terminology.md` for official term definitions.
 
 ## Step 1: Display Banner
 

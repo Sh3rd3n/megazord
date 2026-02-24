@@ -10,6 +10,7 @@ Display current project progress, phase completion, and recommended next actions
 
 Reference `@skills/init/design-system.md` for all visual output formatting.
 Reference `@skills/shared/presentation-standards.md` for content formatting rules.
+Reference `@skills/shared/terminology.md` for official term definitions.
 
 ## Step 1: Display Banner
 

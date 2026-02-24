@@ -9,6 +9,7 @@ disable-model-invocation: false
 Guide systematic four-phase debugging with observable state transitions. Each phase has a distinct banner so the user always knows which stage the debugging process is in. Adapts techniques based on issue type (runtime error, build failure, test failure, performance, logic bug).
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/terminology.md` for official term definitions.
 
 ## Step 1: Display Banner
 

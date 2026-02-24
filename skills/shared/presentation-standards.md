@@ -29,7 +29,7 @@ Summaries use markdown H3 headings for category sections. No flat bullet lists, 
 ### Plans
 {plan summaries — one line each}
 
-### Next Step
+### Next Up
 {single actionable next step}
 ```
 

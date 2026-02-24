@@ -10,6 +10,7 @@ Plan a phase by orchestrating research and planning agents. Produces PLAN.md fil
 
 Reference `@skills/init/design-system.md` for visual output formatting.
 Reference `@skills/shared/presentation-standards.md` for content formatting rules.
+Reference `@skills/shared/terminology.md` for official term definitions.
 Reference `@skills/plan/agents.md` for agent definitions and spawning patterns.
 
 ## Step 1: Display Banner

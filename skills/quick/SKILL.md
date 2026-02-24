@@ -9,6 +9,7 @@ disable-model-invocation: false
 Execute a one-off task with atomic commit tracking. Skips roadmap and phase planning but respects quality gates from project config. Works with or without an active Megazord project.
 
 Reference `@skills/init/design-system.md` for all visual output formatting.
+Reference `@skills/shared/terminology.md` for official term definitions.
 
 ## Step 1: Display Banner
 

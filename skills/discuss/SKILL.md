@@ -10,6 +10,7 @@ Facilitate Socratic brainstorming that explores 5+ alternative approaches before
 
 Reference `@skills/init/design-system.md` for visual output formatting.
 Reference `@skills/shared/interview-language.md` for language detection and session-wide persistence rules.
+Reference `@skills/shared/terminology.md` for official term definitions.
 
 ## Step 1: Display Banner
 
