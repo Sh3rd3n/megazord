@@ -1,8 +1,19 @@
 #!/usr/bin/env bash
 # Megazord banner with Power Rangers colors
 # Usage: scripts/banner.sh [version]
+# If no version argument, reads from package.json in project root
 
-VERSION="${1:-1.1.2}"
+if [ -n "$1" ]; then
+  VERSION="$1"
+else
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+  PKG_JSON="$(dirname "$SCRIPT_DIR")/package.json"
+  if [ -f "$PKG_JSON" ]; then
+    VERSION=$(grep '"version"' "$PKG_JSON" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+  else
+    VERSION="dev"
+  fi
+fi
 
 # Power Rangers palette (truecolor)
 R='\033[38;2;230;57;70m'    # Red Ranger   (M, O)

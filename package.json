@@ -48,6 +48,7 @@
 		"CHANGELOG.md"
 	],
 	"scripts": {
+		"prebuild": "bash scripts/sync-version.sh",
 		"build": "tsdown",
 		"postbuild": "node bin/megazord.mjs install || true",
 		"typecheck": "tsc --noEmit",
