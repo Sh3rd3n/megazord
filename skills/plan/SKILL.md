@@ -9,6 +9,8 @@ disable-model-invocation: false
 Plan a phase by orchestrating research and planning agents. Produces PLAN.md files with task breakdown, dependencies, and completion criteria.
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/presentation-standards.md` for content formatting rules.
+Reference `@skills/shared/terminology.md` for official term definitions.
 Reference `@skills/plan/agents.md` for agent definitions and spawning patterns.
 
 ## Step 1: Display Banner
@@ -158,11 +160,13 @@ To check for PLAN.md files, use Glob: `.planning/phases/{padded}-*/*-*-PLAN.md` 
 
 **If all phases are planned:** Display: "All phases in the roadmap are planned. Run `/mz:go` to execute."
 
-Display the target phase:
+Display the target phase with inline context (per presentation-standards.md Section 4):
 ```
 ▸ Target
-  Phase {N}: {Phase Name}
+  Phase {N}: {Phase Name} — {functional_sentence_from_goal}
 ```
+
+Extract the functional sentence from the phase's Goal field in ROADMAP.md (max 8-10 words, user-centric).
 
 ### Verification Gate Enforcement
 
@@ -177,17 +181,25 @@ After determining the target phase and BEFORE any research or planning, check th
    Display a strong warning (advisory, not blocking -- the user has final authority):
    ```
    > Verification Gate
-     ! Phase {N-1} has not passed verification.
+     ! Phase {N-1}: {Name} — has not passed verification.
      Run /mz:verify {N-1} before planning Phase {N}.
    ```
    Use AskUserQuestion (header: "Gate", 4 chars):
    - "Continue anyway" (proceed with planning)
-   - "Run /mz:verify first" (display "Run `/mz:verify {N-1}` to verify the previous phase first." and exit)
+   - "Run /mz:verify first" (display the following and exit):
+     ```
+     ## Next Up
+
+     **Verify Phase {N-1}: {PrevName} — confirm deliverables before planning Phase {N}**
+     `/mz:verify {N-1}`
+
+     <sub>`/clear` — start fresh context for the next step</sub>
+     ```
 4. **If verification passed** (status is "passed" or "human_needed"):
    Display confirmation:
    ```
    > Verification Gate
-     ✓ Phase {N-1} verified
+     ✓ Phase {N-1}: {Name} — verified
    ```
 5. **If the target phase is 1:** Skip the verification gate (no previous phase to check).
 
@@ -223,7 +235,16 @@ Use AskUserQuestion:
 - question: "Continue planning without context?"
 - options: "Continue" / "Run /mz:discuss first"
 
-If "Run /mz:discuss first": Display "Run `/mz:discuss {N}` to gather context for this phase." and exit.
+If "Run /mz:discuss first": Display the following and exit:
+
+```
+## Next Up
+
+**Gather context for Phase {N}: {Name} — {functional_sentence_from_goal}**
+`/mz:discuss {N}`
+
+<sub>`/clear` — start fresh context for the next step</sub>
+```
 If "Continue": Proceed without CONTEXT.md content.
 
 **Important:** This is a soft check -- warn but do not block. The user decides.
@@ -238,10 +259,10 @@ Determine whether to run research:
 
 **If research should run:**
 
-Display:
+Display with contextual progress indicator (per presentation-standards.md Section 6):
 ```
 ▸ Research
-  ◆ Researching Phase {N}...
+  ◆ Researching Phase {N}: {Name}... (analyzing patterns and best practices)
 ```
 
 Spawn the researcher agent:
@@ -296,10 +317,10 @@ Gather all context for the planner:
 - Previous phase SUMMARY.md files (if relevant, for established patterns)
 - Codebase summary (if loaded in Step 2 brownfield detection)
 
-Display:
+Display with contextual progress indicator (per presentation-standards.md Section 6):
 ```
 ▸ Planning
-  ◆ Creating plans for Phase {N}...
+  ◆ Creating plans for Phase {N}: {Name}... (decomposing into tasks and waves)
 ```
 
 Read `{plugin_path}/agents/mz-planner.md` file content into memory.
@@ -358,10 +379,10 @@ Determine whether to run plan verification:
 
 **If plan_check is enabled:**
 
-Display:
+Display with contextual progress indicator (per presentation-standards.md Section 6):
 ```
 ▸ Plan Check
-  ◆ Validating plans...
+  ◆ Validating plans... (checking frontmatter, structure, and dependencies)
 ```
 
 For each created PLAN.md file, validate using the CLI tool:
@@ -429,31 +450,30 @@ After plans are created:
 
 ## Step 8: Present Results
 
-Display a plan summary using the design system action box:
+Display a plan summary using heading-based layout (per presentation-standards.md Section 1 — no action box for regular summaries):
 
 ```
-╔═══════════════════════════════════════════════╗
-║  Phase {N} Planned                            ║
-╠═══════════════════════════════════════════════╣
-║  Plans: {count}                               ║
-║                                               ║
-║  01: {brief objective from plan 01}           ║
-║  02: {brief objective from plan 02}           ║
-║  ...                                          ║
-║                                               ║
-║  Wave 1: {plans in wave 1}                    ║
-║  Wave 2: {plans in wave 2} (if applicable)    ║
-╚═══════════════════════════════════════════════╝
+### Phase {N}: {Name} — Planned
+
+Plans: {count}
+  01: {functional_objective_plan_01}
+  02: {functional_objective_plan_02}
+
+Wave 1: {plan_list} — {functional_summary_of_wave}
+Wave 2: {plan_list} — {functional_summary_of_wave}
 ```
 
-End with the Next Up block:
+Where `{functional_objective}` is extracted from each plan's `<objective>` section — user-centric, max 10 words. Wave summaries should be functional: "Wave 1: Plans 01, 02 — foundation and reference docs" not just "Wave 1: 01, 02".
+
+End with the Next Up block using the heading format (per presentation-standards.md Section 8):
 
 ```
-═══════════════════════════════════════════════════
-▸ Next Up
-**Execute Phase {N}** -- start with plan 01
+## Next Up
+
+**Execute Phase {N}: {Name} — {functional_sentence_from_goal}**
 `/mz:go`
-═══════════════════════════════════════════════════
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
 ## Error Handling

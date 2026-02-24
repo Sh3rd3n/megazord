@@ -11,6 +11,8 @@ Orchestrate the full milestone lifecycle: audit verification status, archive the
 **Note:** This skill handles the entire end-of-milestone flow in a single entry point. When audit finds gaps, it proposes gap-closure phases and exits. When audit passes, it proceeds through archive, deferred item collection, and next-version preparation.
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/presentation-standards.md` for content formatting rules.
+Reference `@skills/shared/terminology.md` for official term definitions.
 
 ## Step 1: Display Banner
 
@@ -27,12 +29,11 @@ Output the stage banner:
 Read `.planning/megazord.config.json`. If missing, display error and stop:
 
 ```
-+===============================================+
-|  X Project Not Initialized                    |
-+-----------------------------------------------+
-|  No megazord.config.json found.               |
-|  Run /mz:init to set up your project first.   |
-+===============================================+
+## Error
+
+Project not initialized — no megazord.config.json found.
+
+`/mz:init`
 ```
 
 If config exists, continue loading:
@@ -44,7 +45,14 @@ Determine the plugin path for CLI commands:
 1. Read `plugin_path` from the config JSON.
 2. If `plugin_path` is not set in config, try `~/.claude/plugins/mz`. Check if `~/.claude/plugins/mz/bin/megazord.mjs` exists.
 3. If neither exists, display error and stop:
-   > Plugin path not configured. Run `/mz:settings` and set `plugin_path`, or re-run `/mz:init`.
+
+```
+## Error
+
+Plugin path not configured.
+
+`/mz:settings` to set plugin_path, or `/mz:init` to re-initialize.
+```
 
 Parse the user's message (text after `/mz:lifecycle`) for arguments:
 - `--skip-audit` -- bypass the audit step entirely (for informal projects)
@@ -69,27 +77,28 @@ Use the resolved `{plugin_path}` for all `node {plugin_path}/bin/megazord.mjs` c
 |  Completed: {M}/{N}                           |
 |  Progress: {percentage}%                      |
 |                                               |
-|  {Phase status list with symbols}             |
-|  Phase 1: Core Plugin Infrastructure    [done]|
-|  Phase 2: Project Initialization        [done]|
-|  ...                                          |
+|  ✓ Phase 1: {Name} — {functional_sentence}   |
+|  ✓ Phase 2: {Name} — {functional_sentence}   |
+|  ◆ Phase 3: {Name} — {functional_sentence}   |
+|  ○ Phase 4: {Name} — {functional_sentence}   |
 +===============================================+
 ```
+
+Use status symbols (✓ complete, ◆ in progress, ○ pending) instead of [done] tags. Extract functional sentences from the phase Goal in ROADMAP.md — one line per phase, never a bare phase number.
 
 4. If no version argument was provided:
    - Check `.planning/MILESTONE.md` for a `version:` field in frontmatter. If found, use it.
    - If no MILESTONE.md or no version field, prompt the user: "What version is this milestone? (e.g., v1.0):"
 
 5. If no completed phases found, display error and stop:
-   ```
-   +===============================================+
-   |  X No Completed Phases                        |
-   +-----------------------------------------------+
-   |  No completed phases found.                   |
-   |  Complete at least one phase before running    |
-   |  lifecycle.                                    |
-   +===============================================+
-   ```
+
+```
+## Error
+
+No completed phases found. Complete at least one phase first.
+
+`/mz:go` to execute the current phase.
+```
 
 ## Step 4: Audit (or Skip)
 
@@ -145,8 +154,8 @@ Display gaps clearly with a per-phase status table:
 |  Phases verified: {passed}/{total}            |
 |                                               |
 |  Failed:                                      |
-|  - Phase {N}: {reason}                        |
-|  - Phase {M}: No VERIFICATION.md             |
+|  - Phase {N}: {Name} — {reason}              |
+|  - Phase {M}: {Name} — No VERIFICATION.md    |
 +===============================================+
 ```
 
@@ -173,11 +182,12 @@ Then propose gap-closure phases:
    - Add phases via CLI tool.
    - Display next steps:
      ```
-     ===============================================
-     > Next Up
-     **Gap-closure phases added.** Plan and execute them.
-     `/mz:plan` for the new phase(s), then `/mz:go` to execute, then `/mz:lifecycle` again.
-     ===============================================
+     ## Next Up
+
+     **Plan gap-closure Phase {X}: {description}** — address audit gaps
+     `/mz:plan {X}`
+
+     <sub>`/clear` — start fresh context for the next step</sub>
      ```
 5. **EXIT** -- Do NOT proceed to archive when gaps exist.
 
@@ -394,11 +404,12 @@ Proceed with archive? (yes/no)
 ```
 
 ```
-===============================================
-> Next Up
-**Ready for {next_version}.** Create the roadmap and start planning.
+## Next Up
+
+**Ready for {next_version}: {name}.** Create the roadmap and start planning.
 `/mz:plan`
-===============================================
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
 ## Error Handling

@@ -9,6 +9,7 @@ disable-model-invocation: false
 Display the complete skill reference for Megazord.
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/terminology.md` for official term definitions.
 
 Display the stage banner:
 

@@ -11,6 +11,8 @@ Verify that a phase achieved its GOAL by performing goal-backward verification a
 **Note:** This skill always works when invoked manually, regardless of the `workflow.verifier` config setting. The config toggle only controls whether `/mz:go` automatically suggests verification after execution.
 
 Reference `@skills/init/design-system.md` for visual output formatting.
+Reference `@skills/shared/presentation-standards.md` for content formatting rules.
+Reference `@skills/shared/terminology.md` for official term definitions.
 Reference `@skills/verify/verifier.md` for verification protocol and spawning patterns.
 
 ## Step 1: Display Banner
@@ -28,12 +30,11 @@ Output the stage banner:
 Read `.planning/megazord.config.json`. If missing, display error and stop:
 
 ```
-+===============================================+
-|  X Project Not Initialized                    |
-+-----------------------------------------------+
-|  No megazord.config.json found.               |
-|  Run /mz:init to set up your project first.   |
-+===============================================+
+## Error
+
+Project not initialized — no megazord.config.json found.
+
+`/mz:init`
 ```
 
 If config exists, continue loading:
@@ -49,7 +50,14 @@ Determine the plugin path for CLI commands:
 1. Read `plugin_path` from the config JSON.
 2. If `plugin_path` is not set in config, try `~/.claude/plugins/mz`. Check if `~/.claude/plugins/mz/bin/megazord.mjs` exists.
 3. If neither exists, display error and stop:
-   > Plugin path not configured. Run `/mz:settings` and set `plugin_path`, or re-run `/mz:init`.
+
+```
+## Error
+
+Plugin path not configured.
+
+`/mz:settings` to set plugin_path, or `/mz:init` to re-initialize.
+```
 
 Use this resolved path for all `node {plugin_path}/bin/megazord.mjs` commands below:
 
@@ -63,13 +71,23 @@ node {plugin_path}/bin/megazord.mjs tools plan incomplete --phase-dir {phase_dir
 - Otherwise: use current phase from STATE.md.
 - Compute the phase directory path (e.g., `.planning/phases/05-code-review-and-verification`).
 - Extract phase goal and success criteria from ROADMAP.md.
+- If phase not found in ROADMAP.md, display error and stop:
+
+```
+## Error
+
+Phase {N} not found in roadmap. Valid phases: {list}.
+
+`/mz:status` to check current position.
+```
 
 Display:
 ```
 > Target
-  Phase {N}: {Name}
-  Goal: {phase goal from ROADMAP.md}
+  Phase {N}: {Name} — {functional_sentence_from_goal}
 ```
+
+The goal is already inline in the functional sentence — no separate "Goal:" line needed.
 
 ## Step 3b: Milestone Audit Mode (alternative path)
 
@@ -114,8 +132,8 @@ Display:
    |  Phases verified: {passed}/{total}            |
    |                                               |
    |  Failed:                                      |
-   |  - Phase {N}: {reason}                        |
-   |  - Phase {M}: No VERIFICATION.md             |
+   |  - Phase {N}: {Name} — {reason}              |
+   |  - Phase {M}: {Name} — No VERIFICATION.md    |
    +===============================================+
    ```
    Suggest: "Run `/mz:verify {N}` for each failed phase."
@@ -130,20 +148,22 @@ Display:
 
    If passed:
    ```
-   ===============================================
-   > Next Up
+   ## Next Up
+
    **Milestone {version} audit passed.** Ready to archive.
-   `/mz:plan` to complete milestone lifecycle.
-   ===============================================
+   `/mz:lifecycle`
+
+   <sub>`/clear` — start fresh context for the next step</sub>
    ```
 
    If gaps found:
    ```
-   ===============================================
-   > Next Up
+   ## Next Up
+
    **Address gaps before closing milestone.**
-   `/mz:verify {N}` for each failed phase.
-   ===============================================
+   `/mz:verify {N}` for Phase {N}: {Name}
+
+   <sub>`/clear` — start fresh context for the next step</sub>
    ```
 
 8. Exit (do not proceed to regular phase verification).
@@ -154,6 +174,16 @@ Display:
 
 ```bash
 node {plugin_path}/bin/megazord.mjs tools plan incomplete --phase-dir {phase_dir}
+```
+
+- If no plans found in the phase directory, display error and stop:
+
+```
+## Error
+
+No plans found for Phase {N}: {Name}.
+
+`/mz:plan {N}`
 ```
 
 - If incomplete plans exist AND `--partial` was NOT provided:
@@ -234,10 +264,21 @@ Parse the verification status from the structured result:
 
 All truths verified, all artifacts exist and are wired, all requirements covered.
 
-Display success:
+Display the strong phase completion banner first:
+```
+═══════════════════════════════════════════════════
+
+### Phase {N}: {Name} — Complete
+
+{Brief recap: what this phase delivered, 1-2 sentences}
+
+═══════════════════════════════════════════════════
+```
+
+Then display verification stats:
 ```
 +===============================================+
-|  Phase {N} Verification: PASSED              |
+|  Phase {N}: {Name} — Verification: PASSED    |
 +===============================================+
 |  Truths: {N}/{N} passed                      |
 |  Artifacts: {N}/{N} verified                 |
@@ -255,7 +296,7 @@ Some truths failed, artifacts missing, or requirements uncovered.
 Display gaps clearly with details from VERIFICATION.md:
 ```
 +===============================================+
-|  Phase {N} Verification: GAPS FOUND          |
+|  Phase {N}: {Name} — Verification: GAPS FOUND|
 +===============================================+
 |  Truths: {passed}/{total} ({failed} failed)  |
 |  Artifacts: {passed}/{total}                 |
@@ -303,20 +344,24 @@ Display Next Up block:
 
 If passed:
 ```
-===============================================
-> Next Up
-**Phase {N} verified.** Ready for Phase {N+1}.
-`/mz:plan`
-===============================================
+## Next Up
+
+**Plan Phase {N+1}: {NextName}** — {functional_sentence_of_next_phase}
+`/mz:plan {N+1}`
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
 If gaps_found:
 ```
-===============================================
-> Next Up
-**Address gaps first.** Fix issues, then re-verify.
+## Next Up
+
+**Address gaps in Phase {N}: {Name}** — fix issues, then re-verify
 `/mz:go`
-===============================================
+
+- Re-verify after fixes: `/mz:verify {N}`
+
+<sub>`/clear` — start fresh context for the next step</sub>
 ```
 
 If human_needed (after user confirms all): Update and proceed as passed or gaps_found based on user responses.
